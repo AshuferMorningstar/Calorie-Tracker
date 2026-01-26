@@ -16,6 +16,7 @@ export default function OnboardDetails(){
   const genderRef = useRef(null)
   const activityRef = useRef(null)
   const [customCalories, setCustomCalories] = useState('')
+  const [workoutDays, setWorkoutDays] = useState('')
   const [error, setError] = useState('')
 
   useEffect(()=>{
@@ -93,25 +94,49 @@ export default function OnboardDetails(){
 
         <div className="form-row dropdown" ref={activityRef}>
           <label>Activity level</label>
-          <div className="dropdown-trigger" tabIndex={0} role="button" onClick={()=>{setActivityOpen(v=>!v); setGenderOpen(false)}} onKeyDown={e=>{if(e.key==='Enter') setActivityOpen(v=>!v)}}>
+          <div
+            className={`dropdown-trigger ${customCalories ? 'disabled' : ''}`}
+            tabIndex={0}
+            role="button"
+            onClick={()=>{
+              if(customCalories) return
+              setActivityOpen(v=>!v); setGenderOpen(false)
+            }}
+            onKeyDown={e=>{if(e.key==='Enter' && !customCalories) setActivityOpen(v=>!v)}}
+          >
             <span>{activity || '-- Choose --'}</span>
             <span className="chev">▾</span>
           </div>
           {activityOpen && (
             <div className="dropdown-drawer" role="listbox">
-              <button type="button" className="dropdown-item" onClick={()=>{setActivity('sedentary'); setActivityOpen(false)}}>Sedentary (little or no exercise)</button>
-              <button type="button" className="dropdown-item" onClick={()=>{setActivity('light'); setActivityOpen(false)}}>Light (1-3 workouts/week)</button>
-              <button type="button" className="dropdown-item" onClick={()=>{setActivity('moderate'); setActivityOpen(false)}}>Moderate (3-5 workouts/week)</button>
-              <button type="button" className="dropdown-item" onClick={()=>{setActivity('active'); setActivityOpen(false)}}>Active (6-7 workouts/week)</button>
-              <button type="button" className="dropdown-item" onClick={()=>{setActivity('very'); setActivityOpen(false)}}>Very active (daily intense exercise)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('sedentary'); setCustomCalories(''); setWorkoutDays(''); setActivityOpen(false)}}>Sedentary (little or no exercise)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('light'); setCustomCalories(''); setWorkoutDays(''); setActivityOpen(false)}}>Light (1-3 workouts/week)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('moderate'); setCustomCalories(''); setWorkoutDays(''); setActivityOpen(false)}}>Moderate (3-5 workouts/week)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('active'); setCustomCalories(''); setWorkoutDays(''); setActivityOpen(false)}}>Active (6-7 workouts/week)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('very'); setCustomCalories(''); setWorkoutDays(''); setActivityOpen(false)}}>Very active (daily intense exercise)</button>
             </div>
           )}
         </div>
 
         <div className="form-row">
           <label>Or enter calories burned per workout</label>
-          <input type="number" min="0" value={customCalories} onChange={e=>setCustomCalories(e.target.value)} placeholder="e.g. 300" />
+          <input type="number" min="0" value={customCalories} onChange={e=>{
+            const v = e.target.value
+            setCustomCalories(v)
+            if(v){
+              // when custom calories are entered, clear activity and close drawer
+              setActivity('')
+              setActivityOpen(false)
+            }
+          }} placeholder="e.g. 300" />
         </div>
+
+        {customCalories && (
+          <div className="form-row">
+            <label>Workout days per week</label>
+            <input type="number" min="1" max="7" value={workoutDays} onChange={e=>setWorkoutDays(e.target.value)} placeholder="1-7" />
+          </div>
+        )}
 
         {error && <div style={{color:'crimson',fontSize:13,marginTop:8}}>{error}</div>}
 
