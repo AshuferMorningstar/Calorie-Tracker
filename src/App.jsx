@@ -173,10 +173,7 @@ export default function App(){
           <button ref={closeBtnRef} className="icon-btn" aria-label="Close menu" onClick={closeMenu}>✕</button>
         </div>
         <div className="panel-body">
-          <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'12px 0'}}>
-            <div style={{fontWeight:700}}>Your profile</div>
-            <div style={{fontSize:13,color:'var(--muted)'}}>View your details and plan</div>
-          </div>
+          
 
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
