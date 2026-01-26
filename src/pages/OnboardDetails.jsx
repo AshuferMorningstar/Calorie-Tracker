@@ -35,6 +35,48 @@ export default function OnboardDetails(){
     // noop placeholder; kept for parity with earlier logic
   },[])
 
+  // load previously-saved values so returning users see their inputs
+  useEffect(()=>{
+    try{
+      const storedDob = localStorage.getItem('calorieWise.dob') || ''
+      if(storedDob) setDob(storedDob)
+
+      const storedHeightUnit = localStorage.getItem('calorieWise.heightUnit') || 'cm'
+      setHeightUnit(storedHeightUnit)
+      if(storedHeightUnit === 'cm'){
+        const h = localStorage.getItem('calorieWise.height') || ''
+        if(h) setHeight(h)
+      }else{
+        const hd = localStorage.getItem('calorieWise.heightDisplay') || ''
+        if(hd){
+          const m = hd.match(/(\d+)'(\d+)/)
+          if(m){ setFeet(m[1]); setInches(m[2]) }
+        }else{
+          // fallback: convert stored cm to ft/in
+          const hcm = Number(localStorage.getItem('calorieWise.height') || '')
+          if(hcm){
+            const totalIn = Math.round(hcm / 2.54)
+            const f = Math.floor(totalIn / 12)
+            const i = totalIn % 12
+            setFeet(String(f)); setInches(String(i))
+          }
+        }
+      }
+
+      const g = localStorage.getItem('calorieWise.gender') || ''
+      if(g) setGender(g)
+
+      const act = localStorage.getItem('calorieWise.activity') || ''
+      if(act === 'custom'){
+        setActivity('')
+        setCustomCalories(localStorage.getItem('calorieWise.customCalories') || '')
+        setWorkoutDays(localStorage.getItem('calorieWise.workoutDays') || '')
+      }else{
+        if(act) setActivity(act)
+      }
+    }catch(e){}
+  },[])
+
   // live computed age for display under DOB
   let liveAge = null
   if(dob){
