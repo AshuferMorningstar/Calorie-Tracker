@@ -18,6 +18,7 @@ export default function Onboard(){
         <div className="goal-actions" style={{marginTop:16}}>
           <button className="card" onClick={()=>choose('loss')}>Weight loss</button>
           <button className="card secondary" onClick={()=>choose('gain')}>Weight gain</button>
+          <button className="card" onClick={()=>choose('maintain')}>Maintain weight</button>
         </div>
       </div>
     </div>

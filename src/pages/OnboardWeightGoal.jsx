@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function OnboardWeightGoal(){
   const navigate = useNavigate()
@@ -13,6 +13,8 @@ export default function OnboardWeightGoal(){
   const [error, setError] = useState('')
   const [fastConsent, setFastConsent] = useState(false)
   const [bands, setBands] = useState(null)
+  const location = useLocation()
+  const incomingGoal = (location && location.state && location.state.goal) || localStorage.getItem('calorieWise.goal') || null
 
   useEffect(()=>{
     const h = Number(localStorage.getItem('calorieWise.height') || '')
@@ -62,6 +64,17 @@ export default function OnboardWeightGoal(){
     }
   }
 
+  // if the user came in with a 'maintain' goal, auto-use current weight as the goal
+  useEffect(()=>{
+    if(incomingGoal === 'maintain'){
+      setSelectedBand('maintain')
+      if(currentKg){
+        setGoalKg(String(currentKg))
+      }
+      setMonths('0')
+    }
+  },[incomingGoal,currentKg])
+
   const handleSubmit = (e)=>{
     e.preventDefault()
     setError('')
@@ -71,7 +84,18 @@ export default function OnboardWeightGoal(){
     if(c <= 0){ setError('Enter your current weight.'); return }
     if(g <= 0){ setError('Enter a goal weight or use a band.'); return }
     const diff = c - g
-    if(diff <= 0){ setError('Goal must be less than current weight for a weight loss plan.'); return }
+    if(g > c){ setError('Goal must be less than or equal to current weight (use maintenance if equal).'); return }
+    if(diff === 0){
+      // maintenance selected — accept immediately
+      try{
+        localStorage.setItem('calorieWise.currentWeightKg', String(c))
+        localStorage.setItem('calorieWise.targetWeightKg', String(g))
+        localStorage.setItem('calorieWise.targetBand', 'maintain')
+        localStorage.setItem('calorieWise.timelineMonths', String(0))
+      }catch(e){}
+      navigate('/', { state: { fromSplash: true } })
+      return
+    }
 
     // default recommended pace: 0.5–1.0 kg/week → 2–4 kg/month
     // allow optional faster pace up to ~1.2 kg/week → 5 kg/month with explicit consent
@@ -116,7 +140,7 @@ export default function OnboardWeightGoal(){
           <input id="goal-kg" type="number" min="20" max="500" value={goalKg} onChange={e=>setGoalKg(e.target.value)} />
         </div>
 
-        {bands && (
+        {bands && incomingGoal !== 'maintain' && (
           <div className="form-row">
             <label>Quick pick</label>
             <div style={{display:'flex',gap:8}}>
@@ -128,9 +152,10 @@ export default function OnboardWeightGoal(){
           </div>
         )}
 
-        <div className="form-row">
-          <label htmlFor="months">Timeline (months)</label>
-          <input id="months" type="number" min="1" value={months} onChange={e=>setMonths(e.target.value)} placeholder="Number of months" />
+        {incomingGoal !== 'maintain' && (
+          <div className="form-row">
+            <label htmlFor="months">Timeline (months)</label>
+            <input id="months" type="number" min="1" value={months} onChange={e=>setMonths(e.target.value)} placeholder="Number of months" />
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>Recommended: 0.5–1.0 kg/week (≈2–4 kg/month). Optional faster pace up to 1.2 kg/week (≈5 kg/month) is allowed with acknowledgement and clinician advice.</div>
             {(() => {
               const cNum = Number(currentKg) || 0
@@ -150,7 +175,8 @@ export default function OnboardWeightGoal(){
               }
               return null
             })()}
-        </div>
+          </div>
+        )}
 
         {error && <div style={{color:'crimson',fontSize:13,marginTop:8}}>{error}</div>}
 

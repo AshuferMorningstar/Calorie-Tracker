@@ -99,8 +99,8 @@ export default function OnboardDetails(){
       if(customCalories) localStorage.setItem('calorieWise.workoutDays', String(workoutDays || '0'))
     }catch(e){}
 
-    // proceed to weight goal step
-    navigate('/onboard/weight')
+    // proceed to weight goal step, forward the chosen goal
+    navigate('/onboard/weight', { state: { goal } })
   }
 
   useEffect(()=>{
