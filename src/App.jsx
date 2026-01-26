@@ -188,13 +188,8 @@ export default function App(){
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
             <button className="card" onClick={()=>{ navigate('/'); closeMenu() }}>Home</button>
+            <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
           </nav>
-
-          
-
-          <div className="panel-row" style={{marginTop:12}}>
-            <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow() }}>Reset app</button>
-          </div>
         </div>
       </div>
     </div>
