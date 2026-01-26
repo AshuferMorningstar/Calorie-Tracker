@@ -60,5 +60,19 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .goal-actions .card.secondary{border-color:var(--accent2);color:var(--accent2)}
 .goal-actions .card:hover{filter:brightness(0.98);transform:translateY(-1px)}
 
+/* Onboarding form styles */
+.form-row{display:flex;flex-direction:column;align-items:flex-start;gap:6px;margin-top:10px}
+.form-row label{font-size:13px;color:var(--muted)}
+.form-row input,.form-row select{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(0,0,0,0.06);background:white}
+.goal-box input::placeholder{color:rgba(36,48,49,0.28)}
+.goal-box .icon-btn{border:1px solid rgba(0,0,0,0.06);background:transparent;padding:8px 12px}
+.goal-box .card{background:var(--accent1);color:white;border-radius:10px;padding:10px 12px;border:none}
+
+@media (max-width:480px){
+  .goal-actions{flex-direction:column}
+  .goal-actions .card{width:100%}
+  .goal-box{padding:14px}
+}
+
 /* Responsive */
 @media (max-width:480px){.logo{width:96px;height:96px}.app-name{font-size:22px}}

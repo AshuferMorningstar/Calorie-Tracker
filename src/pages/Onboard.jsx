@@ -5,12 +5,8 @@ export default function Onboard(){
   const navigate = useNavigate()
 
   const choose = (goal)=>{
-    try{
-      localStorage.setItem('calorieWise.seenEver','1')
-      localStorage.setItem('calorieWise.goal', goal)
-    }catch(e){}
-    // after selecting, go to home and signal fromSplash so ConditionalHome renders App
-    navigate('/', { state: { fromSplash: true } })
+    // route to details page to collect age/height/gender/activity
+    navigate('/onboard/details', { state: { goal } })
   }
 
   return (
@@ -21,7 +17,7 @@ export default function Onboard(){
         <p className="muted">Select a goal to personalize your experience.</p>
         <div className="goal-actions" style={{marginTop:16}}>
           <button className="card" onClick={()=>choose('loss')}>Weight loss</button>
-          <button className="card" onClick={()=>choose('gain')}>Weight gain</button>
+          <button className="card secondary" onClick={()=>choose('gain')}>Weight gain</button>
         </div>
       </div>
     </div>

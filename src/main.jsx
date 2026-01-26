@@ -4,6 +4,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import App from './App'
 import SplashPage from './pages/SplashPage'
 import Onboard from './pages/Onboard'
+import OnboardDetails from './pages/OnboardDetails'
 import ConditionalHome from './ConditionalHome'
 import '../styles.css'
 
@@ -15,6 +16,7 @@ root.render(
         <Route path="/" element={<ConditionalHome/>} />
         <Route path="/splash" element={<SplashPage/>} />
         <Route path="/onboard" element={<Onboard/>} />
+        <Route path="/onboard/details" element={<OnboardDetails/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
