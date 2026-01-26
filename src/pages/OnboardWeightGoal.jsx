@@ -127,6 +127,7 @@ export default function OnboardWeightGoal(){
   return (
     <div className="goal-modal" role="main">
       <form className="goal-box" onSubmit={handleSubmit} aria-label="Set current and goal weight">
+        <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise logo" style={{width:72,height:72,display:'block',margin:'0 auto 8px'}}/>
         <h2 style={{margin:0}}>Set weight target</h2>
         <p className="muted" style={{marginTop:6}}>Enter your current weight and goal, or pick a band to auto-fill.</p>
 
