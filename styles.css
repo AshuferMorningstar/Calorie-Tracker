@@ -48,6 +48,9 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .icon-btn{background:transparent;border:none;padding:6px;border-radius:8px;cursor:pointer;color:var(--muted)}
 .icon-btn:hover{background:rgba(0,0,0,0.03);color:var(--text)}
 
+/* larger, touch-friendly hamburger button */
+.icon-btn.hamburger-icon{font-size:22px;padding:8px 10px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px}
+
 /* prevent overflow and allow wrapping on very small screens */
 .card{min-width:0;overflow:hidden;word-break:break-word}
 .card *{min-width:0}

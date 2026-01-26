@@ -70,7 +70,7 @@ export default function App(){
             <h2 style={{margin:0}}>Calorie Wise</h2>
           </div>
           <div style={{display:'flex',gap:8,alignItems:'center'}}>
-            <button className="icon-btn" title="Settings">⚙️</button>
+            <button className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu">☰</button>
           </div>
         </div>
 
