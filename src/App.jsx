@@ -134,16 +134,16 @@ export default function App(){
 
   return (
     <div>
-      <div className="dashboard-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:24,maxWidth:900,margin:'0 auto'}}>
+      <div className="dashboard-header profile-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div>
-          <h2 style={{margin:0}}>Calorie Wise</h2>
+          <h2>Calorie Wise</h2>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
           <button ref={hamburgerRef} className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu" onClick={toggleMenu}>☰</button>
         </div>
       </div>
 
-      <main ref={mainRef} style={{padding:24,maxWidth:900,margin:'0 auto',display:'grid',gap:16}}>
+      <main ref={mainRef} style={{padding:16,maxWidth:720,margin:'0 auto',display:'grid',gap:16}}>
 
         <div className="dashboard-grid">
           <div className="card">

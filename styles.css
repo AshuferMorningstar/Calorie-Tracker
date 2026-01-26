@@ -206,11 +206,13 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 /* profile top dashboard (full-width header, not a card) */
 .profile-top{
   width:100%;
-  max-width:900px;
+  max-width:720px;
   margin:0 auto 8px auto;
-  padding:12px 0;
+  padding:6px 0;
   border-bottom:1px solid rgba(36,48,49,0.06);
 }
+
+.profile-top h2{margin:0;font-size:18px;font-weight:600}
 
 /* theme toggle (sun / moon) */
 .theme-toggle{
