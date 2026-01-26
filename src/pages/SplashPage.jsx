@@ -6,9 +6,9 @@ export default function SplashPage(){
   const navigate = useNavigate()
 
   const handleFinish = ()=>{
-    console.log('[SplashPage] finished; navigating to / with fromSplash state')
-    // navigate back to home and set a flag so home does not immediately redirect
-    navigate('/', { state: { fromSplash: true } })
+    console.log('[SplashPage] finished; navigating to /onboard')
+    // navigate to onboarding (login-like) page
+    navigate('/onboard')
   }
 
   useEffect(()=>{

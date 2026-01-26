@@ -50,5 +50,15 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 
 .content{padding:28px;background:transparent}
 
+/* Goal selection modal (first-time users) */
+.goal-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(36,48,49,0.06);z-index:50}
+.goal-box{background:transparent;padding:0;border-radius:0;box-shadow:none;min-width:0;max-width:520px;text-align:center}
+.goal-box h3{margin:8px 0 6px;color:var(--text)}
+.goal-box .muted{color:var(--muted);margin:0 0 8px}
+.goal-actions{display:flex;gap:12px;justify-content:center}
+.goal-actions .card{flex:1;padding:10px 14px;border-radius:999px;border:2px solid var(--accent1);background:transparent;color:var(--accent1);font-weight:700;cursor:pointer}
+.goal-actions .card.secondary{border-color:var(--accent2);color:var(--accent2)}
+.goal-actions .card:hover{filter:brightness(0.98);transform:translateY(-1px)}
+
 /* Responsive */
 @media (max-width:480px){.logo{width:96px;height:96px}.app-name{font-size:22px}}
