@@ -170,7 +170,16 @@ export default function App(){
 
       <div ref={panelRef} className={`slide-panel ${menuOpen ? 'open' : ''}`} role="dialog" aria-hidden={!menuOpen}>
         <div className="panel-header">
-          <strong>Menu</strong>
+          <div>
+            <button
+              className="theme-toggle"
+              aria-pressed={darkMode}
+              onClick={()=>setDarkMode(d=>!d)}
+              title={darkMode ? 'Switch to light' : 'Switch to dark'}
+            >
+              <span className="tt-icon" aria-hidden>{darkMode ? '🌙' : '☀️'}</span>
+            </button>
+          </div>
           <button ref={closeBtnRef} className="icon-btn" aria-label="Close menu" onClick={closeMenu}>✕</button>
         </div>
         <div className="panel-body">
@@ -181,12 +190,7 @@ export default function App(){
             <button className="card" onClick={()=>{ navigate('/'); closeMenu() }}>Home</button>
           </nav>
 
-          <div style={{marginTop:16}}>
-            <label style={{display:'flex',alignItems:'center',gap:8}}>
-              <input type="checkbox" checked={darkMode} onChange={e=>setDarkMode(e.target.checked)} />
-              <span>Dark mode</span>
-            </label>
-          </div>
+          
 
           <div className="panel-row" style={{marginTop:12}}>
             <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow() }}>Reset app</button>
