@@ -65,7 +65,7 @@ export default function App(){
   return (
     <div>
       <main style={{padding:24,maxWidth:900,margin:'0 auto',display:'grid',gap:16}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <div className="dashboard-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
           <div>
             <h2 style={{margin:0}}>Calorie Wise</h2>
           </div>
