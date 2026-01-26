@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 export default function OnboardDetails(){
@@ -11,6 +11,10 @@ export default function OnboardDetails(){
   const [height, setHeight] = useState('')
   const [gender, setGender] = useState('')
   const [activity, setActivity] = useState('')
+  const [genderOpen, setGenderOpen] = useState(false)
+  const [activityOpen, setActivityOpen] = useState(false)
+  const genderRef = useRef(null)
+  const activityRef = useRef(null)
   const [customCalories, setCustomCalories] = useState('')
   const [error, setError] = useState('')
 
@@ -46,6 +50,15 @@ export default function OnboardDetails(){
     navigate('/', { state: { fromSplash: true } })
   }
 
+  useEffect(()=>{
+    const onDocClick = (e)=>{
+      if(genderOpen && genderRef.current && !genderRef.current.contains(e.target)) setGenderOpen(false)
+      if(activityOpen && activityRef.current && !activityRef.current.contains(e.target)) setActivityOpen(false)
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return ()=> document.removeEventListener('mousedown', onDocClick)
+  },[genderOpen,activityOpen])
+
   return (
     <div className="goal-modal" role="main">
       <form className="goal-box" onSubmit={handleSubmit} aria-label="Provide personal details">
@@ -63,26 +76,36 @@ export default function OnboardDetails(){
           <input type="number" min="50" max="250" value={height} onChange={e=>setHeight(e.target.value)} placeholder="cm" />
         </div>
 
-        <div className="form-row">
+        <div className="form-row dropdown" ref={genderRef}>
           <label>Gender</label>
-          <select value={gender} onChange={e=>setGender(e.target.value)}>
-            <option value="">Select</option>
-            <option value="female">Female</option>
-            <option value="male">Male</option>
-            <option value="other">Other / Prefer not to say</option>
-          </select>
+          <div className="dropdown-trigger" tabIndex={0} role="button" onClick={()=>{setGenderOpen(v=>!v); setActivityOpen(false)}} onKeyDown={e=>{if(e.key==='Enter') setGenderOpen(v=>!v)}}>
+            <span>{gender || 'Select'}</span>
+            <span className="chev">▾</span>
+          </div>
+          {genderOpen && (
+            <div className="dropdown-drawer" role="listbox">
+              <button type="button" className="dropdown-item" onClick={()=>{setGender('female'); setGenderOpen(false)}}>Female</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setGender('male'); setGenderOpen(false)}}>Male</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setGender('other'); setGenderOpen(false)}}>Other / Prefer not to say</button>
+            </div>
+          )}
         </div>
 
-        <div className="form-row">
+        <div className="form-row dropdown" ref={activityRef}>
           <label>Activity level</label>
-          <select value={activity} onChange={e=>setActivity(e.target.value)}>
-            <option value="">-- Choose --</option>
-            <option value="sedentary">Sedentary (little or no exercise)</option>
-            <option value="light">Light (1-3 workouts/week)</option>
-            <option value="moderate">Moderate (3-5 workouts/week)</option>
-            <option value="active">Active (6-7 workouts/week)</option>
-            <option value="very">Very active (daily intense exercise)</option>
-          </select>
+          <div className="dropdown-trigger" tabIndex={0} role="button" onClick={()=>{setActivityOpen(v=>!v); setGenderOpen(false)}} onKeyDown={e=>{if(e.key==='Enter') setActivityOpen(v=>!v)}}>
+            <span>{activity || '-- Choose --'}</span>
+            <span className="chev">▾</span>
+          </div>
+          {activityOpen && (
+            <div className="dropdown-drawer" role="listbox">
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('sedentary'); setActivityOpen(false)}}>Sedentary (little or no exercise)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('light'); setActivityOpen(false)}}>Light (1-3 workouts/week)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('moderate'); setActivityOpen(false)}}>Moderate (3-5 workouts/week)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('active'); setActivityOpen(false)}}>Active (6-7 workouts/week)</button>
+              <button type="button" className="dropdown-item" onClick={()=>{setActivity('very'); setActivityOpen(false)}}>Very active (daily intense exercise)</button>
+            </div>
+          )}
         </div>
 
         <div className="form-row">
