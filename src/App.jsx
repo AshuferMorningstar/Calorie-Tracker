@@ -173,8 +173,7 @@ export default function App(){
           <button ref={closeBtnRef} className="icon-btn" aria-label="Close menu" onClick={closeMenu}>✕</button>
         </div>
         <div className="panel-body">
-          <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10,padding:'12px 0'}}>
-            <div style={{width:84,height:84,borderRadius:999,background:'linear-gradient(90deg,#8fbf8a,#f2b880)'}} />
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:6,padding:'12px 0'}}>
             <div style={{fontWeight:700}}>Your profile</div>
             <div style={{fontSize:13,color:'var(--muted)'}}>View your details and plan</div>
           </div>

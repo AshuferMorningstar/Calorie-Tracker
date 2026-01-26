@@ -27,7 +27,6 @@ export default function Profile(){
   return (
     <main style={{padding:24,maxWidth:900,margin:'0 auto'}}>
       <div style={{display:'flex',gap:16,alignItems:'center'}}>
-        <div style={{width:84,height:84,borderRadius:999,background:'linear-gradient(90deg,#8fbf8a,#f2b880)'}} />
         <div>
           <h2 style={{margin:0}}>Your profile</h2>
           <div style={{color:'var(--muted)',marginTop:6}}>Review and edit your personal info and plan.</div>
