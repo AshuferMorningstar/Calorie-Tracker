@@ -9,6 +9,9 @@ export default function OnboardDetails(){
   const [goal] = useState(initialGoal)
   const [dob, setDob] = useState('')
   const [height, setHeight] = useState('')
+  const [heightUnit, setHeightUnit] = useState('cm')
+  const [feet, setFeet] = useState('')
+  const [inches, setInches] = useState('')
   const [gender, setGender] = useState('')
   const [activity, setActivity] = useState('')
   const [genderOpen, setGenderOpen] = useState(false)
@@ -48,7 +51,9 @@ export default function OnboardDetails(){
   const handleSubmit = (e)=>{
     e.preventDefault()
     setError('')
-    if(!dob || !height || !gender) {
+    // validate height according to selected unit
+    const hasHeight = heightUnit === 'cm' ? (height && Number(height) > 0) : (feet && Number(feet) >= 0)
+    if(!dob || !hasHeight || !gender) {
       setError('Please enter date of birth, height, and gender.')
       return
     }
@@ -70,12 +75,24 @@ export default function OnboardDetails(){
       return
     }
 
+    // compute height in cm
+    let heightCm = null
+    if(heightUnit === 'cm'){
+      heightCm = Number(height)
+    }else{
+      const f = Number(feet) || 0
+      const i = Number(inches) || 0
+      heightCm = Math.round((f * 12 + i) * 2.54)
+    }
+
     try{
       localStorage.setItem('calorieWise.seenEver','1')
       localStorage.setItem('calorieWise.goal', goal)
       localStorage.setItem('calorieWise.age', String(computedAge))
       localStorage.setItem('calorieWise.dob', String(dob))
-      localStorage.setItem('calorieWise.height', String(height))
+      localStorage.setItem('calorieWise.height', String(heightCm))
+      localStorage.setItem('calorieWise.heightUnit', heightUnit)
+      if(heightUnit === 'ft') localStorage.setItem('calorieWise.heightDisplay', `${feet}'${inches || 0}`)
       localStorage.setItem('calorieWise.gender', gender)
       localStorage.setItem('calorieWise.activity', customCalories ? 'custom' : (activity || ''))
       if(customCalories) localStorage.setItem('calorieWise.customCalories', String(customCalories))
@@ -112,8 +129,19 @@ export default function OnboardDetails(){
         </div>
 
         <div className="form-row">
-          <label>Height (cm)</label>
-          <input type="number" min="50" max="250" value={height} onChange={e=>setHeight(e.target.value)} placeholder="cm" />
+          <label>Height</label>
+          <div style={{display:'flex',gap:8,alignItems:'center',marginTop:6}}>
+            <button type="button" className={`unit-btn ${heightUnit==='cm'?'active':''}`} onClick={()=>setHeightUnit('cm')}>cm</button>
+            <button type="button" className={`unit-btn ${heightUnit==='ft'?'active':''}`} onClick={()=>setHeightUnit('ft')}>ft/in</button>
+          </div>
+          {heightUnit === 'cm' ? (
+            <input type="number" min="50" max="250" value={height} onChange={e=>setHeight(e.target.value)} placeholder="cm" style={{marginTop:8}} />
+          ) : (
+            <div style={{display:'flex',gap:8,marginTop:8}}>
+              <input type="number" min="3" max="8" value={feet} onChange={e=>setFeet(e.target.value)} placeholder="ft" />
+              <input type="number" min="0" max="11" value={inches} onChange={e=>setInches(e.target.value)} placeholder="in" />
+            </div>
+          )}
         </div>
 
         <div className="form-row dropdown" ref={genderRef}>

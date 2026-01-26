@@ -88,5 +88,8 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
   .dropdown-drawer{left:0;right:0}
 }
 
+.unit-btn{border:1px solid rgba(0,0,0,0.06);background:transparent;padding:6px 10px;border-radius:8px;cursor:pointer}
+.unit-btn.active{background:var(--accent1);color:white;border-color:var(--accent1)}
+
 /* Responsive */
 @media (max-width:480px){.logo{width:96px;height:96px}.app-name{font-size:22px}}
