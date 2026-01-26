@@ -6,6 +6,7 @@ import SplashPage from './pages/SplashPage'
 import Onboard from './pages/Onboard'
 import OnboardDetails from './pages/OnboardDetails'
 import OnboardWeightGoal from './pages/OnboardWeightGoal'
+import Profile from './pages/Profile'
 import ConditionalHome from './ConditionalHome'
 import '../styles.css'
 
@@ -19,6 +20,7 @@ root.render(
         <Route path="/onboard" element={<Onboard/>} />
         <Route path="/onboard/details" element={<OnboardDetails/>} />
         <Route path="/onboard/weight" element={<OnboardWeightGoal/>} />
+        <Route path="/profile" element={<Profile/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

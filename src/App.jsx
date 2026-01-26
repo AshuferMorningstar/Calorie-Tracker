@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react'
+import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function App(){
@@ -9,6 +9,75 @@ export default function App(){
     try{ localStorage.removeItem('calorieWise.seenEver') }catch(e){}
     navigate('/splash')
   }
+  const [menuOpen, setMenuOpen] = useState(false)
+  const [darkMode, setDarkMode] = useState(() => {
+    try{ return localStorage.getItem('calorieWise.theme') === 'dark' }catch(e){return false}
+  })
+
+  useEffect(()=>{
+    try{
+      if(darkMode) document.documentElement.classList.add('theme-dark')
+      else document.documentElement.classList.remove('theme-dark')
+      localStorage.setItem('calorieWise.theme', darkMode ? 'dark' : 'light')
+    }catch(e){}
+  },[darkMode])
+
+  // no inline profile editing in menu; profile is edited on the dedicated /profile page
+
+  // manage focus and inert/aria-hidden when the panel opens/closes
+  useEffect(()=>{
+    const mainEl = mainRef.current
+    const panelEl = panelRef.current
+    try{
+      if(menuOpen){
+        // hide the main content from AT and make it inert if supported
+        if(mainEl){
+          mainEl.setAttribute('aria-hidden','true')
+          try{ mainEl.setAttribute('inert','') }catch(e){}
+        }
+        // prevent background scroll
+        document.body.style.overflow = 'hidden'
+        // move focus into the panel (close button)
+        setTimeout(()=>{ closeBtnRef.current?.focus() }, 50)
+      }else{
+        // remove inert/aria-hidden and restore scroll
+        if(mainEl){
+          mainEl.removeAttribute('aria-hidden')
+          try{ mainEl.removeAttribute('inert') }catch(e){}
+        }
+        document.body.style.overflow = ''
+        // ensure focus is not left inside the panel
+        if(panelEl && panelEl.contains(document.activeElement)){
+          hamburgerRef.current?.focus()
+        }
+      }
+    }catch(e){}
+    return ()=>{
+      try{ if(mainEl){ mainEl.removeAttribute('aria-hidden'); mainEl.removeAttribute('inert') } }catch(e){}
+      try{ document.body.style.overflow = '' }catch(e){}
+    }
+  },[menuOpen])
+
+  const hamburgerRef = useRef(null)
+  const panelRef = useRef(null)
+  const closeBtnRef = useRef(null)
+  const mainRef = useRef(null)
+
+  const openMenu = ()=>{
+    setMenuOpen(true)
+  }
+
+  const closeMenu = ()=>{
+    // if focus is inside the panel, move it back to the hamburger before hiding
+    try{
+      if(panelRef.current && panelRef.current.contains(document.activeElement)){
+        hamburgerRef.current?.focus()
+      }
+    }catch(e){}
+    setMenuOpen(false)
+  }
+
+  const toggleMenu = ()=> menuOpen ? closeMenu() : openMenu()
 
   const data = useMemo(()=>{
     try{
@@ -64,15 +133,16 @@ export default function App(){
 
   return (
     <div>
-      <main style={{padding:24,maxWidth:900,margin:'0 auto',display:'grid',gap:16}}>
-        <div className="dashboard-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-          <div>
-            <h2 style={{margin:0}}>Calorie Wise</h2>
-          </div>
-          <div style={{display:'flex',gap:8,alignItems:'center'}}>
-            <button className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu">☰</button>
-          </div>
+      <div className="dashboard-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center',padding:24,maxWidth:900,margin:'0 auto'}}>
+        <div>
+          <h2 style={{margin:0}}>Calorie Wise</h2>
         </div>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <button ref={hamburgerRef} className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu" onClick={toggleMenu}>☰</button>
+        </div>
+      </div>
+
+      <main ref={mainRef} style={{padding:24,maxWidth:900,margin:'0 auto',display:'grid',gap:16}}>
 
         <div className="dashboard-grid">
           <div className="card">
@@ -93,6 +163,39 @@ export default function App(){
           <button className="icon-btn" onClick={resetAndShow}>Reset splash</button>
         </div>
       </main>
+
+      { /* backdrop to dim page while panel open; clicking closes the panel */ }
+      <div className={`panel-backdrop ${menuOpen ? 'open' : ''}`} onClick={closeMenu} aria-hidden="true" />
+
+      <div ref={panelRef} className={`slide-panel ${menuOpen ? 'open' : ''}`} role="dialog" aria-hidden={!menuOpen}>
+        <div className="panel-header">
+          <strong>Menu</strong>
+          <button ref={closeBtnRef} className="icon-btn" aria-label="Close menu" onClick={closeMenu}>✕</button>
+        </div>
+        <div className="panel-body">
+          <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:10,padding:'12px 0'}}>
+            <div style={{width:84,height:84,borderRadius:999,background:'linear-gradient(90deg,#8fbf8a,#f2b880)'}} />
+            <div style={{fontWeight:700}}>Your profile</div>
+            <div style={{fontSize:13,color:'var(--muted)'}}>View your details and plan</div>
+          </div>
+
+          <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
+            <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
+            <button className="card" onClick={()=>{ navigate('/'); closeMenu() }}>Home</button>
+          </nav>
+
+          <div style={{marginTop:16}}>
+            <label style={{display:'flex',alignItems:'center',gap:8}}>
+              <input type="checkbox" checked={darkMode} onChange={e=>setDarkMode(e.target.checked)} />
+              <span>Dark mode</span>
+            </label>
+          </div>
+
+          <div className="panel-row" style={{marginTop:12}}>
+            <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow() }}>Reset app</button>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
