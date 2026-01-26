@@ -1,0 +1,54 @@
+:root{
+  /* Almond-white theme */
+  --bg-start: #fbf8f3; /* very light almond */
+  --bg-end:   #f6f2eb; /* subtle warm gradient */
+  --card:     rgba(24,28,31,0.04);
+  --accent1:  #8fbf8a; /* pistachio */
+  --accent2:  #f2b880; /* soft peach */
+  --muted:    #6b6f72; /* neutral text */
+  --glass:    rgba(255,255,255,0.6);
+  --text:     #243031; /* dark slate text */
+}
+
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg-start),var(--bg-end));color:var(--text);-webkit-font-smoothing:antialiased}
+.splash{height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(255,255,255,0.3),transparent)}
+.logo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeUp 900ms cubic-bezier(.2,.9,.3,1) both;padding:0;margin:0;background:transparent;border-radius:0;box-shadow:none}
+.splash-logo{width:120px;height:120px;object-fit:contain;border-radius:0;box-shadow:none}
+.app-name{margin:0;font-size:28px;letter-spacing:0.2px;color:var(--text);font-weight:700}
+.subtitle{margin:0;color:var(--muted);font-size:14px}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+
+/* subtle logo pop and float */
+@keyframes logoPop{0%{transform:translateY(6px) scale(.96)}30%{transform:translateY(0) scale(1.06)}60%{transform:translateY(-6px) scale(.99)}100%{transform:translateY(0) scale(1)}}
+
+.splash-logo{animation:logoPop 1500ms ease-in-out both}
+
+/* Splash exit animation */
+.splash{transition:opacity 420ms ease, transform 420ms ease}
+.splash-exit{opacity:0;transform:translateY(-10px)}
+
+/* Card styles */
+.card{
+  background: white;
+  border-radius:12px;
+  padding:14px;
+  box-shadow: 0 6px 18px rgba(36,48,49,0.06);
+  display:flex;
+  gap:12px;
+  align-items:center;
+  border: 1px solid rgba(0,0,0,0.04);
+}
+.card .meta{flex:1}
+.card .title{margin:0;font-weight:600;color:var(--text)}
+.card .subtitle{margin:2px 0 0;color:var(--muted);font-size:13px}
+.cal-badge{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;padding:8px 12px;border-radius:999px;font-weight:700;min-width:72px;text-align:center}
+.card-actions{display:flex;gap:8px}
+.icon-btn{background:transparent;border:none;padding:6px;border-radius:8px;cursor:pointer;color:var(--muted)}
+.icon-btn:hover{background:rgba(0,0,0,0.03);color:var(--text)}
+
+.content{padding:28px;background:transparent}
+
+/* Responsive */
+@media (max-width:480px){.logo{width:96px;height:96px}.app-name{font-size:22px}}
