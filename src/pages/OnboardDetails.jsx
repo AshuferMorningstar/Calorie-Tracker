@@ -88,7 +88,14 @@ export default function OnboardDetails(){
     }
   }
 
-  const goBack = ()=> navigate('/onboard')
+  const goBack = ()=>{
+    try{
+      const returnTo = (location && location.state && location.state.from)
+      if(returnTo) return navigate(returnTo)
+    }catch(e){}
+    // fallback: go back one step in history if possible, otherwise go to /onboard
+    try{ navigate(-1) }catch(e){ navigate('/onboard') }
+  }
 
   const handleSubmit = (e)=>{
     e.preventDefault()

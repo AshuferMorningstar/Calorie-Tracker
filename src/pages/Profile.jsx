@@ -22,16 +22,17 @@ export default function Profile(){
     }catch(e){ return {} }
   },[])
 
-  const goEdit = ()=> navigate('/onboard/details')
+  const goEdit = ()=> navigate('/onboard/details', { state: { from: '/profile' } })
 
   return (
     <main style={{padding:24,maxWidth:900,margin:'0 auto'}}>
-      <div style={{display:'flex',gap:16,alignItems:'center'}}>
-        <div>
+      <div className="profile-top" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0'}}>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <button className="icon-btn back-btn" aria-label="Go back" onClick={()=>navigate(-1)}>←</button>
           <h2 style={{margin:0}}>Your profile</h2>
-          <div style={{color:'var(--muted)',marginTop:6}}>Review and edit your personal info and plan.</div>
         </div>
       </div>
+      <div style={{color:'var(--muted)',marginTop:12}}>Review and edit your personal info and plan.</div>
 
       <section style={{marginTop:20,display:'grid',gap:12}}>
         <div className="card">
@@ -81,7 +82,6 @@ export default function Profile(){
 
         <div style={{display:'flex',gap:8}}>
           <button className="card" onClick={goEdit}>Edit profile</button>
-          <button className="icon-btn" onClick={()=>navigate('/')}>Close</button>
         </div>
       </section>
     </main>

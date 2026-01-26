@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function App(){
   const navigate = useNavigate()
@@ -78,6 +78,7 @@ export default function App(){
   }
 
   const toggleMenu = ()=> menuOpen ? closeMenu() : openMenu()
+  const location = useLocation()
 
   const data = useMemo(()=>{
     try{
@@ -94,7 +95,7 @@ export default function App(){
 
       return { currentKg, targetKg, age, height, gender, activity, customCalories, workoutDays, timelineMonths, goal }
     }catch(e){ return {} }
-  },[]) 
+  },[location.pathname]) 
 
   const calories = useMemo(()=>{
     const { currentKg, targetKg, age, height, gender, activity, customCalories, workoutDays, timelineMonths, goal } = data || {}

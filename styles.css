@@ -52,6 +52,9 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 /* larger, touch-friendly hamburger button */
 .icon-btn.hamburger-icon{font-size:22px;padding:8px 10px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px}
 
+/* larger back button for top-left navigation */
+.icon-btn.back-btn{font-size:20px;padding:8px;width:44px;height:44px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px}
+
 /* prevent overflow and allow wrapping on very small screens */
 .card{min-width:0;overflow:hidden;word-break:break-word}
 .card *{min-width:0}
@@ -184,3 +187,12 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
   z-index:1100;
 }
 .panel-backdrop.open{ opacity:1; pointer-events:auto }
+
+/* profile top dashboard (full-width header, not a card) */
+.profile-top{
+  width:100%;
+  max-width:900px;
+  margin:0 auto 8px auto;
+  padding:12px 0;
+  border-bottom:1px solid rgba(36,48,49,0.06);
+}
