@@ -7,7 +7,7 @@ export default function OnboardDetails(){
   const initialGoal = (location && location.state && location.state.goal) || localStorage.getItem('calorieWise.goal') || 'loss'
 
   const [goal] = useState(initialGoal)
-  const [age, setAge] = useState('')
+  const [dob, setDob] = useState('')
   const [height, setHeight] = useState('')
   const [gender, setGender] = useState('')
   const [activity, setActivity] = useState('')
@@ -19,33 +19,67 @@ export default function OnboardDetails(){
   const [workoutDays, setWorkoutDays] = useState('')
   const [error, setError] = useState('')
 
+  // compute max allowed DOB (10 years ago) for the date input
+  const today = new Date()
+  const maxDob = new Date()
+  maxDob.setFullYear(today.getFullYear() - 10)
+  const maxDobIso = maxDob.toISOString().slice(0,10)
+
+  // ISO for today (prevent future dates) — allow recent years to appear in picker
+  const todayIso = today.toISOString().slice(0,10)
+
   useEffect(()=>{
-    // focus first field if desired
-    // noop for now
+    // noop placeholder; kept for parity with earlier logic
   },[])
+
+  // live computed age for display under DOB
+  let liveAge = null
+  if(dob){
+    const d = new Date(dob)
+    if(!Number.isNaN(d.getTime())){
+      liveAge = today.getFullYear() - d.getFullYear()
+      const mm = today.getMonth() - d.getMonth()
+      if(mm < 0 || (mm === 0 && today.getDate() < d.getDate())) liveAge--
+    }
+  }
 
   const goBack = ()=> navigate('/onboard')
 
   const handleSubmit = (e)=>{
     e.preventDefault()
     setError('')
-    if(!age || !height || !gender) {
-      setError('Please enter age, height, and gender.')
+    if(!dob || !height || !gender) {
+      setError('Please enter date of birth, height, and gender.')
       return
     }
     if(!activity && !customCalories){
       setError('Choose an activity level or enter calories burned per workout.')
       return
     }
+    // calculate age from dob
+    const dobDate = new Date(dob)
+    if(Number.isNaN(dobDate.getTime())){
+      setError('Please enter a valid date of birth.')
+      return
+    }
+    let computedAge = today.getFullYear() - dobDate.getFullYear()
+    const m = today.getMonth() - dobDate.getMonth()
+    if(m < 0 || (m === 0 && today.getDate() < dobDate.getDate())) computedAge--
+    if(computedAge < 10){
+      setError('You must be at least 10 years old.')
+      return
+    }
 
     try{
       localStorage.setItem('calorieWise.seenEver','1')
       localStorage.setItem('calorieWise.goal', goal)
-      localStorage.setItem('calorieWise.age', String(age))
+      localStorage.setItem('calorieWise.age', String(computedAge))
+      localStorage.setItem('calorieWise.dob', String(dob))
       localStorage.setItem('calorieWise.height', String(height))
       localStorage.setItem('calorieWise.gender', gender)
-      localStorage.setItem('calorieWise.activity', activity || 'custom')
+      localStorage.setItem('calorieWise.activity', customCalories ? 'custom' : (activity || ''))
       if(customCalories) localStorage.setItem('calorieWise.customCalories', String(customCalories))
+      if(customCalories) localStorage.setItem('calorieWise.workoutDays', String(workoutDays || '0'))
     }catch(e){}
 
     navigate('/', { state: { fromSplash: true } })
@@ -68,8 +102,13 @@ export default function OnboardDetails(){
         <p className="muted">This helps estimate daily needs.</p>
 
         <div className="form-row">
-          <label>Age</label>
-          <input type="number" min="10" max="120" value={age} onChange={e=>setAge(e.target.value)} placeholder="Years" />
+          <label>Date of birth</label>
+          <input type="date" max={todayIso} value={dob} onChange={e=>setDob(e.target.value)} />
+          {dob && liveAge !== null && (
+            <div style={{fontSize:13,color: liveAge < 10 ? 'crimson' : 'var(--muted)', marginTop:6}}>
+              Age: {liveAge} year{liveAge === 1 ? '' : 's'} {liveAge < 10 ? ' — must be 10 or older' : ''}
+            </div>
+          )}
         </div>
 
         <div className="form-row">
