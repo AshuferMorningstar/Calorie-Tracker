@@ -48,7 +48,21 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .icon-btn{background:transparent;border:none;padding:6px;border-radius:8px;cursor:pointer;color:var(--muted)}
 .icon-btn:hover{background:rgba(0,0,0,0.03);color:var(--text)}
 
+/* prevent overflow and allow wrapping on very small screens */
+.card{min-width:0;overflow:hidden;word-break:break-word}
+.card *{min-width:0}
+.card .meta{min-width:0}
+.cal-badge{min-width:48px;flex-shrink:0;padding:6px 10px}
+
 .content{padding:28px;background:transparent}
+
+/* Dashboard grid used on the home screen */
+.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+@media (max-width:480px){
+  .dashboard-grid{grid-template-columns:1fr}
+  .card{padding:12px}
+}
 
 /* Goal selection modal (first-time users) */
 .goal-modal{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(36,48,49,0.06);z-index:50}
@@ -93,3 +107,17 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 
 /* Responsive */
 @media (max-width:480px){.logo{width:96px;height:96px}.app-name{font-size:22px}}
+
+@media (max-width:480px){
+  /* make cards stack their internal content vertically so nothing is cut off */
+  .card{flex-direction:column;align-items:flex-start;gap:8px;padding:12px}
+  .card .meta{width:100%}
+  .card .cal-badge{align-self:flex-start}
+  .dashboard-grid{grid-template-columns:1fr}
+  /* reduce main padding (override inline style if needed) */
+  main{padding:12px !important}
+  .goal-box{max-width:100%;padding:12px}
+  .goal-actions{gap:8px}
+  .goal-actions .card{padding:10px}
+  .form-row input{font-size:15px}
+}
