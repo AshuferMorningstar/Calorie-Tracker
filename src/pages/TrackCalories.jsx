@@ -443,14 +443,14 @@ export default function TrackCalories(){
                   }
 
                   return (
-                  <li key={it.id} className="card" style={{position:'relative',padding:12,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'28px 1fr 96px 140px',alignItems:'center',gap:12}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id) } }}>
+                  <li key={it.id} className="card" style={{position:'relative',padding:6,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'14px minmax(20px,1fr) 64px 100px',alignItems:'center',gap:4,paddingLeft:6}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id) } }}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
                       {editMode ? (
                         <input type="checkbox" checked={selectedIds.has(it.id)} onClick={(e)=>e.stopPropagation()} onChange={(e)=>{ e.stopPropagation(); toggleSelect(it.id) }} />
                       ) : null}
                     </div>
-                    <div style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}</div>
-                    <div style={{textAlign:'right',fontSize:13,color:'var(--muted)'}}>
+                    <div title={it.name} style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}</div>
+                    <div style={{display:'flex',justifyContent:'center',alignItems:'center',fontSize:13,color:'var(--muted)'}}>
                       {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
                     </div>
                     <div style={{textAlign:'right',fontSize:13,fontWeight:700}}>
