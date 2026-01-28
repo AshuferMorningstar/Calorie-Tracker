@@ -223,6 +223,15 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 }
 .panel-backdrop.open{ opacity:1; pointer-events:auto }
 
+/* Track page layout */
+.track-grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+@media (max-width:720px){.track-grid{grid-template-columns:1fr}}
+.track-form .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
+.track-form input{padding:8px;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text)}
+.track-grid .card{padding:12px}
+.track-grid .card .card{padding:8px}
+.track-grid input[type="date"]{padding:8px;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text)}
+
 /* profile top dashboard (full-width header, not a card) */
 .profile-top{
   width:100%;
