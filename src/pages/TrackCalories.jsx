@@ -406,16 +406,13 @@ export default function TrackCalories(){
                   }
 
                   return (
-                  <li key={it.id} className="card" style={{position:'relative',padding:12,display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch'}}>
-                    <button aria-label="Remove item" onClick={()=>removeItem(it.id)} className="icon-btn close-btn" style={{position:'absolute',top:4,right:4,width:32,height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',borderRadius:6,zIndex:40,cursor:'pointer'}}>×</button>
-                    <div style={{minWidth:0,flex:1,marginRight:8,display:'flex',alignItems:'center',gap:12}}>
-                      <div style={{flex:'1 1 auto',fontWeight:600,whiteSpace:'normal',overflow:'visible',wordBreak:'normal',overflowWrap:'normal',hyphens:'none'}}>{it.name}</div>
-                              <div style={{flex:'0 0 auto',minWidth:64,textAlign:'right',fontSize:13,color:'var(--muted)'}}>
-                                {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
-                              </div>
-                              <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>
-                                {it.calories ? `${it.calories} kcal` : ''}{displayProtein !== null && displayProtein !== undefined ? ` • ${displayProtein} g` : ''}
-                              </div>
+                  <li key={it.id} className="card" style={{position:'relative',padding:12,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'1fr 96px 140px',alignItems:'center',gap:12}}>
+                    <div style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}</div>
+                    <div style={{textAlign:'right',fontSize:13,color:'var(--muted)'}}>
+                      {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
+                    </div>
+                    <div style={{textAlign:'right',fontSize:13,fontWeight:700}}>
+                      {it.calories ? `${it.calories} kcal` : ''}{displayProtein !== null && displayProtein !== undefined ? ` • ${displayProtein} g` : ''}
                     </div>
                   </li>
                 )})}
