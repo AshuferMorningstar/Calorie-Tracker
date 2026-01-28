@@ -43,7 +43,7 @@ const FOODS = [
   { id: 'apple', name: 'Apple', kcal: 52 },
   { id: 'milk', name: 'Milk (whole)', kcal: 60 },
   { id: 'bread', name: 'Bread (white)', kcal: 265 },
-  { id: 'egg', name: 'Egg (whole)', kcal: 155 },
+  { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 78 },
   { id: 'sugar', name: 'Sugar', kcal: 387 },
   { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383 },
 ]
@@ -91,6 +91,8 @@ export default function TrackCalories(){
   const [amount, setAmount] = useState('') // grams
   const [kcalPer100g, setKcalPer100g] = useState('')
   const [manualKcalNeeded, setManualKcalNeeded] = useState(false)
+  const [unit, setUnit] = useState('g') // 'g' or 'count'
+  const [kcalPerUnit, setKcalPerUnit] = useState('')
 
   useEffect(()=>{
     // load items for selected date
@@ -115,11 +117,18 @@ export default function TrackCalories(){
 
     let calories = null
     let caloriesPerGram = null
-    if(!isNaN(kcal100) && kcal100 > 0){
-      caloriesPerGram = Number((kcal100 / 100).toFixed(2))
-    }
-    if(!isNaN(amt) && amt > 0 && caloriesPerGram !== null){
-      calories = Math.round(amt * caloriesPerGram)
+    if(unit === 'count'){
+      const perUnit = parseFloat(kcalPerUnit)
+      if(!isNaN(amt) && amt > 0 && !isNaN(perUnit) && perUnit > 0){
+        calories = Math.round(amt * perUnit)
+      }
+    } else {
+      if(!isNaN(kcal100) && kcal100 > 0){
+        caloriesPerGram = Number((kcal100 / 100).toFixed(2))
+      }
+      if(!isNaN(amt) && amt > 0 && caloriesPerGram !== null){
+        calories = Math.round(amt * caloriesPerGram)
+      }
     }
 
     const item = {
@@ -127,13 +136,14 @@ export default function TrackCalories(){
       name: trimmed,
       amount: !isNaN(amt) && amt > 0 ? amt : null,
       kcalPer100g: !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null,
+      kcalPerUnit: unit === 'count' && kcalPerUnit ? Number(kcalPerUnit) : null,
       caloriesPerGram: caloriesPerGram,
       calories: calories,
     }
     const next = [...items, item]
     setItems(next)
     persist(next)
-    setName(''); setAmount(''); setKcalPer100g(''); setManualKcalNeeded(false)
+    setName(''); setAmount(''); setKcalPer100g(''); setKcalPerUnit(''); setUnit('g'); setManualKcalNeeded(false)
   }
 
   const removeItem = (id)=>{
@@ -148,6 +158,13 @@ export default function TrackCalories(){
   const previewCalories = (()=>{
     const amt = parseFloat(amount)
     const kcal100 = parseFloat(kcalPer100g)
+    const perUnit = parseFloat(kcalPerUnit)
+    if(unit === 'count'){
+      if(!isNaN(amt) && amt > 0 && !isNaN(perUnit) && perUnit > 0){
+        return Math.round(amt * perUnit)
+      }
+      return null
+    }
     if(!isNaN(amt) && amt > 0 && !isNaN(kcal100) && kcal100 > 0){
       return Math.round((amt * kcal100) / 100)
     }
@@ -221,8 +238,24 @@ export default function TrackCalories(){
                   }
                 }
 
-                if(found){ setKcalPer100g(found.kcal); setManualKcalNeeded(false) }
-                else { setKcalPer100g(''); setManualKcalNeeded(true) }
+                if(found){
+                  if(found.unit === 'count'){
+                    setUnit('count')
+                    setKcalPerUnit(found.kcalPerUnit || found.kcal || '')
+                    setKcalPer100g('')
+                    setManualKcalNeeded(false)
+                  } else {
+                    setUnit('g')
+                    setKcalPer100g(found.kcal)
+                    setKcalPerUnit('')
+                    setManualKcalNeeded(false)
+                  }
+                } else {
+                  setUnit('g')
+                  setKcalPer100g('')
+                  setKcalPerUnit('')
+                  setManualKcalNeeded(true)
+                }
 
               }} placeholder="Start typing (e.g. Chicken breast)" />
 
@@ -230,23 +263,27 @@ export default function TrackCalories(){
 
             <div style={{display:'flex',gap:8,alignItems:'flex-end'}}>
               <div style={{flex:1}} className="form-row">
-                <label>Amount (g)</label>
-                <input value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder="100" type="number" step="any" />
+                <label>{unit === 'count' ? 'Count' : 'Amount (g)'}</label>
+                <input value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder={unit === 'count' ? '1' : '100'} type="number" step={unit === 'count' ? '1' : 'any'} min={unit === 'count' ? '1' : undefined} />
               </div>
 
               <div style={{width:140}} className="form-row">
-                <label>kcal / 100g</label>
-                <input value={kcalPer100g} onChange={(e)=>{ setKcalPer100g(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
-                {previewCalories !== null && (
-                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>{previewCalories} kcal for {amount || 0} g</div>
+                <label>{unit === 'count' ? 'kcal / unit' : 'kcal / 100g'}</label>
+                {unit === 'count' ? (
+                  <input value={kcalPerUnit} onChange={(e)=>{ setKcalPerUnit(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
+                ) : (
+                  <input value={kcalPer100g} onChange={(e)=>{ setKcalPer100g(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
                 )}
-                {manualKcalNeeded && <div style={{fontSize:11,color:'var(--muted)'}}>Unknown — enter kcal/100g</div>}
+                {previewCalories !== null && (
+                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>{unit === 'count' ? `${kcalPerUnit || ''} kcal/unit • ` : ''}{previewCalories} kcal for {amount || 0}{unit === 'count' ? '' : ' g'}</div>
+                )}
+                {manualKcalNeeded && <div style={{fontSize:11,color:'var(--muted)'}}>Unknown — enter kcal/{unit === 'count' ? 'unit' : '100g'}</div>}
               </div>
             </div>
 
             <div style={{display:'flex',gap:8,marginTop:8}}>
               <button className="card" type="submit" style={{background:'var(--accent1)',color:'#fff',border:'none',padding:'8px 12px'}}>Add</button>
-              <button className="icon-btn" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setManualKcalNeeded(false) }}>Clear</button>
+              <button className="icon-btn" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setKcalPerUnit(''); setUnit('g'); setManualKcalNeeded(false) }}>Clear</button>
             </div>
           </form>
         </div>
@@ -269,8 +306,10 @@ export default function TrackCalories(){
                     <button aria-label="Remove item" onClick={()=>removeItem(it.id)} className="icon-btn close-btn" style={{position:'absolute',top:4,right:4,width:32,height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',borderRadius:6,zIndex:40,cursor:'pointer'}}>×</button>
                     <div style={{minWidth:0,flex:1,marginRight:8,display:'flex',alignItems:'center',gap:12}}>
                       <div style={{flex:'1 1 auto',fontWeight:600,whiteSpace:'normal',overflow:'visible',wordBreak:'normal',overflowWrap:'normal',hyphens:'none'}}>{it.name}</div>
-                      <div style={{flex:'0 0 auto',minWidth:64,textAlign:'right',fontSize:13,color:'var(--muted)'}}>{it.amount ? `${it.amount} g` : ''}</div>
-                      <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>{it.calories ? `${it.calories} kcal` : ''}</div>
+                              <div style={{flex:'0 0 auto',minWidth:64,textAlign:'right',fontSize:13,color:'var(--muted)'}}>
+                                {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
+                              </div>
+                              <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>{it.calories ? `${it.calories} kcal` : ''}</div>
                     </div>
                   </li>
                 ))}
