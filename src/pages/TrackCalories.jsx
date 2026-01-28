@@ -265,29 +265,15 @@ export default function TrackCalories(){
             ) : (
               <ul style={{listStyle:'none',padding:0,display:'grid',gap:8}}>
                 {items.map(it=> (
-                  <li key={it.id} className="card" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-                    <div>
-                      <div style={{fontWeight:600}}>{it.name}</div>
-                      <div style={{fontSize:12,color:'var(--muted)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis',maxWidth:420}}>
+                  <li key={it.id} className="card" style={{position:'relative',padding:12,display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'visible'}}>
+                    <button aria-label="Remove item" onClick={()=>removeItem(it.id)} className="icon-btn close-btn" style={{position:'absolute',top:4,right:4,width:32,height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',borderRadius:6,zIndex:40,cursor:'pointer'}}>×</button>
+                    <div style={{minWidth:0,flex:1,marginRight:8,maxWidth:'calc(100% - 48px)'}}>
+                      <div style={{fontWeight:600,whiteSpace:'normal',overflow:'visible',wordBreak:'normal',overflowWrap:'normal',hyphens:'none'}}>{it.name}</div>
+                      <div style={{fontSize:12,color:'var(--muted)'}}>
                         {it.amount ? `${it.amount} g • ` : ''}
-                        {it.kcalPer100g ? `${it.kcalPer100g} kcal/100g • ` : ''}
-                                {(() => {
-                                  // prefer kcalPer100g as the source of truth for kcal/g
-                                  const hasKcal100 = it.kcalPer100g !== null && it.kcalPer100g !== undefined && it.kcalPer100g !== ''
-                                  if(hasKcal100){
-                                    const perG = Number((Number(it.kcalPer100g) / 100).toFixed(2))
-                                    return `${perG} kcal/g • `
-                                  }
-                                  if(it.amount && it.calories){
-                                    const perG = Number((Number(it.calories) / Number(it.amount)).toFixed(2))
-                                    return `${perG} kcal/g • `
-                                  }
-                                  return ''
-                                })()}
                         {it.calories ? `${it.calories} kcal` : ''}
                       </div>
                     </div>
-                    <button className="icon-btn" onClick={()=>removeItem(it.id)}>Remove</button>
                   </li>
                 ))}
               </ul>
