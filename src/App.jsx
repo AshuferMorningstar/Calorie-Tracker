@@ -132,6 +132,24 @@ export default function App(){
     }
   },[data])
 
+  const todayISO = ()=>{
+    const d = new Date()
+    const y = d.getFullYear()
+    const m = String(d.getMonth()+1).padStart(2,'0')
+    const day = String(d.getDate()).padStart(2,'0')
+    return `${y}-${m}-${day}`
+  }
+
+  const consumedToday = useMemo(()=>{
+    try{
+      const raw = localStorage.getItem(`calorieWise.entries.${todayISO()}`)
+      if(!raw) return 0
+      const parsed = JSON.parse(raw)
+      if(!Array.isArray(parsed)) return 0
+      return parsed.reduce((s,i)=> s + (Number(i.calories) || 0), 0)
+    }catch(e){ return 0 }
+  },[location.pathname])
+
   return (
     <div>
       <div className="dashboard-header profile-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
@@ -149,12 +167,14 @@ export default function App(){
           <div className="card">
             <strong>Maintenance calories</strong>
             <div style={{fontSize:20,marginTop:8}}>{calories ? `${calories.maintenance} kcal/day` : '—'}</div>
+            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? calories.maintenance : '—'} kcal consumed today`}</div>
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>Estimated calories to maintain current weight.</div>
           </div>
 
           <div className="card">
             <strong>Diet calories</strong>
             <div style={{fontSize:20,marginTop:8}}>{calories ? `${calories.diet} kcal/day` : '—'}</div>
+            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? calories.diet : '—'} kcal consumed today`}</div>
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
           </div>
 
