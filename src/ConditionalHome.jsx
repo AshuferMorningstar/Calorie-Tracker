@@ -3,13 +3,21 @@ import { Navigate, useLocation } from 'react-router-dom'
 import App from './App'
 
 export default function ConditionalHome(){
-  // Show the splash page whenever the page is loaded directly (refresh or fresh open).
-  // If the location.state.fromSplash flag is present (i.e., we arrived via the SplashPage
-  // client navigation), render the app without redirect to avoid a loop.
+  // Decide whether to show the splash/onboarding flow or the main app.
+  // If the user has previously completed onboarding (persisted in localStorage
+  // as `calorieWise.seenEver`) render the app directly. Otherwise, if we arrived
+  // from the SplashPage during client navigation, render the app to avoid a loop.
   const location = useLocation()
 
   try{
-    console.log('[ConditionalHome] location state:', location && location.state)
+    const seenEver = (()=>{ try{ return localStorage.getItem('calorieWise.seenEver') }catch(e){ return null } })()
+    console.log('[ConditionalHome] location state:', location && location.state, 'seenEver=', seenEver)
+
+    if(seenEver){
+      console.log('[ConditionalHome] user already onboarded — rendering App')
+      return <App />
+    }
+
     if(location && location.state && location.state.fromSplash){
       console.log('[ConditionalHome] rendering App (arrived from splash)')
       return <App />
