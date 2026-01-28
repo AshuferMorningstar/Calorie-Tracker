@@ -97,6 +97,7 @@ export default function TrackCalories(){
   const [proteinPerUnit, setProteinPerUnit] = useState('')
   const [editMode, setEditMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
 
   useEffect(()=>{
     // load items for selected date
@@ -219,11 +220,20 @@ export default function TrackCalories(){
 
   const clearAll = ()=>{
     if(items.length === 0) return
-    if(!window.confirm(`Clear all ${items.length} items for ${date}?`)) return
+    // show inline confirmation card instead of native confirm
+    setShowClearConfirm(true)
+  }
+
+  const confirmClearAll = ()=>{
     setItems([])
     persist([])
     setSelectedIds(new Set())
     setEditMode(false)
+    setShowClearConfirm(false)
+  }
+
+  const cancelClear = ()=>{
+    setShowClearConfirm(false)
   }
 
   const totalCalories = useMemo(()=> items.reduce((s,i)=> s + (Number(i.calories)||0), 0), [items])
@@ -462,6 +472,22 @@ export default function TrackCalories(){
               )}
               <button className="icon-btn" onClick={clearAll}>Clear</button>
             </div>
+
+            {showClearConfirm && (
+              <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',zIndex:1200}}>
+                <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.32)'}} onClick={cancelClear}></div>
+                <div className="card" style={{zIndex:1201,maxWidth:520,width:'92%',padding:18,display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
+                  <div>
+                    <div style={{fontWeight:700}}>Clear all entries?</div>
+                    <div style={{fontSize:13,color:'var(--muted)'}}>This will remove all logged items for {date}.</div>
+                  </div>
+                  <div style={{display:'flex',gap:8}}>
+                    <button className="icon-btn" onClick={cancelClear}>Cancel</button>
+                    <button className="card" onClick={confirmClearAll} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Confirm</button>
+                  </div>
+                </div>
+              </div>
+            )}
 
           </div>
         </div>
