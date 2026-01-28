@@ -1,51 +1,51 @@
 import React, { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 
-// small built-in food database (kcal per 100 g)
+// small built-in food database (kcal per 100 g where applicable)
 const FOODS = [
-  { id: 'chicken', name: 'Chicken breast', kcal: 165 },
-  { id: 'rice', name: 'White rice (cooked)', kcal: 130 },
-  { id: 'rice_raw', name: 'White rice (raw)', kcal: 365 },
-  { id: 'basmati_rice', name: 'Basmati rice (cooked)', kcal: 130 },
-  { id: 'basmati_rice_raw', name: 'Basmati rice (raw)', kcal: 365 },
-  { id: 'brown_rice', name: 'Brown rice (cooked)', kcal: 123 },
-  { id: 'brown_rice_raw', name: 'Brown rice (raw)', kcal: 370 },
-  { id: 'chapati', name: 'Roti / Chapati (whole wheat)', kcal: 250 },
-  { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340 },
-  { id: 'besan', name: 'Besan (gram flour)', kcal: 387 },
-  { id: 'moong_dal', name: 'Moong dal (cooked)', kcal: 105 },
-  { id: 'moong_dal_raw', name: 'Moong dal (raw/dry)', kcal: 347 },
-  { id: 'toor_dal', name: 'Toor dal (cooked)', kcal: 120 },
-  { id: 'toor_dal_raw', name: 'Toor dal (raw/dry)', kcal: 360 },
-  { id: 'masoor_dal', name: 'Masoor dal (cooked)', kcal: 116 },
-  { id: 'masoor_dal_raw', name: 'Masoor dal (raw/dry)', kcal: 352 },
-  { id: 'chickpeas', name: 'Chickpeas (cooked)', kcal: 164 },
-  { id: 'chickpeas_raw', name: 'Chickpeas (raw/dry)', kcal: 364 },
-  { id: 'rajma', name: 'Kidney beans (cooked)', kcal: 140 },
-  { id: 'rajma_raw', name: 'Kidney beans (raw/dry)', kcal: 337 },
-  { id: 'paneer', name: 'Paneer (cottage cheese)', kcal: 265 },
-  { id: 'ghee', name: 'Ghee', kcal: 900 },
-  { id: 'mustard_oil', name: 'Mustard oil', kcal: 884 },
-  { id: 'coconut_oil', name: 'Coconut oil', kcal: 892 },
-  { id: 'peanut_oil', name: 'Peanut oil', kcal: 884 },
-  { id: 'veg_oil', name: 'Vegetable oil', kcal: 884 },
-  { id: 'potato', name: 'Potato (boiled)', kcal: 87 },
-  { id: 'potato_raw', name: 'Potato (raw)', kcal: 77 },
-  { id: 'onion', name: 'Onion', kcal: 40 },
-  { id: 'tomato', name: 'Tomato', kcal: 18 },
-  { id: 'garlic', name: 'Garlic', kcal: 149 },
-  { id: 'ginger', name: 'Ginger', kcal: 80 },
-  { id: 'spinach', name: 'Spinach (cooked)', kcal: 23 },
-  { id: 'spinach_raw', name: 'Spinach (raw)', kcal: 23 },
-  { id: 'cauliflower', name: 'Cauliflower (cooked)', kcal: 25 },
-  { id: 'cauliflower_raw', name: 'Cauliflower (raw)', kcal: 25 },
-  { id: 'banana', name: 'Banana', kcal: 89 },
-  { id: 'apple', name: 'Apple', kcal: 52 },
-  { id: 'milk', name: 'Milk (whole)', kcal: 60 },
-  { id: 'bread', name: 'Bread (white)', kcal: 265 },
-  { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 78 },
-  { id: 'sugar', name: 'Sugar', kcal: 387 },
-  { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383 },
+  { id: 'chicken', name: 'Chicken breast', kcal: 165, protein: 31.0 },
+  { id: 'rice', name: 'White rice (cooked)', kcal: 130, protein: 2.7 },
+  { id: 'rice_raw', name: 'White rice (raw)', kcal: 365, protein: 7.1 },
+  { id: 'basmati_rice', name: 'Basmati rice (cooked)', kcal: 130, protein: 2.6 },
+  { id: 'basmati_rice_raw', name: 'Basmati rice (raw)', kcal: 365, protein: 7.1 },
+  { id: 'brown_rice', name: 'Brown rice (cooked)', kcal: 123, protein: 2.6 },
+  { id: 'brown_rice_raw', name: 'Brown rice (raw)', kcal: 370, protein: 7.5 },
+  { id: 'chapati', name: 'Roti / Chapati (whole wheat)', kcal: 250, protein: 9.0 },
+  { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340, protein: 13.2 },
+  { id: 'besan', name: 'Besan (gram flour)', kcal: 387, protein: 22.4 },
+  { id: 'moong_dal', name: 'Moong dal (cooked)', kcal: 105, protein: 7.0 },
+  { id: 'moong_dal_raw', name: 'Moong dal (raw/dry)', kcal: 347, protein: 24.0 },
+  { id: 'toor_dal', name: 'Toor dal (cooked)', kcal: 120, protein: 7.0 },
+  { id: 'toor_dal_raw', name: 'Toor dal (raw/dry)', kcal: 360, protein: 22.0 },
+  { id: 'masoor_dal', name: 'Masoor dal (cooked)', kcal: 116, protein: 9.0 },
+  { id: 'masoor_dal_raw', name: 'Masoor dal (raw/dry)', kcal: 352, protein: 25.8 },
+  { id: 'chickpeas', name: 'Chickpeas (cooked)', kcal: 164, protein: 8.9 },
+  { id: 'chickpeas_raw', name: 'Chickpeas (raw/dry)', kcal: 364, protein: 19.3 },
+  { id: 'rajma', name: 'Kidney beans (cooked)', kcal: 140, protein: 8.7 },
+  { id: 'rajma_raw', name: 'Kidney beans (raw/dry)', kcal: 337, protein: 21.6 },
+  { id: 'paneer', name: 'Paneer (cottage cheese)', kcal: 265, protein: 18.3 },
+  { id: 'ghee', name: 'Ghee', kcal: 900, protein: 0 },
+  { id: 'mustard_oil', name: 'Mustard oil', kcal: 884, protein: 0 },
+  { id: 'coconut_oil', name: 'Coconut oil', kcal: 892, protein: 0 },
+  { id: 'peanut_oil', name: 'Peanut oil', kcal: 884, protein: 0 },
+  { id: 'veg_oil', name: 'Vegetable oil', kcal: 884, protein: 0 },
+  { id: 'potato', name: 'Potato (boiled)', kcal: 87, protein: 1.9 },
+  { id: 'potato_raw', name: 'Potato (raw)', kcal: 77, protein: 2.0 },
+  { id: 'onion', name: 'Onion', kcal: 40, protein: 1.1 },
+  { id: 'tomato', name: 'Tomato', kcal: 18, protein: 0.9 },
+  { id: 'garlic', name: 'Garlic', kcal: 149, protein: 6.4 },
+  { id: 'ginger', name: 'Ginger', kcal: 80, protein: 1.8 },
+  { id: 'spinach', name: 'Spinach (cooked)', kcal: 23, protein: 2.9 },
+  { id: 'spinach_raw', name: 'Spinach (raw)', kcal: 23, protein: 2.9 },
+  { id: 'cauliflower', name: 'Cauliflower (cooked)', kcal: 25, protein: 1.9 },
+  { id: 'cauliflower_raw', name: 'Cauliflower (raw)', kcal: 25, protein: 1.9 },
+  { id: 'banana', name: 'Banana', kcal: 89, protein: 1.1 },
+  { id: 'apple', name: 'Apple', kcal: 52, protein: 0.3 },
+  { id: 'milk', name: 'Milk (whole)', kcal: 60, protein: 3.2 },
+  { id: 'bread', name: 'Bread (white)', kcal: 265, protein: 9.0 },
+  { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 62, proteinPer100g: 13.0, proteinPerUnit: 6.5 },
+  { id: 'sugar', name: 'Sugar', kcal: 387, protein: 0 },
+  { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383, protein: 0 },
 ]
 
 // common aliases -> preferred raw IDs
@@ -90,9 +90,11 @@ export default function TrackCalories(){
   const [name, setName] = useState('')
   const [amount, setAmount] = useState('') // grams
   const [kcalPer100g, setKcalPer100g] = useState('')
+  const [proteinPer100g, setProteinPer100g] = useState('')
   const [manualKcalNeeded, setManualKcalNeeded] = useState(false)
   const [unit, setUnit] = useState('g') // 'g' or 'count'
   const [kcalPerUnit, setKcalPerUnit] = useState('')
+  const [proteinPerUnit, setProteinPerUnit] = useState('')
 
   useEffect(()=>{
     // load items for selected date
@@ -114,13 +116,20 @@ export default function TrackCalories(){
 
     const amt = parseFloat(amount)
     const kcal100 = parseFloat(kcalPer100g)
+    const protein100 = parseFloat(proteinPer100g)
 
     let calories = null
     let caloriesPerGram = null
+    let protein = null
+    let proteinPerGram = null
     if(unit === 'count'){
       const perUnit = parseFloat(kcalPerUnit)
+      const protUnit = parseFloat(proteinPerUnit)
       if(!isNaN(amt) && amt > 0 && !isNaN(perUnit) && perUnit > 0){
         calories = Math.round(amt * perUnit)
+      }
+      if(!isNaN(amt) && amt > 0 && !isNaN(protUnit) && protUnit >= 0){
+        protein = Math.round((amt * protUnit) * 10) / 10
       }
     } else {
       if(!isNaN(kcal100) && kcal100 > 0){
@@ -128,6 +137,12 @@ export default function TrackCalories(){
       }
       if(!isNaN(amt) && amt > 0 && caloriesPerGram !== null){
         calories = Math.round(amt * caloriesPerGram)
+      }
+      if(!isNaN(protein100) && protein100 >= 0){
+        proteinPerGram = Number((protein100 / 100).toFixed(3))
+      }
+      if(!isNaN(amt) && amt > 0 && proteinPerGram !== null){
+        protein = Math.round((amt * proteinPerGram) * 10) / 10
       }
     }
 
@@ -137,13 +152,16 @@ export default function TrackCalories(){
       amount: !isNaN(amt) && amt > 0 ? amt : null,
       kcalPer100g: !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null,
       kcalPerUnit: unit === 'count' && kcalPerUnit ? Number(kcalPerUnit) : null,
+      proteinPer100g: !isNaN(protein100) && protein100 >= 0 ? protein100 : null,
+      proteinPerUnit: unit === 'count' && proteinPerUnit ? Number(proteinPerUnit) : null,
       caloriesPerGram: caloriesPerGram,
       calories: calories,
+      protein: protein,
     }
     const next = [...items, item]
     setItems(next)
     persist(next)
-    setName(''); setAmount(''); setKcalPer100g(''); setKcalPerUnit(''); setUnit('g'); setManualKcalNeeded(false)
+    setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false)
   }
 
   const removeItem = (id)=>{
@@ -153,12 +171,15 @@ export default function TrackCalories(){
   }
 
   const totalCalories = useMemo(()=> items.reduce((s,i)=> s + (Number(i.calories)||0), 0), [items])
+  const totalProtein = useMemo(()=> Math.round(items.reduce((s,i)=> s + (Number(i.protein)||0), 0) * 10) / 10, [items])
 
   // live preview: calculated calories for the entered amount
   const previewCalories = (()=>{
     const amt = parseFloat(amount)
     const kcal100 = parseFloat(kcalPer100g)
     const perUnit = parseFloat(kcalPerUnit)
+    const protein100 = parseFloat(proteinPer100g)
+    const perProtUnit = parseFloat(proteinPerUnit)
     if(unit === 'count'){
       if(!isNaN(amt) && amt > 0 && !isNaN(perUnit) && perUnit > 0){
         return Math.round(amt * perUnit)
@@ -167,6 +188,22 @@ export default function TrackCalories(){
     }
     if(!isNaN(amt) && amt > 0 && !isNaN(kcal100) && kcal100 > 0){
       return Math.round((amt * kcal100) / 100)
+    }
+    return null
+  })()
+
+  const previewProtein = (()=>{
+    const amt = parseFloat(amount)
+    const protein100 = parseFloat(proteinPer100g)
+    const perProtUnit = parseFloat(proteinPerUnit)
+    if(unit === 'count'){
+      if(!isNaN(amt) && amt > 0 && !isNaN(perProtUnit) && perProtUnit >= 0){
+        return Math.round((amt * perProtUnit) * 10) / 10
+      }
+      return null
+    }
+    if(!isNaN(amt) && amt > 0 && !isNaN(protein100) && protein100 >= 0){
+      return Math.round((amt * protein100) / 100 * 10) / 10
     }
     return null
   })()
@@ -242,18 +279,24 @@ export default function TrackCalories(){
                   if(found.unit === 'count'){
                     setUnit('count')
                     setKcalPerUnit(found.kcalPerUnit || found.kcal || '')
+                    setProteinPerUnit(found.proteinPerUnit || found.proteinPer100g || '')
                     setKcalPer100g('')
+                    setProteinPer100g('')
                     setManualKcalNeeded(false)
                   } else {
                     setUnit('g')
                     setKcalPer100g(found.kcal)
+                    setProteinPer100g(found.protein || '')
                     setKcalPerUnit('')
+                    setProteinPerUnit('')
                     setManualKcalNeeded(false)
                   }
                 } else {
                   setUnit('g')
                   setKcalPer100g('')
                   setKcalPerUnit('')
+                  setProteinPer100g('')
+                  setProteinPerUnit('')
                   // only show the manual-kcal-needed hint if the user has typed something
                   setManualKcalNeeded(Boolean(base))
                 }
@@ -276,7 +319,11 @@ export default function TrackCalories(){
                   <input value={kcalPer100g} onChange={(e)=>{ setKcalPer100g(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
                 )}
                 {previewCalories !== null && (
-                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>{unit === 'count' ? `${kcalPerUnit || ''} kcal/unit • ` : ''}{previewCalories} kcal for {amount || 0}{unit === 'count' ? '' : ' g'}</div>
+                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>
+                    {unit === 'count' ? `${kcalPerUnit || ''} kcal/unit • ` : ''}
+                    {previewCalories} kcal for {amount || 0}{unit === 'count' ? '' : ' g'}
+                    {previewProtein !== null ? ` • ${previewProtein} g protein` : ''}
+                  </div>
                 )}
                 {manualKcalNeeded && <div style={{fontSize:11,color:'var(--muted)'}}>Unknown — enter kcal/{unit === 'count' ? 'unit' : '100g'}</div>}
               </div>
@@ -284,7 +331,7 @@ export default function TrackCalories(){
 
             <div style={{display:'flex',gap:8,marginTop:8}}>
               <button className="card" type="submit" style={{background:'var(--accent1)',color:'#fff',border:'none',padding:'8px 12px'}}>Add</button>
-              <button className="icon-btn" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setKcalPerUnit(''); setUnit('g'); setManualKcalNeeded(false) }}>Clear</button>
+              <button className="icon-btn" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false) }}>Clear</button>
             </div>
           </form>
         </div>
@@ -294,7 +341,7 @@ export default function TrackCalories(){
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',width:'100%',gap:12}}>
                 <div style={{fontWeight:700}}>Logged — {date}</div>
-                <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal</div>
+                <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal{totalProtein ? ` • ${totalProtein} g` : ''}</div>
               </div>
             </div>
 
@@ -310,7 +357,10 @@ export default function TrackCalories(){
                               <div style={{flex:'0 0 auto',minWidth:64,textAlign:'right',fontSize:13,color:'var(--muted)'}}>
                                 {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
                               </div>
-                              <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>{it.calories ? `${it.calories} kcal` : ''}</div>
+                              <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>
+                                {it.calories ? `${it.calories} kcal` : ''}
+                                {it.protein !== null && it.protein !== undefined ? <div style={{fontSize:12,fontWeight:500,color:'var(--muted)'}}>{it.protein} g</div> : null}
+                              </div>
                     </div>
                   </li>
                 ))}
