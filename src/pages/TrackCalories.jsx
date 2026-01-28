@@ -311,21 +311,28 @@ export default function TrackCalories(){
                 <input value={amount} onChange={(e)=>setAmount(e.target.value)} placeholder={unit === 'count' ? '1' : '100'} type="number" step={unit === 'count' ? '1' : 'any'} min={unit === 'count' ? '1' : undefined} />
               </div>
 
-              <div style={{width:140}} className="form-row">
+              <div style={{width:120}} className="form-row">
                 <label>{unit === 'count' ? 'kcal / unit' : 'kcal / 100g'}</label>
                 {unit === 'count' ? (
                   <input value={kcalPerUnit} onChange={(e)=>{ setKcalPerUnit(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
                 ) : (
                   <input value={kcalPer100g} onChange={(e)=>{ setKcalPer100g(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
                 )}
-                {previewCalories !== null && (
-                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>
-                    {unit === 'count' ? `${kcalPerUnit || ''} kcal/unit • ` : ''}
-                    {previewCalories} kcal for {amount || 0}{unit === 'count' ? '' : ' g'}
-                    {previewProtein !== null ? ` • ${previewProtein} g protein` : ''}
-                  </div>
+              </div>
+
+              <div style={{width:120}} className="form-row">
+                <label>{unit === 'count' ? 'protein / unit' : 'protein / 100g'}</label>
+                {unit === 'count' ? (
+                  <input value={proteinPerUnit} onChange={(e)=>{ setProteinPerUnit(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
+                ) : (
+                  <input value={proteinPer100g} onChange={(e)=>{ setProteinPer100g(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
                 )}
                 {manualKcalNeeded && <div style={{fontSize:11,color:'var(--muted)'}}>Unknown — enter kcal/{unit === 'count' ? 'unit' : '100g'}</div>}
+                {previewCalories !== null && (
+                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>
+                    {previewCalories} kcal{previewProtein !== null ? ` • ${previewProtein} g protein` : ''}
+                  </div>
+                )}
               </div>
             </div>
 
