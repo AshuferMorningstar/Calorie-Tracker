@@ -328,13 +328,14 @@ export default function TrackCalories(){
                   <input value={proteinPer100g} onChange={(e)=>{ setProteinPer100g(e.target.value); setManualKcalNeeded(false) }} placeholder="auto" type="number" step="any" />
                 )}
                 {manualKcalNeeded && <div style={{fontSize:11,color:'var(--muted)'}}>Unknown — enter kcal/{unit === 'count' ? 'unit' : '100g'}</div>}
-                {previewCalories !== null && (
-                  <div style={{fontSize:12,color:'var(--muted)',marginTop:6,whiteSpace:'nowrap'}}>
-                    {previewCalories} kcal{previewProtein !== null ? ` • ${previewProtein} g protein` : ''}
-                  </div>
-                )}
               </div>
             </div>
+
+            {previewCalories !== null && (
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>
+                {previewCalories} kcal{previewProtein !== null ? ` • ${previewProtein} g protein` : ''}
+              </div>
+            )}
 
             <div style={{display:'flex',gap:8,marginTop:8}}>
               <button className="card" type="submit" style={{background:'var(--accent1)',color:'#fff',border:'none',padding:'8px 12px'}}>Add</button>
