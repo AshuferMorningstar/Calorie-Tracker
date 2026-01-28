@@ -100,7 +100,34 @@ export default function TrackCalories(){
     // load items for selected date
     try{
       const raw = localStorage.getItem(dateKey(date))
-      if(raw){ setItems(JSON.parse(raw)) }
+      if(raw){
+        const parsed = JSON.parse(raw)
+        // normalize older items: compute protein if missing
+        const normalized = parsed.map(it=>{
+          if(it && (it.protein === null || it.protein === undefined)){
+            let prot = null
+            const amt = parseFloat(it.amount)
+            if(it.proteinPerUnit && !isNaN(amt) && amt > 0){
+              prot = Math.round((amt * Number(it.proteinPerUnit)) * 10) / 10
+            } else if(it.proteinPer100g && !isNaN(amt) && amt > 0){
+              prot = Math.round((amt * Number(it.proteinPer100g) / 100) * 10) / 10
+            } else {
+              // try to infer from built-in FOODS by name
+              try{
+                const name = (it.name || '').toLowerCase()
+                const found = FOODS.find(f=>f.name.toLowerCase() === name) || FOODS.find(f=>name.includes((f.name||'').toLowerCase()))
+                if(found && !isNaN(amt) && amt > 0){
+                  if(found.unit === 'count' && found.proteinPerUnit){ prot = Math.round((amt * found.proteinPerUnit) * 10) / 10 }
+                  else if(found.protein){ prot = Math.round((amt * found.protein / 100) * 10) / 10 }
+                }
+              }catch(e){}
+            }
+            return {...it, protein: prot}
+          }
+          return it
+        })
+        setItems(normalized)
+      }
       else setItems([])
     }catch(e){ setItems([]) }
   },[date])
@@ -349,16 +376,37 @@ export default function TrackCalories(){
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
               <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',width:'100%',gap:12}}>
                 <div style={{fontWeight:700}}>Logged — {date}</div>
-                <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal{totalProtein ? ` • ${totalProtein} g` : ''}</div>
+                <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal • {totalProtein.toFixed(1)} g</div>
               </div>
             </div>
 
             {items.length === 0 ? (
               <div style={{color:'var(--muted)'}}>No items logged for this date.</div>
             ) : (
-              <ul style={{listStyle:'none',padding:0,display:'flex',flexWrap:'wrap',gap:8}}>
-                {items.map(it=> (
-                  <li key={it.id} className="card" style={{position:'relative',padding:12,display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'visible',flex:'1 1 220px',minWidth:180,boxSizing:'border-box',maxWidth:'100%'}}>
+              <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
+                {items.map(it=> {
+                  // compute display protein if missing
+                  let displayProtein = null
+                  if(it.protein !== null && it.protein !== undefined){ displayProtein = it.protein }
+                  else {
+                    const amt = parseFloat(it.amount)
+                    if(it.proteinPerUnit && !isNaN(amt) && amt > 0){ displayProtein = Math.round((amt * Number(it.proteinPerUnit)) * 10) / 10 }
+                    else if(it.proteinPer100g && !isNaN(amt) && amt > 0){ displayProtein = Math.round((amt * Number(it.proteinPer100g) / 100) * 10) / 10 }
+                    else {
+                      // fallback: try to find in FOODS
+                      try{
+                        const nm = (it.name || '').toLowerCase()
+                        const found = FOODS.find(f=>f.name.toLowerCase() === nm) || FOODS.find(f=>nm.includes((f.name||'').toLowerCase()))
+                        if(found && !isNaN(amt) && amt > 0){
+                          if(found.unit === 'count' && found.proteinPerUnit){ displayProtein = Math.round((amt * found.proteinPerUnit) * 10) / 10 }
+                          else if(found.protein){ displayProtein = Math.round((amt * found.protein / 100) * 10) / 10 }
+                        }
+                      }catch(e){}
+                    }
+                  }
+
+                  return (
+                  <li key={it.id} className="card" style={{position:'relative',padding:12,display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch'}}>
                     <button aria-label="Remove item" onClick={()=>removeItem(it.id)} className="icon-btn close-btn" style={{position:'absolute',top:4,right:4,width:32,height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',borderRadius:6,zIndex:40,cursor:'pointer'}}>×</button>
                     <div style={{minWidth:0,flex:1,marginRight:8,display:'flex',alignItems:'center',gap:12}}>
                       <div style={{flex:'1 1 auto',fontWeight:600,whiteSpace:'normal',overflow:'visible',wordBreak:'normal',overflowWrap:'normal',hyphens:'none'}}>{it.name}</div>
@@ -366,12 +414,11 @@ export default function TrackCalories(){
                                 {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
                               </div>
                               <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>
-                                {it.calories ? `${it.calories} kcal` : ''}
-                                {it.protein !== null && it.protein !== undefined ? <div style={{fontSize:12,fontWeight:500,color:'var(--muted)'}}>{it.protein} g</div> : null}
+                                {it.calories ? `${it.calories} kcal` : ''}{displayProtein !== null && displayProtein !== undefined ? ` • ${displayProtein} g` : ''}
                               </div>
                     </div>
                   </li>
-                ))}
+                )})}
               </ul>
             )}
           </div>

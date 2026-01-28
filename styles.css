@@ -235,6 +235,8 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .track-grid .card{flex-direction:column;align-items:flex-start;gap:8px}
 .track-grid .card .cal-badge{align-self:flex-start}
 @media (max-width:720px){.track-grid{grid-template-columns:1fr}}
+.track-grid .card ul{margin:0;padding:0;width:100%}
+.track-grid .card ul li.card{width:100%}
 .track-form .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
 .track-form input{padding:8px;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text)}
 .track-grid .card{padding:12px}
