@@ -84,6 +84,12 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .mini-cal .date-cell{font-size:12px;height:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);border-radius:6px}
 .mini-cal .date-cell.today{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:700}
 
+/* month calendar styles */
+.month-cal .date-cell{background:transparent}
+.month-cal .date-cell.today{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:700}
+.month-cal .date-cell.future{color:rgba(36,48,49,0.28)}
+.cal-header .icon-btn[disabled]{opacity:0.4;pointer-events:none}
+
 
 /* Dashboard visual separation */
 .dashboard-header{padding-bottom:12px;margin-bottom:8px;border-bottom:1px solid var(--card-border)}
