@@ -414,7 +414,7 @@ export default function TrackCalories(){
           <div className="card">
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
               <div style={{fontWeight:700}}>Logged — {date}</div>
-              <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal • {totalProtein.toFixed(1)} g</div>
+              <div style={{fontSize:14,fontWeight:700,textAlign:'right',minWidth:140,marginLeft:12}}>{totalCalories} kcal • {totalProtein.toFixed(1)} g</div>
             </div>
 
             {items.length === 0 ? (
