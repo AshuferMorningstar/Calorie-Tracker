@@ -254,7 +254,8 @@ export default function TrackCalories(){
                   setUnit('g')
                   setKcalPer100g('')
                   setKcalPerUnit('')
-                  setManualKcalNeeded(true)
+                  // only show the manual-kcal-needed hint if the user has typed something
+                  setManualKcalNeeded(Boolean(base))
                 }
 
               }} placeholder="Start typing (e.g. Chicken breast)" />
