@@ -69,7 +69,10 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .content{padding:28px;background:transparent}
 
 /* Dashboard grid used on the home screen */
-.dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.dashboard-grid{display:grid;grid-template-columns:1fr;gap:12px}
+/* stack dashboard cards vertically on desktop to match mobile appearance */
+.dashboard-grid .card{flex-direction:column;align-items:flex-start;gap:8px}
+.dashboard-grid .card .cal-badge{align-self:flex-start}
 
 /* Square card tile (used for quick actions) */
 .square-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:15px;padding:6px;width:128px;height:128px;border-radius:12px;line-height:1.1;white-space:normal}
@@ -223,8 +226,10 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 }
 .panel-backdrop.open{ opacity:1; pointer-events:auto }
 
-/* Track page layout */
-.track-grid{display:grid;grid-template-columns:1fr 320px;gap:16px}
+.track-grid{display:grid;grid-template-columns:1fr;gap:16px}
+/* keep cards stacked like mobile for desktop as well */
+.track-grid .card{flex-direction:column;align-items:flex-start;gap:8px}
+.track-grid .card .cal-badge{align-self:flex-start}
 @media (max-width:720px){.track-grid{grid-template-columns:1fr}}
 .track-form .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
 .track-form input{padding:8px;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text)}
