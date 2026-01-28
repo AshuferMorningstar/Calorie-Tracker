@@ -267,12 +267,10 @@ export default function TrackCalories(){
                 {items.map(it=> (
                   <li key={it.id} className="card" style={{position:'relative',padding:12,display:'flex',justifyContent:'space-between',alignItems:'center',overflow:'visible',flex:'1 1 220px',minWidth:180,boxSizing:'border-box',maxWidth:'100%'}}>
                     <button aria-label="Remove item" onClick={()=>removeItem(it.id)} className="icon-btn close-btn" style={{position:'absolute',top:4,right:4,width:32,height:32,display:'inline-flex',alignItems:'center',justifyContent:'center',borderRadius:6,zIndex:40,cursor:'pointer'}}>×</button>
-                    <div style={{minWidth:0,flex:1,marginRight:8,maxWidth:'calc(100% - 48px)'}}>
-                      <div style={{fontWeight:600,whiteSpace:'normal',overflow:'visible',wordBreak:'normal',overflowWrap:'normal',hyphens:'none'}}>{it.name}</div>
-                      <div style={{fontSize:12,color:'var(--muted)'}}>
-                        {it.amount ? `${it.amount} g • ` : ''}
-                        {it.calories ? `${it.calories} kcal` : ''}
-                      </div>
+                    <div style={{minWidth:0,flex:1,marginRight:8,display:'flex',alignItems:'center',gap:12}}>
+                      <div style={{flex:'1 1 auto',fontWeight:600,whiteSpace:'normal',overflow:'visible',wordBreak:'normal',overflowWrap:'normal',hyphens:'none'}}>{it.name}</div>
+                      <div style={{flex:'0 0 auto',minWidth:64,textAlign:'right',fontSize:13,color:'var(--muted)'}}>{it.amount ? `${it.amount} g` : ''}</div>
+                      <div style={{flex:'0 0 auto',minWidth:84,textAlign:'right',fontSize:13,fontWeight:700}}>{it.calories ? `${it.calories} kcal` : ''}</div>
                     </div>
                   </li>
                 ))}
