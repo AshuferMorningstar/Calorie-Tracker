@@ -35,15 +35,45 @@ export default function MiniCalendar(){
     return d === today.getDate()
   }
 
+  // mark days that have entries in localStorage for the current month
+  const marked = useMemo(()=>{
+    const set = new Set()
+    try{
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i)
+        if(!key) continue
+        if(key.startsWith('calorieWise.entries.')){
+          const dateStr = key.slice('calorieWise.entries.'.length)
+          const parts = dateStr.split('-')
+          if(parts.length === 3){
+            const y = Number(parts[0])
+            const m = Number(parts[1]) - 1
+            const day = Number(parts[2])
+            if(y === today.getFullYear() && m === today.getMonth()) set.add(day)
+          }
+        }
+      }
+    }catch(e){}
+    return set
+  }, [today])
+
   return (
     <div className="mini-cal" aria-hidden>
       <div className="dow-row">
         {weekDays.map((w,i)=> <div key={i} className="dow">{w}</div>)}
       </div>
       <div className="dates-grid">
-        {weeks.flat().map((d, i)=> (
-          <div key={i} className={`date-cell ${isToday(d) ? 'today' : ''}`}>{d || ''}</div>
-        ))}
+        {weeks.flat().map((d, i)=> {
+          const hasEntry = d && marked.has(d)
+          return (
+            <div key={i} className={`date-cell ${isToday(d) ? 'today' : ''} ${hasEntry ? 'has-entry' : ''}`}>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:2}}>
+                <div>{d || ''}</div>
+                {hasEntry ? <div style={{width:6,height:6,borderRadius:99,background:'var(--accent1)'}} /> : null}
+              </div>
+            </div>
+          )
+        })}
       </div>
     </div>
   )

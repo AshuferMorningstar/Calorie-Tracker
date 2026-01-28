@@ -43,6 +43,30 @@ export default function Calendar(){
     return { cells, daysInMonth }
   }, [view])
 
+  // compute marked days for the visible month by scanning localStorage keys
+  const markedDays = useMemo(()=>{
+    const set = new Set()
+    try{
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i)
+        if(!key) continue
+        if(key.startsWith('calorieWise.entries.')){
+          const dateStr = key.slice('calorieWise.entries.'.length)
+          const parts = dateStr.split('-')
+          if(parts.length === 3){
+            const y = Number(parts[0])
+            const m = Number(parts[1]) - 1
+            const day = Number(parts[2])
+            if(y === view.year && m === view.month){
+              set.add(day)
+            }
+          }
+        }
+      }
+    }catch(e){}
+    return set
+  }, [view.year, view.month])
+
   return (
     <div style={{padding:16,maxWidth:720,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
@@ -74,9 +98,13 @@ export default function Calendar(){
             {daysGrid.cells.map((d,i)=>{
               const isToday = d === today.getDate() && view.month === currentMonth && view.year === currentYear
               const isFutureDay = view.year === currentYear && view.month === currentMonth && d && d > today.getDate()
+              const hasEntry = d && markedDays.has(d)
               return (
-                <div key={i} className={`date-cell ${isToday ? 'today' : ''} ${isFutureDay ? 'future' : ''}`} style={{height:40,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8,cursor:d ? 'pointer' : 'default'}}>
-                  {d || ''}
+                <div key={i} className={`date-cell ${isToday ? 'today' : ''} ${isFutureDay ? 'future' : ''} ${hasEntry ? 'has-entry' : ''}`} style={{height:40,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8,cursor:d ? 'pointer' : 'default'}}>
+                  <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
+                    <div>{d || ''}</div>
+                    {hasEntry ? <div style={{width:6,height:6,borderRadius:99,background:'var(--accent1)'}} /> : null}
+                  </div>
                 </div>
               )
             })}
