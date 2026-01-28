@@ -98,15 +98,13 @@ export default function TrackCalories(){
           <form onSubmit={addItem} className="track-form">
             <div className="form-row">
               <label>Ingredient</label>
-              <input list="food-list" value={name} onChange={(e)=>{
+              <input value={name} onChange={(e)=>{
                 const v = e.target.value
                 setName(v)
                 const found = FOODS.find(f=>f.name.toLowerCase() === v.toLowerCase())
                 if(found){ setKcalPer100g(found.kcal); setManualKcalNeeded(false) }else{ setKcalPer100g(''); setManualKcalNeeded(true) }
               }} placeholder="Start typing (e.g. Chicken breast)" />
-              <datalist id="food-list">
-                {FOODS.map(f=> <option key={f.id} value={f.name} />)}
-              </datalist>
+          
             </div>
 
             <div style={{display:'flex',gap:8,alignItems:'flex-end'}}>
