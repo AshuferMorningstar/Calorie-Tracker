@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 // small built-in food database (kcal per 100 g where applicable)
@@ -78,13 +78,19 @@ const dateKey = (d)=> `calorieWise.entries.${d}`
 
 const todayISO = ()=>{
   const d = new Date()
-  return d.toISOString().slice(0,10)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2,'0')
+  const day = String(d.getDate()).padStart(2,'0')
+  return `${y}-${m}-${day}`
 }
 
 export default function TrackCalories(){
   const navigate = useNavigate()
   const [date, setDate] = useState(todayISO())
   const [items, setItems] = useState([])
+
+  // keep track of what the "today" value was when scheduling updates
+  const prevTodayRef = useRef(todayISO())
 
   // form fields
   const [name, setName] = useState('')
@@ -135,8 +141,35 @@ export default function TrackCalories(){
     }catch(e){ setItems([]) }
   },[date])
 
-  const persist = (nextItems)=>{
-    try{ localStorage.setItem(dateKey(date), JSON.stringify(nextItems)) }catch(e){}
+  // automatically advance `date` when the system day rolls over.
+  // Only update if the user is currently viewing the previous "today" value
+  // (so we don't override when they explicitly selected another date).
+  useEffect(()=>{
+    let timer = null
+    const schedule = ()=>{
+      const now = new Date()
+      const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+      const ms = Math.max(1000, next.getTime() - now.getTime() + 50)
+      timer = setTimeout(()=>{
+        try{
+          const newToday = todayISO()
+          // only advance if the currently-selected date equals the previous today
+          if(date === prevTodayRef.current){
+            setDate(newToday)
+          }
+          prevTodayRef.current = newToday
+        }catch(e){}
+        schedule()
+      }, ms)
+    }
+    // initialize prevTodayRef to current today value
+    prevTodayRef.current = todayISO()
+    schedule()
+    return ()=>{ if(timer) clearTimeout(timer) }
+  },[date])
+
+  const persist = (nextItems, forDate = date)=>{
+    try{ localStorage.setItem(dateKey(forDate), JSON.stringify(nextItems)) }catch(e){}
   }
 
   const addItem = (e)=>{
@@ -188,9 +221,39 @@ export default function TrackCalories(){
       calories: calories,
       protein: protein,
     }
-    const next = [...items, item]
-    setItems(next)
-    persist(next)
+    // if the system date advanced since the user opened the page, and the
+    // currently-selected `date` still equals the previous "today" value,
+    // treat the item as intended for the new today date and persist there.
+    const currentToday = todayISO()
+    let effectiveDate = date
+    if(currentToday !== date && date === prevTodayRef.current){
+      effectiveDate = currentToday
+      prevTodayRef.current = currentToday
+      // update UI to show the new date
+      setDate(currentToday)
+    }
+
+    if(effectiveDate === date){
+      const next = [...items, item]
+      setItems(next)
+      persist(next, effectiveDate)
+    }else{
+      // append item to whatever entries already exist for effectiveDate
+      try{
+        const raw = localStorage.getItem(dateKey(effectiveDate))
+        const parsed = raw ? JSON.parse(raw) : []
+        const merged = Array.isArray(parsed) ? [...parsed, item] : [item]
+        persist(merged, effectiveDate)
+        // if we switched the UI to the new date, update in-memory items immediately
+        if(effectiveDate === currentToday){
+          setItems(merged)
+        }
+      }catch(e){
+        // fallback: just write the single item
+        persist([item], effectiveDate)
+        if(effectiveDate === currentToday){ setItems([item]) }
+      }
+    }
     setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false)
   }
 
