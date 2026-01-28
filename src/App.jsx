@@ -157,12 +157,20 @@ export default function App(){
             <div style={{fontSize:20,marginTop:8}}>{calories ? `${calories.diet} kcal/day` : '—'}</div>
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
           </div>
+
+          <div style={{gridColumn: '1 / -1', display:'flex', gap:12, alignItems:'center'}}>
+            <button className="card square-card" onClick={()=>navigate('/track')}>Track calories</button>
+            <button className="card square-card" onClick={()=>navigate('/calendar')}>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{new Date().toLocaleString(undefined,{weekday:'short'})}</div>
+                <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{new Date().getDate()}</div>
+                <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
+              </div>
+            </button>
+          </div>
         </div>
 
-        <div style={{display:'flex',gap:8}}>
-          <button className="icon-btn" onClick={previewSplash}>Preview splash</button>
-          <button className="icon-btn" onClick={resetAndShow}>Reset splash</button>
-        </div>
+        
       </main>
 
       { /* backdrop to dim page while panel open; clicking closes the panel */ }
@@ -187,7 +195,7 @@ export default function App(){
 
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
-            <button className="card" onClick={()=>{ navigate('/'); closeMenu() }}>Home</button>
+            <button className="card" onClick={()=>{ navigate('/', { state: { fromSplash: true } }); closeMenu() }}>Home</button>
             <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
           </nav>
         </div>

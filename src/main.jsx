@@ -7,6 +7,8 @@ import Onboard from './pages/Onboard'
 import OnboardDetails from './pages/OnboardDetails'
 import OnboardWeightGoal from './pages/OnboardWeightGoal'
 import Profile from './pages/Profile'
+import TrackCalories from './pages/TrackCalories'
+import Calendar from './pages/Calendar'
 import ConditionalHome from './ConditionalHome'
 import '../styles.css'
 
@@ -21,6 +23,8 @@ root.render(
         <Route path="/onboard/details" element={<OnboardDetails/>} />
         <Route path="/onboard/weight" element={<OnboardWeightGoal/>} />
         <Route path="/profile" element={<Profile/>} />
+        <Route path="/track" element={<TrackCalories/>} />
+        <Route path="/calendar" element={<Calendar/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

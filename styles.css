@@ -71,6 +71,20 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 /* Dashboard grid used on the home screen */
 .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 
+/* Square card tile (used for quick actions) */
+.square-card{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:15px;padding:6px;width:128px;height:128px;border-radius:12px;line-height:1.1;white-space:normal}
+.card.square-card{padding:0;display:inline-flex;align-items:center;justify-content:center}
+.card.square-card > div{display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;height:100%}
+
+/* mini calendar used inside square tile */
+.mini-cal{width:100%;display:flex;flex-direction:column;gap:4px;align-items:center}
+.mini-cal .dow-row{display:grid;grid-template-columns:repeat(7,1fr);width:86%;gap:2px}
+.mini-cal .dow{font-size:9px;color:var(--muted);text-align:center}
+.mini-cal .dates-grid{display:grid;grid-template-columns:repeat(7,1fr);width:86%;gap:4px}
+.mini-cal .date-cell{font-size:12px;height:14px;display:flex;align-items:center;justify-content:center;color:var(--muted);border-radius:6px}
+.mini-cal .date-cell.today{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:700}
+
+
 /* Dashboard visual separation */
 .dashboard-header{padding-bottom:12px;margin-bottom:8px;border-bottom:1px solid var(--card-border)}
 .dashboard-grid .card{box-shadow: 0 12px 30px rgba(36,48,49,0.10);border:1px solid var(--card-border);background:var(--card-bg)}
