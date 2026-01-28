@@ -95,6 +95,8 @@ export default function TrackCalories(){
   const [unit, setUnit] = useState('g') // 'g' or 'count'
   const [kcalPerUnit, setKcalPerUnit] = useState('')
   const [proteinPerUnit, setProteinPerUnit] = useState('')
+  const [editMode, setEditMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState(new Set())
 
   useEffect(()=>{
     // load items for selected date
@@ -195,6 +197,34 @@ export default function TrackCalories(){
     const next = items.filter(i=>i.id !== id)
     setItems(next)
     persist(next)
+  }
+
+  const toggleSelect = (id)=>{
+    setSelectedIds(prev=>{
+      const s = new Set(prev)
+      if(s.has(id)) s.delete(id)
+      else s.add(id)
+      return s
+    })
+  }
+
+  const deleteSelected = ()=>{
+    if(!selectedIds || selectedIds.size === 0) return
+    if(!window.confirm(`Delete ${selectedIds.size} selected item(s)?`)) return
+    const next = items.filter(i=> !selectedIds.has(i.id))
+    setItems(next)
+    persist(next)
+    setSelectedIds(new Set())
+    setEditMode(false)
+  }
+
+  const clearAll = ()=>{
+    if(items.length === 0) return
+    if(!window.confirm(`Clear all ${items.length} items for ${date}?`)) return
+    setItems([])
+    persist([])
+    setSelectedIds(new Set())
+    setEditMode(false)
   }
 
   const totalCalories = useMemo(()=> items.reduce((s,i)=> s + (Number(i.calories)||0), 0), [items])
@@ -374,10 +404,8 @@ export default function TrackCalories(){
         <div>
           <div className="card">
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-              <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',width:'100%',gap:12}}>
-                <div style={{fontWeight:700}}>Logged — {date}</div>
-                <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal • {totalProtein.toFixed(1)} g</div>
-              </div>
+              <div style={{fontWeight:700}}>Logged — {date}</div>
+              <div style={{fontSize:14,fontWeight:700,textAlign:'right'}}>{totalCalories} kcal • {totalProtein.toFixed(1)} g</div>
             </div>
 
             {items.length === 0 ? (
@@ -406,7 +434,12 @@ export default function TrackCalories(){
                   }
 
                   return (
-                  <li key={it.id} className="card" style={{position:'relative',padding:12,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'1fr 96px 140px',alignItems:'center',gap:12}}>
+                  <li key={it.id} className="card" style={{position:'relative',padding:12,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'28px 1fr 96px 140px',alignItems:'center',gap:12}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id) } }}>
+                    <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
+                      {editMode ? (
+                        <input type="checkbox" checked={selectedIds.has(it.id)} onChange={(e)=>{ e.stopPropagation(); toggleSelect(it.id) }} />
+                      ) : null}
+                    </div>
                     <div style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}</div>
                     <div style={{textAlign:'right',fontSize:13,color:'var(--muted)'}}>
                       {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
@@ -418,6 +451,19 @@ export default function TrackCalories(){
                 )})}
               </ul>
             )}
+
+            <div style={{display:'flex',justifyContent:'flex-end',gap:8,marginTop:12}}>
+              {!editMode ? (
+                <button className="icon-btn" onClick={()=>{ setEditMode(true); setSelectedIds(new Set()) }}>Edit</button>
+              ) : (
+                <>
+                  <button className="icon-btn" onClick={deleteSelected} disabled={!selectedIds || selectedIds.size===0}>Delete</button>
+                  <button className="icon-btn" onClick={()=>{ setEditMode(false); setSelectedIds(new Set()) }}>Cancel</button>
+                </>
+              )}
+              <button className="icon-btn" onClick={clearAll}>Clear</button>
+            </div>
+
           </div>
         </div>
       </div>
