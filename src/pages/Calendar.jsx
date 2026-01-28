@@ -183,12 +183,13 @@ export default function Calendar(){
         </div>
       </div>
       <div className="card" style={{padding:12,marginTop:12}}>
-        <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
           <div style={{fontWeight:700}}>Total deficit this month</div>
-          <div style={{fontSize:14,fontWeight:700}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
+          <div>:</div>
+          <div style={{fontSize:20,fontWeight:800}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
         </div>
-        <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>
-          {plan ? `Per-day deficit (plan): ${plan.maintenance - plan.diet} kcal — from ${totalMonthLost ? totalMonthLost.loggedDays : 0} logged day(s)` : 'Set up your profile to see estimates.'}
+        <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+          {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
         </div>
       </div>
     </div>
