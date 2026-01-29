@@ -34,7 +34,8 @@ export default function Profile(){
 
       const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
       const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
-      const activityFactor = activity === 'custom' ? 1.2 : (activityFactors[activity] || 1.2)
+      // Use sedentary baseline for display unless a workout is marked for a given day
+      const activityFactor = activityFactors['sedentary']
 
       const maintenanceNoWorkout = Math.round(bmr * activityFactor)
 

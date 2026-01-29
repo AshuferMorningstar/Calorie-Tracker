@@ -150,7 +150,8 @@ export default function App(){
     const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
 
     const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
-    const activityFactor = activity === 'custom' ? 1.2 : (activityFactors[activity] || 1.2)
+    // Show sedentary baseline unless a workout is marked for the day
+    const activityFactor = activityFactors['sedentary']
 
     // include exercise calories when custom activity provided
     // If the user has marked attendance (calorieWise.attendance.YYYY-MM-DD keys) we treat exercise as occurring
