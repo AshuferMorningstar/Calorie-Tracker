@@ -257,6 +257,8 @@ export default function App(){
           </div>
         </div>
 
+        <WeeklyAttendance />
+
         
       </main>
 
@@ -286,6 +288,52 @@ export default function App(){
             <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
           </nav>
         </div>
+      </div>
+    </div>
+  )
+}
+
+function WeeklyAttendance(){
+  // ensure we have an install/reference date so week counting starts at user install
+  try{ if(!localStorage.getItem('calorieWise.installDate')){ localStorage.setItem('calorieWise.installDate', new Date().toISOString().slice(0,10)) } }catch(e){}
+  const installIso = localStorage.getItem('calorieWise.installDate') || new Date().toISOString().slice(0,10)
+  const installDate = new Date(installIso)
+  const now = new Date()
+
+  // week number since install (1-based)
+  const daysSinceInstall = Math.floor((now - installDate) / (24 * 60 * 60 * 1000))
+  const weekIndex = Math.floor(daysSinceInstall / 7) + 1
+
+  // compute current calendar week (Sunday..Saturday) that contains today
+  const weekStart = new Date(now)
+  weekStart.setHours(0,0,0,0)
+  weekStart.setDate(now.getDate() - now.getDay())
+
+  const days = []
+  for(let i=0;i<7;i++){
+    const d = new Date(weekStart)
+    d.setDate(weekStart.getDate() + i)
+    const y = d.getFullYear()
+    const m = d.toLocaleString(undefined,{month:'short'})
+    const dayNum = d.getDate()
+    const iso = `${y}-${String(d.getMonth()+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`
+    days.push({ iso, dow: d.toLocaleString(undefined,{weekday:'short'}), month: m, dayNum })
+  }
+
+  return (
+    <div className="card" style={{padding:12}}>
+      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+        <strong>Week {weekIndex}</strong>
+      </div>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:6,alignItems:'stretch',width:'100%'}}>
+        {days.map(d=> (
+          <div key={d.iso} style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:8,borderRadius:6,minHeight:72}}>
+            <div style={{fontSize:12,color:'var(--muted)'}}>{d.dow}</div>
+            <div style={{fontSize:12,color:'var(--muted)'}}>{d.month}</div>
+            <div style={{fontSize:16,fontWeight:700,marginTop:6}}>{d.dayNum}</div>
+            <div style={{fontSize:18,marginTop:6}}>{localStorage.getItem(`calorieWise.attendance.${d.iso}`) === '1' ? '🔥' : ''}</div>
+          </div>
+        ))}
       </div>
     </div>
   )
