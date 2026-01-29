@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import vegetables from '../data/vegetables_india.json'
 import fruits from '../data/fruits.json'
+import './TrackCalories.autocomplete.css'
 
 // small built-in food database (kcal per 100 g where applicable)
 const FOODS = [
@@ -127,7 +129,75 @@ const ALIASES = {
   'potato': 'potato_raw',
   'spinach': 'spinach_raw',
   'cauliflower': 'cauliflower_raw',
+  // common breads / variants aliases
+  'naan': 'naan_plain',
+  'naan plain': 'naan_plain',
+  'butter naan': 'naan_butter',
+  'garlic naan': 'naan_garlic',
+  'cheese naan': 'cheese_naan',
+  'keema naan': 'keema_naan',
+  'peshawari naan': 'peshawari_naan',
+  'kulcha': 'kulcha',
+  'amritsari kulcha': 'amritsari_kulcha',
+  'paratha': 'paratha_plain',
+  'aloo paratha': 'aloo_paratha',
+  'lachha paratha': 'lachha_paratha',
+  'lacha paratha': 'lachha_paratha',
+  'lachha': 'lachha_paratha',
+  'puri': 'puri',
+  'bhatura': 'bhatura',
+  'pav': 'pav',
+  'luchi': 'luchi',
+  'thepla': 'thepla',
+  'bajra roti': 'bajra_roti',
+  'jowar roti': 'jowar_roti',
+  'makki roti': 'makki_roti',
+  'ragi roti': 'ragi_roti',
+  'chapati': 'chapati',
+  'roti': 'chapati',
+  // south indian
+  'dosa': 'dosa_plain',
+  'masala dosa': 'masala_dosa',
+  'rava dosa': 'rava_dosa',
+  'idli': 'idli',
+  'vada': 'medu_vada',
+  'vada bonda': 'vada_bonda',
+  'besan chilla': 'besan_chilla',
+  'suji chilla': 'suji_chilla',
 }
+
+// extra common synonyms/plurals and local colloquialisms
+Object.assign(ALIASES, {
+  'chicken breast': 'chicken',
+  'chicken': 'chicken',
+  'potatoes': 'potato_raw',
+  'potato': 'potato_raw',
+  'aloo': 'potato_raw',
+  'onions': 'onion',
+  'onion': 'onion',
+  'tomatoes': 'tomato',
+  'tomato': 'tomato',
+  'garlic': 'garlic',
+  'ginger': 'ginger',
+  'egg': 'egg',
+  'eggs': 'egg',
+  'banana': 'banana',
+  'apple': 'apple',
+  'roti': 'chapati',
+  'chapati': 'chapati',
+  'flatbread': 'chapati',
+  'naan': 'naan_plain',
+  'paratha': 'paratha_plain',
+  'puri': 'puri',
+  'dosa': 'dosa_plain',
+  'idli': 'idli',
+  'paneer': 'paneer',
+  'milk': 'milk',
+  'rice': 'rice_raw',
+  'basmati': 'basmati_rice_raw',
+  'brown rice': 'brown_rice_raw',
+  'chana': 'chickpeas_raw',
+})
 
 const dateKey = (d)=> `calorieWise.entries.${d}`
 
@@ -159,6 +229,59 @@ export default function TrackCalories(){
       return [...FOODS, ...extras]
     }catch(e){ return FOODS }
   },[])
+  const [suggestions, setSuggestions] = useState([])
+  const [selectedSuggestion, setSelectedSuggestion] = useState(-1)
+  const inputRef = useRef(null)
+  const containerRef = useRef(null)
+  const [suggestionCoords, setSuggestionCoords] = useState(null)
+
+  // close suggestions when clicking outside
+  useEffect(()=>{
+    const onDocClick = (e)=>{
+      if(containerRef.current && !containerRef.current.contains(e.target)){
+        setSuggestions([])
+        setSelectedSuggestion(-1)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return ()=> document.removeEventListener('mousedown', onDocClick)
+  },[])
+
+  // keep suggestion portal positioned on scroll/resize
+  useEffect(()=>{
+    if(!inputRef.current) return
+    const onMove = ()=>{
+      try{
+        const el = inputRef.current
+        const r = el.getBoundingClientRect()
+        setSuggestionCoords({ top: Math.round(r.bottom + window.scrollY + 6) + 'px', left: Math.round(r.left + window.scrollX) + 'px', width: Math.round(r.width) + 'px' })
+      }catch(e){}
+    }
+    window.addEventListener('scroll', onMove, { passive:true })
+    window.addEventListener('resize', onMove)
+    return ()=>{ window.removeEventListener('scroll', onMove); window.removeEventListener('resize', onMove) }
+  },[inputRef.current, suggestions])
+
+  const applyFound = (found)=>{
+    if(!found) return
+    if(found.unit === 'count' || found.unit === 'count' || found.kcalPerUnit){
+      setUnit('count')
+      setKcalPerUnit(found.kcalPerUnit || found.kcal || '')
+      setProteinPerUnit(found.proteinPerUnit || found.protein || '')
+      setKcalPer100g('')
+      setProteinPer100g('')
+      setManualKcalNeeded(false)
+    } else {
+      setUnit('g')
+      setKcalPer100g(found.kcal || found.kcalPer100g || '')
+      setProteinPer100g(found.protein || found.proteinPer100g || '')
+      setKcalPerUnit('')
+      setProteinPerUnit('')
+      setManualKcalNeeded(false)
+    }
+    // also populate name in case caller wants it
+    try{ setName(found.name || found.name_en || '') }catch(e){}
+  }
   const [date, setDate] = useState(todayISO())
   const [items, setItems] = useState([])
 
@@ -410,6 +533,29 @@ export default function TrackCalories(){
     return null
   })()
 
+  // keyboard navigation for suggestions
+  const onNameKeyDown = (e)=>{
+    if(!suggestions || suggestions.length === 0) return
+    if(e.key === 'ArrowDown'){
+      e.preventDefault()
+      setSelectedSuggestion(s => Math.min(s + 1, suggestions.length - 1))
+    }else if(e.key === 'ArrowUp'){
+      e.preventDefault()
+      setSelectedSuggestion(s => Math.max(s - 1, 0))
+    }else if(e.key === 'Enter'){
+      if(selectedSuggestion >= 0 && suggestions[selectedSuggestion]){
+        e.preventDefault()
+        const s = suggestions[selectedSuggestion]
+        applyFound(s)
+        setSuggestions([])
+        setSelectedSuggestion(-1)
+      }
+    }else if(e.key === 'Escape'){
+      setSuggestions([])
+      setSelectedSuggestion(-1)
+    }
+  }
+
   const handleBack = ()=>{
     try{ if(window.history && window.history.length > 1){ navigate(-1); return } }catch(e){}
     navigate('/', { state: { fromSplash: true } })
@@ -436,7 +582,8 @@ export default function TrackCalories(){
           <form onSubmit={addItem} className="track-form">
             <div className="form-row">
               <label>Ingredient</label>
-              <input value={name} onChange={(e)=>{
+              <div className="tc-autocomplete" ref={containerRef}>
+                <input ref={inputRef} value={name} onKeyDown={onNameKeyDown} onChange={(e)=>{
                 const v = e.target.value
                 setName(v)
                 const raw = (v || '').trim().toLowerCase()
@@ -502,7 +649,50 @@ export default function TrackCalories(){
                   setManualKcalNeeded(Boolean(base))
                 }
 
-              }} placeholder="Start typing (e.g. Chicken breast)" />
+                // Build suggestion list for the autocomplete popover
+                try{
+                  const baseTerm = (base || '').toLowerCase()
+                  if(baseTerm){
+                    const matches = []
+                    // prioritise alias matches
+                    const aliasId = ALIASES[baseTerm]
+                    if(aliasId){
+                      const ali = ALL_FOODS.find(f => f.id === aliasId || f.id === aliasId.replace(/_raw$/,''))
+                      if(ali) matches.push(ali)
+                    }
+
+                    // general contains matches (name, hindi, translit)
+                    const general = ALL_FOODS.filter(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      return lname.includes(baseTerm) || lhi.includes(baseTerm) || ltr.includes(baseTerm)
+                    })
+
+                    general.forEach(g => { if(!matches.find(m => m.id === g.id)) matches.push(g) })
+
+                    const limited = matches.slice(0,12)
+                    setSuggestions(limited)
+                    setSelectedSuggestion(limited.length ? 0 : -1)
+                    // compute input rect to position the portal
+                    try{
+                      const el = inputRef.current
+                      if(el){
+                        const r = el.getBoundingClientRect()
+                        setSuggestionCoords({ top: Math.round(r.bottom + window.scrollY + 6) + 'px', left: Math.round(r.left + window.scrollX) + 'px', width: Math.round(r.width) + 'px' })
+                      }
+                    }catch(e){ setSuggestionCoords(null) }
+                  } else {
+                    setSuggestions([])
+                    setSelectedSuggestion(-1)
+                  }
+                }catch(e){ setSuggestions([]); setSelectedSuggestion(-1) }
+
+              }} placeholder="Start typing (e.g. Chicken breast)" aria-autocomplete="list" aria-controls="tc-suggestions" aria-haspopup="listbox" aria-expanded={suggestions && suggestions.length > 0} aria-activedescendant={selectedSuggestion >= 0 && suggestions[selectedSuggestion] ? `tc-option-${suggestions[selectedSuggestion].id}` : undefined} />
+
+                <div className="sr-only" aria-live="polite">{suggestions && suggestions.length ? `${suggestions.length} suggestions` : ''}</div>
+
+              </div>
 
             </div>
 
@@ -558,6 +748,9 @@ export default function TrackCalories(){
               <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
                 {items.map(it=> {
                   // compute display protein if missing
+                  // clear suggestions when an exact match is found
+                  setSuggestions([])
+                  setSelectedSuggestion(-1)
                   let displayProtein = null
                   if(it.protein !== null && it.protein !== undefined){ displayProtein = it.protein }
                   else {
@@ -567,6 +760,7 @@ export default function TrackCalories(){
                     else {
                       // fallback: try to find in FOODS
                       try{
+
                         const nm = (it.name || '').toLowerCase()
                         const found = ALL_FOODS.find(f=> (f.name||'').toLowerCase() === nm || (f.name_hi||'').toLowerCase() === nm || (f.name_hi_translit||'').toLowerCase() === nm) || ALL_FOODS.find(f=> nm.includes((f.name||'').toLowerCase()))
                         if(found && !isNaN(amt) && amt > 0){
@@ -627,6 +821,17 @@ export default function TrackCalories(){
           </div>
         </div>
       </div>
+      {/* suggestion portal rendered at body level to avoid clipping by parent cards */}
+      {suggestions && suggestions.length > 0 && suggestionCoords && typeof document !== 'undefined' ? createPortal(
+        <ul id="tc-suggestions" role="listbox" className="tc-suggestions-portal" aria-label="Ingredient suggestions" style={{top:suggestionCoords.top,left:suggestionCoords.left,width:suggestionCoords.width}}>
+          {suggestions.map((s, idx)=> (
+            <li key={s.id} id={"tc-option-" + s.id} role="option" aria-selected={idx === selectedSuggestion} className={`tc-suggestion ${idx === selectedSuggestion ? 'selected' : ''}`} onMouseDown={(e)=>{ e.preventDefault(); applyFound(s); setSuggestions([]); setSelectedSuggestion(-1); setSuggestionCoords(null) }}>
+              <div className="tc-suggestion-title">{s.name}</div>
+              <div className="tc-suggestion-sub">{s.name_hi ? `${s.name_hi} • ${s.name_hi_translit || ''}` : (s.name_hi_translit || '')}</div>
+            </li>
+          ))}
+        </ul>
+      , document.body) : null}
     </div>
   )
 }

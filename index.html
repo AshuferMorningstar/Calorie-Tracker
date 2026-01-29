@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Calorie Wise</title>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="preload" href="/assets/Picsart_26-01-22_22-42-53-930.png" as="image" type="image/png">
-    <link rel="preload" href="/assets/logo.webp" as="image" type="image/webp">
+        <!-- Use prefetch instead of preload to avoid unused-preload warnings when the image
+          isn't needed immediately on some routes. These are still cached by the browser. -->
+        <link rel="prefetch" href="/assets/Picsart_26-01-22_22-42-53-930.png" type="image/png">
+        <link rel="prefetch" href="/assets/logo.webp" type="image/webp">
   </head>
   <body>
     <div id="root"></div>
