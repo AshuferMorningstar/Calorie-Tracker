@@ -197,7 +197,63 @@ Object.assign(ALIASES, {
   'basmati': 'basmati_rice_raw',
   'brown rice': 'brown_rice_raw',
   'chana': 'chickpeas_raw',
+  // common misspellings / plurals for paratha/parotta variants
+  'parathas': 'paratha_plain',
+  'paratha': 'paratha_plain',
+  'parotha': 'parotta',
+  'parota': 'parotta',
+  'parotta': 'parotta',
+  'parottas': 'parotta',
+  'pratha': 'paratha_plain',
+  'prathas': 'paratha_plain',
+  'paratha_plain': 'paratha_plain',
+  'aloo parathas': 'aloo_paratha',
+  'aloo parotha': 'aloo_paratha',
 })
+
+// helper: small levenshtein for fuzzy alias matching (works well for short terms)
+function levenshtein(a, b){
+  const al = a.length, bl = b.length
+  if(al === 0) return bl
+  if(bl === 0) return al
+  const dp = Array(al + 1).fill(null).map(()=>Array(bl + 1).fill(0))
+  for(let i=0;i<=al;i++) dp[i][0]=i
+  for(let j=0;j<=bl;j++) dp[0][j]=j
+  for(let i=1;i<=al;i++){
+    for(let j=1;j<=bl;j++){
+      const cost = a[i-1] === b[j-1] ? 0 : 1
+      dp[i][j] = Math.min(dp[i-1][j] + 1, dp[i][j-1] + 1, dp[i-1][j-1] + cost)
+    }
+  }
+  return dp[al][bl]
+}
+
+function findAliasIdFor(term){
+  if(!term) return null
+  const k = term.toLowerCase().trim()
+  if(ALIASES[k]) return ALIASES[k]
+  // fuzzy: find alias key with edit distance <= 1 (covers simple typos)
+  let best = null; let bestD = Infinity
+  for(const key in ALIASES){
+    const d = levenshtein(key, k)
+    if(d < bestD){ bestD = d; best = key }
+    if(bestD === 0) break
+  }
+  return (bestD <= 1) ? ALIASES[best] : null
+}
+
+// dictionary-style subsequence match: returns true if query letters occur in order in target
+function isSubsequence(query, target){
+  if(!query || !target) return false
+  const q = query.replace(/\s+/g,'').toLowerCase()
+  const t = target.replace(/\s+/g,'').toLowerCase()
+  let i = 0, j = 0
+  while(i < q.length && j < t.length){
+    if(q[i] === t[j]) i++
+    j++
+  }
+  return i === q.length && q.length > 0
+}
 
 const dateKey = (d)=> `calorieWise.entries.${d}`
 
@@ -601,7 +657,7 @@ export default function TrackCalories(){
 
                 // 3) alias lookup (prefer raw by default)
                 if(!found){
-                  const aliasId = ALIASES[base]
+                  const aliasId = findAliasIdFor(base)
                   if(aliasId){
                     if(cookedRequested){
                       const cookedId = aliasId.replace(/_raw$/, '')
@@ -620,6 +676,10 @@ export default function TrackCalories(){
                   if(!found){
                     // prefer raw or any non-cooked match; also match Hindi/translit
                     found = ALL_FOODS.find(f => ((f.name||'').toLowerCase().includes(base) || (f.name_hi||'').toLowerCase().includes(base) || (f.name_hi_translit||'').toLowerCase().includes(base)) && !(f.name||'').toLowerCase().includes('cooked'))
+                  }
+                  // 5) dictionary-style subsequence fallback (letters in order)
+                  if(!found){
+                    found = ALL_FOODS.find(f => isSubsequence(base, f.name || '') || isSubsequence(base, f.name_hi || '') || isSubsequence(base, f.name_hi_translit || ''))
                   }
                 }
 
@@ -655,7 +715,7 @@ export default function TrackCalories(){
                   if(baseTerm){
                     const matches = []
                     // prioritise alias matches
-                    const aliasId = ALIASES[baseTerm]
+                    const aliasId = findAliasIdFor(baseTerm)
                     if(aliasId){
                       const ali = ALL_FOODS.find(f => f.id === aliasId || f.id === aliasId.replace(/_raw$/,''))
                       if(ali) matches.push(ali)
@@ -670,6 +730,15 @@ export default function TrackCalories(){
                     })
 
                     general.forEach(g => { if(!matches.find(m => m.id === g.id)) matches.push(g) })
+
+                    // dictionary-style: allow letters typed in order to match (e.g. 'pratha' -> 'paratha')
+                    const subseq = ALL_FOODS.filter(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      return isSubsequence(baseTerm, lname) || isSubsequence(baseTerm, lhi) || isSubsequence(baseTerm, ltr)
+                    })
+                    subseq.forEach(s => { if(!matches.find(m => m.id === s.id)) matches.push(s) })
 
                     const limited = matches.slice(0,12)
                     setSuggestions(limited)
