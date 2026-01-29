@@ -203,9 +203,8 @@
   { "id": "fil_bopis_variant", "name": "Bopis with veggies", "unit": "plate", "servingGrams": 220, "kcalPerUnit": 320, "kcalPer100g": 145, "proteinPerUnit": 22.0, "proteinPer100g": 10.0, "cuisine": "Filipino" },
   { "id": "fil_ginataang_langka", "name": "Ginataang Langka (jackfruit in coconut)", "unit": "plate", "servingGrams": 220, "kcalPerUnit": 280, "kcalPer100g": 127, "proteinPerUnit": 4.0, "proteinPer100g": 1.8, "cuisine": "Filipino" },
   { "id": "fil_pinchutang", "name": "Pinchutang (regional fish stew)", "unit": "bowl", "servingGrams": 280, "kcalPerUnit": 260, "kcalPer100g": 93, "proteinPerUnit": 22.0, "proteinPer100g": 7.9, "cuisine": "Filipino" },
-  { "id": "fil_pork_salo_salo", "name": "Pork Salo-Salo (platter)", "unit": "plate", "servingGrams": 450, "kcalPerUnit": 980, "kcalPer100g": 217, "proteinPerUnit": 48.0, "proteinPer100g": 10.7, "cuisine": "Filipino" }
-,
-  { "id": "thai_001_pad_thai", "name": "Pad Thai", "servingGrams": 400, "kcalPerUnit": 600, "proteinPerUnit": 20, "kcalPer100g": 150, "proteinPer100g": 5, "cuisine": "Thai" },
+{ "id": "fil_pork_salo_salo", "name": "Pork Salo-Salo (platter)", "unit": "plate", "servingGrams": 450, "kcalPerUnit": 980, "kcalPer100g": 217, "proteinPerUnit": 48.0, "proteinPer100g": 10.7, "cuisine": "Filipino" },
+{ "id": "thai_001_pad_thai", "name": "Pad Thai", "servingGrams": 400, "kcalPerUnit": 600, "proteinPerUnit": 20, "kcalPer100g": 150, "proteinPer100g": 5, "cuisine": "Thai" },
   { "id": "thai_002_green_curry_chicken", "name": "Green Curry (Chicken)", "servingGrams": 350, "kcalPerUnit": 520, "proteinPerUnit": 24, "kcalPer100g": 149, "proteinPer100g": 6.9, "cuisine": "Thai" },
   { "id": "thai_003_massaman_curry", "name": "Massaman Curry", "servingGrams": 380, "kcalPerUnit": 610, "proteinPerUnit": 18, "kcalPer100g": 160, "proteinPer100g": 4.7, "cuisine": "Thai" },
   { "id": "thai_004_tom_yum_shrimp", "name": "Tom Yum (Shrimp)", "servingGrams": 320, "kcalPerUnit": 180, "proteinPerUnit": 18, "kcalPer100g": 56, "proteinPer100g": 5.6, "cuisine": "Thai" },
@@ -1458,8 +1457,7 @@
     "kcalPer100g": 140,
     "proteinPer100g": 3,
     "cuisine": "Japanese"
-  }
-],
+  },
   {
     "id": "ind_001_nasi_goreng",
     "name": "Nasi Goreng (Indonesian fried rice)",
@@ -2009,8 +2007,7 @@
     "kcalPer100g": 240,
     "proteinPer100g": 1.3,
     "cuisine": "Indonesian"
-  }
-],
+  },
   {
     "id": "mmr_001_mohinga",
     "name": "Mohinga (rice noodle fish soup)",
