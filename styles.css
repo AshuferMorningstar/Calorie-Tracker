@@ -166,6 +166,12 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
   .form-row input{font-size:15px}
 }
 
+/* Calendar stats grid: two columns on desktop, stack on small screens */
+.calendar-stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+@media (max-width:480px){
+  .calendar-stats-grid{grid-template-columns:1fr}
+}
+
 /* Slide-out panel from right (opened by hamburger) */
 .slide-panel{
   position:fixed;

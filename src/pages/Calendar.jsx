@@ -236,7 +236,7 @@ export default function Calendar(){
           </div>
         </div>
       </div>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginTop:12}}>
+      <div className="calendar-stats-grid" style={{marginTop:12}}>
         <div className="card" style={{padding:12}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
             <div style={{fontWeight:700}}>Workout days this month</div>
