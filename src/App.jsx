@@ -384,15 +384,22 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday, toggle
           )
         })}
       </div>
-      <div style={{marginTop:10,display:'flex',justifyContent:'center'}}>
-        {selectedIso ? (
-          <div style={{textAlign:'center'}}>
-            <div style={{fontSize:13}}><strong>Selected:</strong> {new Date(selectedIso).toLocaleDateString()}</div>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>{new Date(selectedIso) > new Date() ? 'Cannot mark future days' : "Press 'Mark workout' card above to mark/unmark this day."}</div>
-          </div>
-        ) : (
-          <div style={{fontSize:13,color:'var(--muted)'}}>Tap a day to select and then use the 'Mark workout' button above</div>
-        )}
+      <div style={{marginTop:10,display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+        <div style={{textAlign:'left'}}>
+          {selectedIso ? (
+            <>
+              <div style={{fontSize:13}}><strong>Selected:</strong> {new Date(selectedIso).toLocaleDateString()}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>{new Date(selectedIso) > new Date() ? 'Cannot mark future days' : "Press 'Mark workout' card above to mark/unmark this day."}</div>
+            </>
+          ) : (
+            <div style={{fontSize:13,color:'var(--muted)'}}>Tap a day to select and then use the 'Mark workout' button above</div>
+          )}
+        </div>
+        <div style={{minWidth:96,display:'flex',justifyContent:'flex-end'}}>
+          {selectedIso ? (
+            <button onClick={()=>setSelectedIso(null)} style={{padding:'6px 12px',borderRadius:6,border:'1px solid #ddd',background:'#fff',cursor:'pointer'}}>Done</button>
+          ) : null}
+        </div>
       </div>
     </div>
   )
