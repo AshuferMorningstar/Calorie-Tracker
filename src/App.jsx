@@ -172,7 +172,13 @@ export default function App(){
           const day = String(d.getDate()).padStart(2,'0')
           const todayKey = `calorieWise.attendance.${y}-${m}-${day}`
           const isTodayWorkout = localStorage.getItem(todayKey) === '1'
-          dailyExercise = isTodayWorkout ? Number(customCalories) : 0
+          const burnedKey = `calorieWise.burned.${y}-${m}-${day}`
+          const burnedToday = Number(localStorage.getItem(burnedKey) || 0)
+          if(burnedToday){
+            dailyExercise = burnedToday
+          }else{
+            dailyExercise = isTodayWorkout ? Number(customCalories) : 0
+          }
         }else{
           dailyExercise = Math.round((customCalories * workoutDays) / 7)
         }
@@ -264,7 +270,7 @@ export default function App(){
               <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
               <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
             </div>
-            <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/track')}>
+            <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/burned')}>
               <div style={{fontSize:20}}>🏃</div>
               <div style={{fontSize:12,color:'var(--muted)'}}>Calories burned</div>
             </button>
