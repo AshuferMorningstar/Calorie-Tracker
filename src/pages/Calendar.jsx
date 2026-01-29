@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export default function Calendar(){
@@ -8,8 +8,13 @@ export default function Calendar(){
   const currentMonth = today.getMonth()
 
   const [view, setView] = useState({ year: currentYear, month: currentMonth })
+  const [selectedDay, setSelectedDay] = useState(null)
 
   const monthName = useMemo(()=> new Date(view.year, view.month, 1).toLocaleString(undefined,{month:'long', year:'numeric'}), [view])
+
+  const isoFor = (y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
+
+  useEffect(()=>{ setSelectedDay(null) }, [view.year, view.month])
 
   // compute maintenance/diet from stored profile (used to estimate deficit)
   const plan = useMemo(()=>{
@@ -61,8 +66,6 @@ export default function Calendar(){
       let daysToCount = last.getDate()
       const now = new Date()
       if(view.year === now.getFullYear() && view.month === now.getMonth()) daysToCount = now.getDate()
-
-      const isoFor = (y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
 
       let total = 0
       let loggedDays = 0
@@ -170,8 +173,12 @@ export default function Calendar(){
               const isToday = d === today.getDate() && view.month === currentMonth && view.year === currentYear
               const isFutureDay = view.year === currentYear && view.month === currentMonth && d && d > today.getDate()
               const hasEntry = d && markedDays.has(d)
+              const isSelected = d && selectedDay === d
               return (
-                <div key={i} className={`date-cell ${isToday ? 'today' : ''} ${isFutureDay ? 'future' : ''} ${hasEntry ? 'has-entry' : ''}`} style={{height:40,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8,cursor:d ? 'pointer' : 'default'}}>
+                <div key={i}
+                  onClick={() => d && setSelectedDay(d)}
+                  className={`date-cell ${isToday ? 'today' : ''} ${isFutureDay ? 'future' : ''} ${hasEntry ? 'has-entry' : ''} ${isSelected ? 'selected' : ''}`}
+                  style={{height:40,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8,cursor:d ? 'pointer' : 'default', border: isSelected ? '2px solid var(--accent1)' : undefined}}>
                   <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
                     <div>{d || ''}</div>
                     {hasEntry ? <div style={{width:6,height:6,borderRadius:99,background:'var(--accent1)'}} /> : null}
@@ -191,7 +198,28 @@ export default function Calendar(){
         <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
           {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
         </div>
+        {selectedDay ? (
+          <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
+        ) : null}
       </div>
     </div>
   )
+}
+
+function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
+  try{
+    const key = `calorieWise.entries.${isoFor(view.year, view.month, selectedDay)}`
+    const raw = localStorage.getItem(key)
+    if(!raw) return <div style={{marginTop:8,textAlign:'center',color:'var(--muted)'}}>No entries for selected date</div>
+    const parsed = JSON.parse(raw)
+    const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
+    const deficit = plan ? Math.round(plan.maintenance - consumed) : null
+    return (
+      <div style={{marginTop:8,textAlign:'center',fontSize:13}}>
+        {deficit !== null ? `Deficit for ${isoFor(view.year, view.month, selectedDay)}: ${deficit} kcal` : `Consumed: ${Math.round(consumed)} kcal`}
+      </div>
+    )
+  }catch(e){
+    return <div style={{marginTop:8,textAlign:'center',color:'var(--muted)'}}>Could not read data</div>
+  }
 }
