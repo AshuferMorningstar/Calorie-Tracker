@@ -14,7 +14,8 @@ export default function Calendar(){
   useEffect(()=>{
     const handler = ()=> setStorageTick(x => x + 1)
     try{ window.addEventListener('calorieWise.attendanceChanged', handler) }catch(e){}
-    return ()=>{ try{ window.removeEventListener('calorieWise.attendanceChanged', handler) }catch(e){} }
+    try{ window.addEventListener('calorieWise.burnedChanged', handler) }catch(e){}
+    return ()=>{ try{ window.removeEventListener('calorieWise.attendanceChanged', handler) }catch(e){}; try{ window.removeEventListener('calorieWise.burnedChanged', handler) }catch(e){} }
   },[])
 
   const monthName = useMemo(()=> new Date(view.year, view.month, 1).toLocaleString(undefined,{month:'long', year:'numeric'}), [view])
@@ -73,7 +74,7 @@ export default function Calendar(){
         return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, dietNoWorkout, dietWithExercise }
       }
     }catch(e){ return null }
-  },[])
+  },[storageTick])
 
   // total actual deficit for viewed month — sum only days where the user logged entries
   // daily deficit = maintenance - consumed; negatives (overeating) reduce the total
@@ -98,12 +99,17 @@ export default function Calendar(){
           const dateIso = isoFor(view.year, view.month, day)
           const attendanceKey = `calorieWise.attendance.${dateIso}`
           const isWorkoutDay = plan.hasAttendance ? (localStorage.getItem(attendanceKey) === '1') : null
+          // prefer per-day burned entry if present
+          const burnedKey = `calorieWise.burned.${dateIso}`
+          const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
           let dailyExercise = 0
-          if(plan && plan.customCalories && plan.workoutDays){
+          if(burnedVal){
+            dailyExercise = burnedVal
+          }else if(plan && plan.customCalories && plan.workoutDays){
             if(plan.hasAttendance){
               dailyExercise = isWorkoutDay ? Number(plan.customCalories) : 0
             }else{
-              dailyExercise = 0
+              dailyExercise = Math.round((plan.customCalories * plan.workoutDays) / 7)
             }
           }
           const maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
@@ -287,7 +293,21 @@ function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
     const parsed = raw ? JSON.parse(raw) : null
     const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
     const isAttended = localStorage.getItem(attendanceKey) === '1'
-    const deficit = plan ? Math.round(plan.maintenanceNoWorkout + (plan.hasAttendance ? (isAttended ? Number(plan.customCalories) : 0) : 0) - consumed) : null
+    // compute maintenance for the selected day using per-day burned if present
+    const dateIso = isoFor(view.year, view.month, selectedDay)
+    const burnedKey = `calorieWise.burned.${dateIso}`
+    const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
+    let dailyExercise = 0
+    if(burnedVal){
+      dailyExercise = burnedVal
+    }else if(plan && plan.customCalories && plan.workoutDays){
+      if(plan.hasAttendance){
+        dailyExercise = isAttended ? Number(plan.customCalories) : 0
+      }else{
+        dailyExercise = Math.round((plan.customCalories * plan.workoutDays) / 7)
+      }
+    }
+    const deficit = plan ? Math.round(plan.maintenanceNoWorkout + dailyExercise - consumed) : null
 
     return (
       <div style={{marginTop:8,textAlign:'center',fontSize:13}}>
