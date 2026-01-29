@@ -382,10 +382,13 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday, toggle
   const daysSinceInstall = Math.floor((now - installDate) / (24 * 60 * 60 * 1000))
   const weekIndex = Math.floor(daysSinceInstall / 7) + 1
 
-  // compute current calendar week (Sunday..Saturday) that contains today
+  // allow paging weeks in the home weekly attendance view
+  const [weekOffset, setWeekOffset] = React.useState(0) // 0 = current week, -1 = previous, etc.
+
+  // compute current calendar week (Sunday..Saturday) adjusted by weekOffset
   const weekStart = new Date(now)
   weekStart.setHours(0,0,0,0)
-  weekStart.setDate(now.getDate() - now.getDay())
+  weekStart.setDate(now.getDate() - now.getDay() + (weekOffset * 7))
 
   const days = []
   for(let i=0;i<7;i++){
@@ -404,7 +407,11 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday, toggle
   return (
     <div className="card" style={{padding:12}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
-        <strong>Week {weekIndex}</strong>
+        <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          <button className="icon-btn" aria-label="Previous week" onClick={()=>setWeekOffset(o=>o-1)}>◀</button>
+          <div style={{fontWeight:700}}>{`Week ${Math.max(1, weekIndex + weekOffset)}`}</div>
+          <button className="icon-btn" aria-label="Next week" onClick={()=> setWeekOffset(o=> Math.min(0, o+1))} disabled={weekOffset >= 0}>▶</button>
+        </div>
       </div>
       <div style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:6,alignItems:'stretch',width:'100%'}}>
         {days.map(d=>{
