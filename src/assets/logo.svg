@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="108" height="108" viewBox="0 0 108 108" role="img" aria-label="Calorie Wise logo">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0" stop-color="#4CAF50"/>
+      <stop offset="1" stop-color="#2E7D32"/>
+    </linearGradient>
+  </defs>
+  <rect width="108" height="108" rx="12" fill="url(#g)" />
+  <g transform="translate(14,18)" fill="#fff" font-family="sans-serif">
+    <text x="0" y="34" font-size="36" font-weight="700">CW</text>
+    <text x="0" y="62" font-size="12" font-weight="600">Calorie Wise</text>
+  </g>
+</svg>

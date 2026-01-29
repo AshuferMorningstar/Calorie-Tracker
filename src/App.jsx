@@ -1,5 +1,4 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import logoImg from '../assets/Picsart_26-01-22_22-42-53-930.png'
 import { useNavigate, useLocation } from 'react-router-dom'
 
 export default function App(){
@@ -293,7 +292,7 @@ export default function App(){
                 <div style={{fontSize:12,color:'var(--muted)'}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
               </div>
             </div>
-            <img src={logoImg} alt="Calorie Wise" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
+            <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise" width={108} height={108} decoding="async" fetchPriority="high" loading="eager" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
           </div>
 
           <div style={{display:'flex',gap:8,alignItems:'stretch'}}>
