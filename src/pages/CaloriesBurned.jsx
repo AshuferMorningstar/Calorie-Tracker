@@ -22,7 +22,6 @@ export default function CaloriesBurned(){
       }else{
         localStorage.setItem(`calorieWise.burned.${iso}`, String(Math.round(n)))
       }
-      // notify other parts of the app to recompute if needed
       try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
       navigate(-1)
     }catch(e){ navigate(-1) }
@@ -34,25 +33,40 @@ export default function CaloriesBurned(){
     setValue('')
   }
 
+  const handleBack = ()=>{
+    try{ if(window.history && window.history.length > 1){ navigate(-1); return } }catch(e){}
+    navigate('/', { state: { fromSplash: true } })
+  }
+
   return (
-    <main style={{padding:16,maxWidth:720,margin:'0 auto'}}>
+    <div style={{padding:16,maxWidth:900,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
-        <h3>Calories burned</h3>
-        <button className="card" onClick={()=>navigate(-1)}>Close</button>
-      </div>
-
-      <div className="card" style={{padding:12}}>
-        <label style={{display:'block',marginBottom:8}}>Date</label>
-        <input type="date" value={iso} onChange={e=>setIso(e.target.value)} style={{padding:8,width:'100%',boxSizing:'border-box',marginBottom:12}} />
-
-        <label style={{display:'block',marginBottom:8}}>Calories burned</label>
-        <input type="number" value={value} onChange={e=>setValue(e.target.value)} placeholder="0" style={{padding:8,width:'100%',boxSizing:'border-box',marginBottom:12}} />
-
-        <div style={{display:'flex',gap:8}}>
-          <button className="card" onClick={save} style={{padding:'8px 12px'}}>Save</button>
-          <button className="card" onClick={remove} style={{padding:'8px 12px'}}>Remove</button>
+        <h2 style={{margin:0}}>Calories burned</h2>
+        <div>
+          <button className="icon-btn" onClick={handleBack}>Back</button>
         </div>
       </div>
-    </main>
+
+      <div className="track-grid">
+        <div className="card">
+          <form className="track-form" onSubmit={(e)=>{ e.preventDefault(); save() }}>
+            <div className="form-row">
+              <label>Date</label>
+              <input type="date" value={iso} onChange={e=>setIso(e.target.value)} />
+            </div>
+
+            <div className="form-row">
+              <label>Calories burned</label>
+              <input type="number" value={value} onChange={e=>setValue(e.target.value)} placeholder="0" />
+            </div>
+
+            <div style={{display:'flex',gap:8,marginTop:8}}>
+              <button className="card" type="submit">Save</button>
+              <button className="card" type="button" onClick={remove}>Remove</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   )
 }
