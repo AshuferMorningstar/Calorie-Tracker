@@ -267,16 +267,20 @@ export default function Calendar(){
         </div>
       </div>
       {/* selected-day details: separate card so total deficit card remains unchanged */}
-      {selectedDay ? (
-        <div className="card" style={{padding:12,marginTop:12}}>
-          <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
-        </div>
-      ) : null}
+      <div className="card" style={{padding:12,marginTop:12}}>
+        <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
+      </div>
     </div>
   )
 }
 function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
   try{
+    if(!selectedDay) return (
+      <div style={{marginTop:8,textAlign:'center',fontSize:13,color:'var(--muted)'}}>
+        Select a date in the calendar to view details here.
+      </div>
+    )
+
     const key = `calorieWise.entries.${isoFor(view.year, view.month, selectedDay)}`
     const attendanceKey = `calorieWise.attendance.${isoFor(view.year, view.month, selectedDay)}`
     const raw = localStorage.getItem(key)
