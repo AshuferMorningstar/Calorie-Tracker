@@ -178,14 +178,17 @@ export default function App(){
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
           </div>
 
-          <div style={{gridColumn: '1 / -1', display:'flex', gap:12, alignItems:'center'}}>
-            <button className="card square-card" onClick={()=>navigate('/track')}>Track calories</button>
-            <button className="card square-card" onClick={()=>navigate('/calendar')}>
+          <div style={{gridColumn: '1 / -1', display:'flex', gap:8, alignItems:'stretch', flexWrap:'wrap'}}>
+            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/track')}>Track calories</button>
+            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/calendar')}>
               <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
                 <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{new Date().toLocaleString(undefined,{weekday:'short'})}</div>
                 <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{new Date().getDate()}</div>
                 <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
               </div>
+            </button>
+            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}} title="Burn">
+              🔥
             </button>
           </div>
         </div>
