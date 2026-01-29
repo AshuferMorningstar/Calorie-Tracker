@@ -122,6 +122,50 @@ export default function Calendar(){
     }catch(e){ return null }
   },[plan, view.year, view.month, storageTick])
 
+  // total deficit for the current calendar week (Sunday..Saturday)
+  const totalWeekLost = useMemo(()=>{
+    if(!plan) return null
+    try{
+      const now = new Date()
+      const weekStart = new Date(now)
+      weekStart.setHours(0,0,0,0)
+      weekStart.setDate(now.getDate() - now.getDay())
+
+      let total = 0
+      let loggedDays = 0
+      for(let i=0;i<7;i++){
+        const d = new Date(weekStart)
+        d.setDate(weekStart.getDate() + i)
+        const iso = `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+        const key = `calorieWise.entries.${iso}`
+        const raw = localStorage.getItem(key)
+        if(!raw) continue
+        const parsed = JSON.parse(raw)
+        const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
+
+        const attendanceKey = `calorieWise.attendance.${iso}`
+        const isWorkoutDay = plan.hasAttendance ? (localStorage.getItem(attendanceKey) === '1') : null
+        const burnedKey = `calorieWise.burned.${iso}`
+        const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
+        let dailyExercise = 0
+        if(burnedVal){
+          dailyExercise = burnedVal
+        }else if(plan && plan.customCalories && plan.workoutDays){
+          if(plan.hasAttendance){
+            dailyExercise = isWorkoutDay ? Number(plan.customCalories) : 0
+          }else{
+            dailyExercise = Math.round((plan.customCalories * plan.workoutDays) / 7)
+          }
+        }
+        const maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+        const deficit = (maintenanceForDay - consumed)
+        total += deficit
+        loggedDays += 1
+      }
+      return { total, loggedDays }
+    }catch(e){ return null }
+  },[plan, storageTick])
+
   const goPrev = ()=>{
     let y = view.year
     let m = view.month - 1
@@ -250,7 +294,7 @@ export default function Calendar(){
         </div>
       </div>
       <div className="calendar-stats-grid" style={{marginTop:12}}>
-        <div className="card" style={{padding:12}}>
+            <div className="card" style={{padding:12}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
             <div style={{fontWeight:700}}>Workout days this month</div>
             <div>:</div>
@@ -260,17 +304,27 @@ export default function Calendar(){
             {`Marked via attendance (${attendanceCount} ${attendanceCount === 1 ? 'day' : 'days'})`}
           </div>
         </div>
+            <div className="card" style={{padding:12}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
+                <div style={{fontWeight:700}}>Total deficit this week</div>
+                <div>:</div>
+                <div style={{fontSize:20,fontWeight:800}}>{totalWeekLost !== null ? `${Math.round(totalWeekLost.total)} kcal` : '—'}</div>
+              </div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+                {totalWeekLost ? `${totalWeekLost.loggedDays} ${totalWeekLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
+              </div>
+            </div>
 
-        <div className="card" style={{padding:12}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
-            <div style={{fontWeight:700}}>Total deficit this month</div>
-            <div>:</div>
-            <div style={{fontSize:20,fontWeight:800}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
-          </div>
-          <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
-            {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
-          </div>
-        </div>
+            <div className="card" style={{padding:12}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
+                <div style={{fontWeight:700}}>Total deficit this month</div>
+                <div>:</div>
+                <div style={{fontSize:20,fontWeight:800}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
+              </div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+                {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
+              </div>
+            </div>
       </div>
       {/* selected-day details: separate card so total deficit card remains unchanged */}
       <div className="card" style={{padding:12,marginTop:12}}>
