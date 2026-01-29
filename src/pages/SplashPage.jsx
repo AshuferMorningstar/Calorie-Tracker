@@ -6,6 +6,14 @@ export default function SplashPage(){
   const navigate = useNavigate()
 
   const handleFinish = ()=>{
+    try{
+      const seenEver = localStorage.getItem('calorieWise.seenEver')
+      if(seenEver){
+        console.log('[SplashPage] finished; user onboarded — navigating to /')
+        navigate('/', { state: { fromSplash: true } })
+        return
+      }
+    }catch(e){}
     console.log('[SplashPage] finished; navigating to /onboard')
     // navigate to onboarding (login-like) page
     navigate('/onboard')

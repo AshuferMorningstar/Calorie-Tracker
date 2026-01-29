@@ -10,16 +10,20 @@ export default function ConditionalHome(){
   const location = useLocation()
 
   try{
-    const seenEver = (()=>{ try{ return localStorage.getItem('calorieWise.seenEver') }catch(e){ return null } })()
-    console.log('[ConditionalHome] location state:', location && location.state, 'seenEver=', seenEver)
+    const sessionSeen = (()=>{ try{ return sessionStorage.getItem('calorieWise.splashThisSession') }catch(e){ return null } })()
+    console.log('[ConditionalHome] location state:', location && location.state, 'sessionSeen=', sessionSeen)
 
-    if(seenEver){
-      console.log('[ConditionalHome] user already onboarded — rendering App')
+    // If we arrived from the splash route via client navigation, mark this session
+    // as having seen the splash and render the app.
+    if(location && location.state && location.state.fromSplash){
+      try{ sessionStorage.setItem('calorieWise.splashThisSession','1') }catch(e){}
+      console.log('[ConditionalHome] rendering App (arrived from splash)')
       return <App />
     }
 
-    if(location && location.state && location.state.fromSplash){
-      console.log('[ConditionalHome] rendering App (arrived from splash)')
+    // If this browser tab/session has already shown the splash, render the app.
+    if(sessionSeen){
+      console.log('[ConditionalHome] splash already shown this session — rendering App')
       return <App />
     }
   }catch(e){/* ignore */}
