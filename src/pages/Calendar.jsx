@@ -313,18 +313,18 @@ export default function Calendar(){
             {`Marked via attendance (${attendanceCount} ${attendanceCount === 1 ? 'day' : 'days'})`}
           </div>
         </div>
-            <div className="card" style={{padding:12}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
-                <button className="icon-btn" aria-label="Previous week" onClick={()=>setWeekOffset(o=>o-1)}>◀</button>
-                <div style={{fontWeight:700}}>{`Week ${Math.max(1, baseWeekIndex + weekOffset)}`}</div>
-                <button className="icon-btn" aria-label="Next week" onClick={()=> setWeekOffset(o=> Math.min(0, o+1))} disabled={weekOffset >= 0}>▶</button>
+            <div className="card" style={{padding:8}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,minHeight:36}}>
+                <button className="icon-btn" aria-label="Previous week" onClick={()=>setWeekOffset(o=>o-1)} style={{padding:'4px 8px'}}>◀</button>
+                <div style={{fontWeight:700,fontSize:14}}>{`Week ${Math.max(1, baseWeekIndex + weekOffset)}`}</div>
+                <button className="icon-btn" aria-label="Next week" onClick={()=> setWeekOffset(o=> Math.min(0, o+1))} disabled={weekOffset >= 0} style={{padding:'4px 8px'}}>▶</button>
               </div>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,marginTop:8}}>
-                <div style={{fontWeight:700}}>Total deficit</div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:6}}>
+                <div style={{fontWeight:700,fontSize:13}}>Total deficit</div>
                 <div>:</div>
-                <div style={{fontSize:20,fontWeight:800}}>{totalWeekLost !== null ? `${Math.round(totalWeekLost.total)} kcal` : '—'}</div>
+                <div style={{fontSize:16,fontWeight:800}}>{totalWeekLost !== null ? `${Math.round(totalWeekLost.total)} kcal` : '—'}</div>
               </div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:6,textAlign:'center'}}>
                 {totalWeekLost ? `${totalWeekLost.loggedDays} ${totalWeekLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
               </div>
             </div>
