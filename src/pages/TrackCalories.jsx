@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import vegetables from '../data/vegetables_india.json'
+import fruits from '../data/fruits.json'
 
 // small built-in food database (kcal per 100 g where applicable)
 const FOODS = [
@@ -86,6 +88,24 @@ const todayISO = ()=>{
 
 export default function TrackCalories(){
   const navigate = useNavigate()
+  const ALL_FOODS = useMemo(()=>{
+    try{
+      const extras = []
+      if(Array.isArray(vegetables)){
+        vegetables.forEach((v, idx)=>{
+          const id = `veg_${idx}_${(v.name_en||'').toLowerCase().replace(/\s+/g,'_')}`
+          extras.push({ id, name: v.name_en, kcal: v.calories_per_100g || v.calories_per_100g, protein: v.protein_per_100g || v.protein_per_100g, name_hi: v.name_hi || '', name_hi_translit: v.name_hi_translit || '', unit: v.unit || 'g' })
+        })
+      }
+      if(Array.isArray(fruits)){
+        fruits.forEach((f, idx)=>{
+          const id = `fruit_${idx}_${(f.name_en||'').toLowerCase().replace(/\s+/g,'_')}`
+          extras.push({ id, name: f.name_en, kcal: f.calories_per_100g || f.calories_per_100g, protein: f.protein_per_100g || f.protein_per_100g, name_hi: f.name_hi || '', name_hi_translit: f.name_hi_translit || '', unit: f.unit || 'g' })
+        })
+      }
+      return [...FOODS, ...extras]
+    }catch(e){ return FOODS }
+  },[])
   const [date, setDate] = useState(todayISO())
   const [items, setItems] = useState([])
 
@@ -124,7 +144,7 @@ export default function TrackCalories(){
               // try to infer from built-in FOODS by name
               try{
                 const name = (it.name || '').toLowerCase()
-                const found = FOODS.find(f=>f.name.toLowerCase() === name) || FOODS.find(f=>name.includes((f.name||'').toLowerCase()))
+                const found = ALL_FOODS.find(f=> (f.name||'').toLowerCase() === name || (f.name_hi||'').toLowerCase() === name || (f.name_hi_translit||'').toLowerCase() === name) || ALL_FOODS.find(f=> name.includes((f.name||'').toLowerCase()))
                 if(found && !isNaN(amt) && amt > 0){
                   if(found.unit === 'count' && found.proteinPerUnit){ prot = Math.round((amt * found.proteinPerUnit) * 10) / 10 }
                   else if(found.protein){ prot = Math.round((amt * found.protein / 100) * 10) / 10 }
@@ -368,8 +388,8 @@ export default function TrackCalories(){
                 setName(v)
                 const raw = (v || '').trim().toLowerCase()
 
-                // 1) exact name match
-                let found = FOODS.find(f => f.name.toLowerCase() === raw)
+                // 1) exact name match (match English, Hindi, or transliteration)
+                let found = ALL_FOODS.find(f => (f.name || '').toLowerCase() === raw || (f.name_hi || '').toLowerCase() === raw || (f.name_hi_translit || '').toLowerCase() === raw)
 
                 // 2) handle explicit "cooked" keyword
                 let cookedRequested = false
@@ -383,12 +403,11 @@ export default function TrackCalories(){
                 if(!found){
                   const aliasId = ALIASES[base]
                   if(aliasId){
-                    // if user asked for cooked, try cooked variant id by removing _raw
                     if(cookedRequested){
                       const cookedId = aliasId.replace(/_raw$/, '')
-                      found = FOODS.find(f => f.id === cookedId) || FOODS.find(f => f.id === aliasId)
+                      found = ALL_FOODS.find(f => f.id === cookedId) || ALL_FOODS.find(f => f.id === aliasId)
                     }else{
-                      found = FOODS.find(f => f.id === aliasId) || FOODS.find(f => f.id === aliasId.replace(/_raw$/,''))
+                      found = ALL_FOODS.find(f => f.id === aliasId) || ALL_FOODS.find(f => f.id === aliasId.replace(/_raw$/,''))
                     }
                   }
                 }
@@ -396,11 +415,11 @@ export default function TrackCalories(){
                 // 4) fallback: includes search preferring cooked/raw based on request
                 if(!found && base){
                   if(cookedRequested){
-                    found = FOODS.find(f => f.name.toLowerCase().includes(base) && f.name.toLowerCase().includes('cooked'))
+                    found = ALL_FOODS.find(f => (f.name||'').toLowerCase().includes(base) && (f.name||'').toLowerCase().includes('cooked'))
                   }
                   if(!found){
-                    // prefer raw or any non-cooked match
-                    found = FOODS.find(f => f.name.toLowerCase().includes(base) && !f.name.toLowerCase().includes('cooked'))
+                    // prefer raw or any non-cooked match; also match Hindi/translit
+                    found = ALL_FOODS.find(f => ((f.name||'').toLowerCase().includes(base) || (f.name_hi||'').toLowerCase().includes(base) || (f.name_hi_translit||'').toLowerCase().includes(base)) && !(f.name||'').toLowerCase().includes('cooked'))
                   }
                 }
 
@@ -496,7 +515,7 @@ export default function TrackCalories(){
                       // fallback: try to find in FOODS
                       try{
                         const nm = (it.name || '').toLowerCase()
-                        const found = FOODS.find(f=>f.name.toLowerCase() === nm) || FOODS.find(f=>nm.includes((f.name||'').toLowerCase()))
+                        const found = ALL_FOODS.find(f=> (f.name||'').toLowerCase() === nm || (f.name_hi||'').toLowerCase() === nm || (f.name_hi_translit||'').toLowerCase() === nm) || ALL_FOODS.find(f=> nm.includes((f.name||'').toLowerCase()))
                         if(found && !isNaN(amt) && amt > 0){
                           if(found.unit === 'count' && found.proteinPerUnit){ displayProtein = Math.round((amt * found.proteinPerUnit) * 10) / 10 }
                           else if(found.protein){ displayProtein = Math.round((amt * found.protein / 100) * 10) / 10 }

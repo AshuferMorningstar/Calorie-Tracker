@@ -47,4 +47,58 @@
   ,{"name_en":"Kohlrabi","name_hi":"कोहलरबी","name_hi_translit":"kohlrabi","category":"vegetable","unit":"g","calories_per_100g":27,"protein_per_100g":1.7}
   ,{"name_en":"Napa cabbage (Chinese cabbage)","name_hi":"नापा गोभी","name_hi_translit":"napa cabbage","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":1.2}
   ,{"name_en":"Bok choy","name_hi":"बोक चॉय","name_hi_translit":"bok choy","category":"vegetable","unit":"g","calories_per_100g":13,"protein_per_100g":1.5}
+  ,{"name_en":"Tinda (Indian round gourd)","name_hi":"टिंडा","name_hi_translit":"tinda","category":"vegetable","unit":"g","calories_per_100g":19,"protein_per_100g":1.0}
+  ,{"name_en":"Pointed gourd (Parwal)","name_hi":"परवल","name_hi_translit":"parwal","category":"vegetable","unit":"g","calories_per_100g":24,"protein_per_100g":1.2}
+  ,{"name_en":"Snake gourd","name_hi":"चिचिंडी","name_hi_translit":"chichindi","category":"vegetable","unit":"g","calories_per_100g":20,"protein_per_100g":1.0}
+  ,{"name_en":"Indian spinach (Basella)","name_hi":"बसेला","name_hi_translit":"basella","category":"vegetable","unit":"g","calories_per_100g":19,"protein_per_100g":2.0}
+  ,{"name_en":"Tamarind (used as vegetable/spice)","name_hi":"इमली","name_hi_translit":"imli","category":"vegetable","unit":"g","calories_per_100g":239,"protein_per_100g":2.8}
+  ,{"name_en":"Karela (small variety)","name_hi":"करेला","name_hi_translit":"karela","category":"vegetable","unit":"g","calories_per_100g":17,"protein_per_100g":1.0}
+  ,{"name_en":"Kakri (Armenian cucumber)","name_hi":"ककरी","name_hi_translit":"kakri","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":0.7}
+  ,{"name_en":"Chinese long bean","name_hi":"लॉन्ग बीन","name_hi_translit":"long bean","category":"vegetable","unit":"g","calories_per_100g":47,"protein_per_100g":2.4}
+  ,{"name_en":"Broad beans (Fava)","name_hi":"बेव फली","name_hi_translit":"broad beans","category":"vegetable","unit":"g","calories_per_100g":88,"protein_per_100g":7.6}
+  ,{"name_en":"Methi (Fenugreek) seeds (used as vegetable/leaf)","name_hi":"मेथी","name_hi_translit":"methi","category":"vegetable","unit":"g","calories_per_100g":323,"protein_per_100g":23.0}
+  ,{"name_en":"Sprouted mung beans","name_hi":"मूँग के अंकुर","name_hi_translit":"moong sprouts","category":"vegetable","unit":"g","calories_per_100g":30,"protein_per_100g":3.0}
+  ,{"name_en":"Lotus stem (Kamal Kakdi)","name_hi":"कमल ककड़ी","name_hi_translit":"kamal kakdi","category":"vegetable","unit":"g","calories_per_100g":74,"protein_per_100g":2.6}
+  ,{"name_en":"Water chestnut","name_hi":"शिंगाडा","name_hi_translit":"shingada","category":"vegetable","unit":"g","calories_per_100g":97,"protein_per_100g":1.4}
+  ,{"name_en":"Kantola (teasel gourd)","name_hi":"कंटोला","name_hi_translit":"kantola","category":"vegetable","unit":"g","calories_per_100g":31,"protein_per_100g":1.5}
+  ,{"name_en":"Ash gourd (Petha)","name_hi":"सफेद कद्दू","name_hi_translit":"ash gourd","category":"vegetable","unit":"g","calories_per_100g":14,"protein_per_100g":0.2}
+  ,{"name_en":"Green garbanzo (Hara chana)","name_hi":"हरा चना","name_hi_translit":"hara chana","category":"vegetable","unit":"g","calories_per_100g":164,"protein_per_100g":8.8}
+  ,{"name_en":"Taro leaves (Patra)","name_hi":"अरबी का साग","name_hi_translit":"arbi ka saag","category":"vegetable","unit":"g","calories_per_100g":49,"protein_per_100g":2.0}
+  ,{"name_en":"Sponge gourd (Luffa)","name_hi":"रौशनी/घिया","name_hi_translit":"ghiya","category":"vegetable","unit":"g","calories_per_100g":20,"protein_per_100g":1.2}
+  ,{"name_en":"Kacha ghia (ridge gourd small)","name_hi":"कच्चा घिया","name_hi_translit":"kacha ghia","category":"vegetable","unit":"g","calories_per_100g":20,"protein_per_100g":1.0}
+  ,{"name_en":"Shallot (small onion)","name_hi":"छोटा प्याज़","name_hi_translit":"shallot","category":"vegetable","unit":"g","calories_per_100g":72,"protein_per_100g":2.5}
+  ,{"name_en":"Yardlong bean (Sorakaya)","name_hi":"चौलाई फली","name_hi_translit":"yardlong bean","category":"vegetable","unit":"g","calories_per_100g":47,"protein_per_100g":2.8}
+  ,{"name_en":"Broadleaf amaranth (Chaulai)","name_hi":"चौलाई","name_hi_translit":"chaulai","category":"vegetable","unit":"g","calories_per_100g":23,"protein_per_100g":2.5}
+  ,{"name_en":"Curry leaves (used as herb)","name_hi":"कड़वी पत्ता","name_hi_translit":"curry patta","category":"vegetable","unit":"g","calories_per_100g":250,"protein_per_100g":6.1}
+  ,{"name_en":"Snake beans","name_hi":"साँप बीन्स","name_hi_translit":"snake beans","category":"vegetable","unit":"g","calories_per_100g":47,"protein_per_100g":2.4}
+  ,{"name_en":"Tindora (Ivy gourd)","name_hi":"तिनदोरा","name_hi_translit":"tindora","category":"vegetable","unit":"g","calories_per_100g":47,"protein_per_100g":1.9}
+  ,{"name_en":"Broadleaf mustard","name_hi":"सरसों का साग","name_hi_translit":"sarson ka saag","category":"vegetable","unit":"g","calories_per_100g":27,"protein_per_100g":2.9}
+  ,{"name_en":"Pea shoots","name_hi":"मटर के अंकुर","name_hi_translit":"pea shoots","category":"vegetable","unit":"g","calories_per_100g":35,"protein_per_100g":3.0}
+  ,{"name_en":"Edamame (young soybeans)","name_hi":"एडामामे","name_hi_translit":"edamame","category":"vegetable","unit":"g","calories_per_100g":121,"protein_per_100g":11.0}
+  ,{"name_en":"Mooli ke patte (radish leaves)","name_hi":"मूली के पत्ते","name_hi_translit":"mooli ke patte","category":"vegetable","unit":"g","calories_per_100g":32,"protein_per_100g":2.8}
+  ,{"name_en":"Bamboo shoots","name_hi":"बाँस के अंकुर","name_hi_translit":"bamboo shoots","category":"vegetable","unit":"g","calories_per_100g":27,"protein_per_100g":2.6}
+  ,{"name_en":"Salsify","name_hi":"सल्सिफाई","name_hi_translit":"salsify","category":"vegetable","unit":"g","calories_per_100g":82,"protein_per_100g":1.5}
+  ,{"name_en":"Seaweed (edible varieties)","name_hi":"समुद्री शैवाल","name_hi_translit":"seaweed","category":"vegetable","unit":"g","calories_per_100g":45,"protein_per_100g":1.6}
+  ,{"name_en":"Perilla (Shiso) leaves","name_hi":"पेरिला पत्ता","name_hi_translit":"perilla","category":"vegetable","unit":"g","calories_per_100g":37,"protein_per_100g":3.0}
+  ,{"name_en":"Sorrel (Gongura)","name_hi":"गोंगुरा","name_hi_translit":"gongura","category":"vegetable","unit":"g","calories_per_100g":22,"protein_per_100g":2.0}
+  ,{"name_en":"Romaine lettuce","name_hi":"रोमेन लेट्युस","name_hi_translit":"romaine lettuce","category":"vegetable","unit":"g","calories_per_100g":17,"protein_per_100g":1.2}
+  ,{"name_en":"Iceberg lettuce","name_hi":"आइसबर्ग लेट्युस","name_hi_translit":"iceberg lettuce","category":"vegetable","unit":"g","calories_per_100g":14,"protein_per_100g":0.9}
+  ,{"name_en":"Cherry tomato","name_hi":"चेरी टमाटर","name_hi_translit":"cherry tomato","category":"vegetable","unit":"g","calories_per_100g":18,"protein_per_100g":0.9}
+  ,{"name_en":"Kangkong (water spinach)","name_hi":"कांगकॉन्ग","name_hi_translit":"kangkong","category":"vegetable","unit":"g","calories_per_100g":19,"protein_per_100g":2.6}
+  ,{"name_en":"Winged bean","name_hi":"विंग्ड बीन्स","name_hi_translit":"winged bean","category":"vegetable","unit":"g","calories_per_100g":50,"protein_per_100g":3.5}
+  ,{"name_en":"Ochro (Ladies' finger small)","name_hi":"छोटी भिंडी","name_hi_translit":"small bhindi","category":"vegetable","unit":"g","calories_per_100g":33,"protein_per_100g":2.0}
+  ,{"name_en":"Chinese broccoli (Gai lan)","name_hi":"गाई लान","name_hi_translit":"gai lan","category":"vegetable","unit":"g","calories_per_100g":21,"protein_per_100g":3.2}
+  ,{"name_en":"Edible cactus (Nopales)","name_hi":"नोपालेस","name_hi_translit":"nopales","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":1.2}
+  ,{"name_en":"Malabar gourd (Chayote)","name_hi":"चायोटे","name_hi_translit":"chayote","category":"vegetable","unit":"g","calories_per_100g":19,"protein_per_100g":0.8}
+  ,{"name_en":"Romanesco","name_hi":"रोमानेस्को","name_hi_translit":"romanesco","category":"vegetable","unit":"g","calories_per_100g":25,"protein_per_100g":2.5}
+  ,{"name_en":"Watercress","name_hi":"वाटरक्रेस","name_hi_translit":"watercress","category":"vegetable","unit":"g","calories_per_100g":11,"protein_per_100g":2.3}
+  ,{"name_en":"Horseradish","name_hi":"हॉर्सरैडिश","name_hi_translit":"horseradish","category":"vegetable","unit":"g","calories_per_100g":48,"protein_per_100g":1.2}
+  ,{"name_en":"Wasabi (root)","name_hi":"वासाबी","name_hi_translit":"wasabi","category":"vegetable","unit":"g","calories_per_100g":109,"protein_per_100g":4.8}
+  ,{"name_en":"Fiddleheads","name_hi":"फिडलहेड्स","name_hi_translit":"fiddleheads","category":"vegetable","unit":"g","calories_per_100g":34,"protein_per_100g":4.6}
+  ,{"name_en":"Sea beet","name_hi":"सी बीट","name_hi_translit":"sea beet","category":"vegetable","unit":"g","calories_per_100g":22,"protein_per_100g":2.4}
+  ,{"name_en":"Burdock root","name_hi":"अरहर मूल","name_hi_translit":"burdock","category":"vegetable","unit":"g","calories_per_100g":73,"protein_per_100g":1.5}
+  ,{"name_en":"Mashua","name_hi":"माशुआ","name_hi_translit":"mashua","category":"vegetable","unit":"g","calories_per_100g":50,"protein_per_100g":2.0}
+  ,{"name_en":"Oca","name_hi":"ओका","name_hi_translit":"oca","category":"vegetable","unit":"g","calories_per_100g":70,"protein_per_100g":2.0}
+  ,{"name_en":"Yacon","name_hi":"याकॉन","name_hi_translit":"yacon","category":"vegetable","unit":"g","calories_per_100g":54,"protein_per_100g":0.6}
+  ,{"name_en":"Gobo (Japanese burdock)","name_hi":"गोबो","name_hi_translit":"gobo","category":"vegetable","unit":"g","calories_per_100g":72,"protein_per_100g":1.5}
 ]

@@ -1,0 +1,73 @@
+[
+  {"name_en":"Apple","name_hi":"सेब","name_hi_translit":"seb","category":"fruit","unit":"g","calories_per_100g":52,"protein_per_100g":0.3},
+  {"name_en":"Banana","name_hi":"केला","name_hi_translit":"kela","category":"fruit","unit":"g","calories_per_100g":89,"protein_per_100g":1.1},
+  {"name_en":"Mango","name_hi":"आम","name_hi_translit":"aam","category":"fruit","unit":"g","calories_per_100g":60,"protein_per_100g":0.8},
+  {"name_en":"Orange","name_hi":"संतरा","name_hi_translit":"santra","category":"fruit","unit":"g","calories_per_100g":47,"protein_per_100g":0.9},
+  {"name_en":"Papaya","name_hi":"पपीता","name_hi_translit":"papita","category":"fruit","unit":"g","calories_per_100g":43,"protein_per_100g":0.5},
+  {"name_en":"Guava","name_hi":"अमरूद","name_hi_translit":"amrood","category":"fruit","unit":"g","calories_per_100g":68,"protein_per_100g":2.6},
+  {"name_en":"Pomegranate","name_hi":"अनार","name_hi_translit":"anar","category":"fruit","unit":"g","calories_per_100g":83,"protein_per_100g":1.7},
+  {"name_en":"Pear","name_hi":"नाशपाती","name_hi_translit":"nashpati","category":"fruit","unit":"g","calories_per_100g":57,"protein_per_100g":0.4},
+  {"name_en":"Grapes","name_hi":"अंगूर","name_hi_translit":"angoor","category":"fruit","unit":"g","calories_per_100g":69,"protein_per_100g":0.6},
+  {"name_en":"Watermelon","name_hi":"तरबूज","name_hi_translit":"tarbooj","category":"fruit","unit":"g","calories_per_100g":30,"protein_per_100g":0.6},
+  {"name_en":"Muskmelon","name_hi":"खरबूजा","name_hi_translit":"kharbooja","category":"fruit","unit":"g","calories_per_100g":34,"protein_per_100g":0.8},
+  {"name_en":"Pineapple","name_hi":"अनानास","name_hi_translit":"ananas","category":"fruit","unit":"g","calories_per_100g":50,"protein_per_100g":0.5},
+  {"name_en":"Cherry","name_hi":"चेरी","name_hi_translit":"cheri","category":"fruit","unit":"g","calories_per_100g":63,"protein_per_100g":1.1},
+  {"name_en":"Strawberry","name_hi":"स्ट्रॉबेरी","name_hi_translit":"strawbery","category":"fruit","unit":"g","calories_per_100g":33,"protein_per_100g":0.7},
+  {"name_en":"Blueberry","name_hi":"ब्लूबेरी","name_hi_translit":"blueberry","category":"fruit","unit":"g","calories_per_100g":57,"protein_per_100g":0.7},
+  {"name_en":"Kiwi","name_hi":"कीवी","name_hi_translit":"kivi","category":"fruit","unit":"g","calories_per_100g":61,"protein_per_100g":1.1}
+  ,{"name_en":"Avocado","name_hi":"एवोकाॅडो","name_hi_translit":"avocado","category":"fruit","unit":"g","calories_per_100g":160,"protein_per_100g":2.0}
+  ,{"name_en":"Apricot","name_hi":"खुबानी","name_hi_translit":"khubani","category":"fruit","unit":"g","calories_per_100g":48,"protein_per_100g":1.4}
+  ,{"name_en":"Blackberry","name_hi":"ब्लैकबेरी","name_hi_translit":"blackberry","category":"fruit","unit":"g","calories_per_100g":43,"protein_per_100g":1.4}
+  ,{"name_en":"Blackcurrant","name_hi":"ब्लैक करंट","name_hi_translit":"blackcurrant","category":"fruit","unit":"g","calories_per_100g":63,"protein_per_100g":1.4}
+  ,{"name_en":"Cantaloupe","name_hi":"कैंटलूप","name_hi_translit":"cantaloupe","category":"fruit","unit":"g","calories_per_100g":34,"protein_per_100g":0.8}
+  ,{"name_en":"Clementine","name_hi":"क्लेमन्टाइन","name_hi_translit":"clementine","category":"fruit","unit":"g","calories_per_100g":47,"protein_per_100g":0.9}
+  ,{"name_en":"Coconut","name_hi":"नारियल","name_hi_translit":"nariyal","category":"fruit","unit":"g","calories_per_100g":354,"protein_per_100g":3.3}
+  ,{"name_en":"Cranberry","name_hi":"क्रैनबेरी","name_hi_translit":"cranberry","category":"fruit","unit":"g","calories_per_100g":46,"protein_per_100g":0.4}
+  ,{"name_en":"Date","name_hi":"खजूर","name_hi_translit":"khajoor","category":"fruit","unit":"g","calories_per_100g":282,"protein_per_100g":2.5}
+  ,{"name_en":"Dragonfruit","name_hi":"ड्रैगनफ्रूट","name_hi_translit":"dragonfruit","category":"fruit","unit":"g","calories_per_100g":50,"protein_per_100g":1.1}
+  ,{"name_en":"Durian","name_hi":"ड्यूरियन","name_hi_translit":"durian","category":"fruit","unit":"g","calories_per_100g":147,"protein_per_100g":1.5}
+  ,{"name_en":"Elderberry","name_hi":"एल्डरबेरी","name_hi_translit":"elderberry","category":"fruit","unit":"g","calories_per_100g":73,"protein_per_100g":0.7}
+  ,{"name_en":"Fig","name_hi":"अंजीर","name_hi_translit":"anjeer","category":"fruit","unit":"g","calories_per_100g":74,"protein_per_100g":0.8}
+  ,{"name_en":"Indian gooseberry (Amla)","name_hi":"आमला","name_hi_translit":"amla","category":"fruit","unit":"g","calories_per_100g":44,"protein_per_100g":0.9}
+  ,{"name_en":"Grapefruit","name_hi":"चकोतरा","name_hi_translit":"chakotra","category":"fruit","unit":"g","calories_per_100g":42,"protein_per_100g":0.8}
+  ,{"name_en":"Honeydew","name_hi":"हनीड्यू","name_hi_translit":"honeydew","category":"fruit","unit":"g","calories_per_100g":36,"protein_per_100g":0.5}
+  ,{"name_en":"Jackfruit","name_hi":"कटहल","name_hi_translit":"kathal","category":"fruit","unit":"g","calories_per_100g":95,"protein_per_100g":1.7}
+  ,{"name_en":"Jujube (Ber)","name_hi":"बेर","name_hi_translit":"ber","category":"fruit","unit":"g","calories_per_100g":79,"protein_per_100g":1.2}
+  ,{"name_en":"Kumquat","name_hi":"कुमक्वाट","name_hi_translit":"kumquat","category":"fruit","unit":"g","calories_per_100g":71,"protein_per_100g":1.9}
+  ,{"name_en":"Longan","name_hi":"लोंगन","name_hi_translit":"longan","category":"fruit","unit":"g","calories_per_100g":60,"protein_per_100g":1.3}
+  ,{"name_en":"Lychee","name_hi":"लीची","name_hi_translit":"lichi","category":"fruit","unit":"g","calories_per_100g":66,"protein_per_100g":0.8}
+  ,{"name_en":"Loquat","name_hi":"लोक्त","name_hi_translit":"loquat","category":"fruit","unit":"g","calories_per_100g":47,"protein_per_100g":0.4}
+  ,{"name_en":"Mandarin","name_hi":"मैनडरिन","name_hi_translit":"mandarin","category":"fruit","unit":"g","calories_per_100g":53,"protein_per_100g":0.8}
+  ,{"name_en":"Mulberry","name_hi":"शहतूत","name_hi_translit":"shahtoot","category":"fruit","unit":"g","calories_per_100g":43,"protein_per_100g":1.4}
+  ,{"name_en":"Nectarine","name_hi":"नेक्टरीन","name_hi_translit":"nectarine","category":"fruit","unit":"g","calories_per_100g":44,"protein_per_100g":1.1}
+  ,{"name_en":"Olive","name_hi":"जैतून","name_hi_translit":"jaitun","category":"fruit","unit":"g","calories_per_100g":115,"protein_per_100g":0.8}
+  ,{"name_en":"Passion fruit","name_hi":"पास्शन फ्रूट","name_hi_translit":"passion fruit","category":"fruit","unit":"g","calories_per_100g":97,"protein_per_100g":2.2}
+  ,{"name_en":"Persimmon","name_hi":"एशियन/फल","name_hi_translit":"persimmon","category":"fruit","unit":"g","calories_per_100g":81,"protein_per_100g":0.6}
+  ,{"name_en":"Plantain","name_hi":"प्लांटेन","name_hi_translit":"plantain","category":"fruit","unit":"g","calories_per_100g":122,"protein_per_100g":1.3}
+  ,{"name_en":"Pomelo","name_hi":"चकोतरा (बड़ा)","name_hi_translit":"pomelo","category":"fruit","unit":"g","calories_per_100g":38,"protein_per_100g":0.8}
+  ,{"name_en":"Quince","name_hi":"शब्द्तो","name_hi_translit":"quince","category":"fruit","unit":"g","calories_per_100g":57,"protein_per_100g":0.4}
+  ,{"name_en":"Rambutan","name_hi":"रम्बुटन","name_hi_translit":"rambutan","category":"fruit","unit":"g","calories_per_100g":68,"protein_per_100g":0.9}
+  ,{"name_en":"Sapodilla (Chikoo)","name_hi":"चीकू","name_hi_translit":"chikoo","category":"fruit","unit":"g","calories_per_100g":83,"protein_per_100g":0.4}
+  ,{"name_en":"Soursop","name_hi":"सौरसोप","name_hi_translit":"soursop","category":"fruit","unit":"g","calories_per_100g":66,"protein_per_100g":1.0}
+  ,{"name_en":"Starfruit (Carambola)","name_hi":"कमरखोल","name_hi_translit":"starfruit","category":"fruit","unit":"g","calories_per_100g":31,"protein_per_100g":1.0}
+  ,{"name_en":"Tamarillo","name_hi":"टमरीलो","name_hi_translit":"tamarillo","category":"fruit","unit":"g","calories_per_100g":29,"protein_per_100g":1.5}
+  ,{"name_en":"Ugli fruit","name_hi":"अग्ली फ्रूट","name_hi_translit":"ugli fruit","category":"fruit","unit":"g","calories_per_100g":45,"protein_per_100g":0.7}
+  ,{"name_en":"Breadfruit","name_hi":"ब्रेडफ्रूट","name_hi_translit":"breadfruit","category":"fruit","unit":"g","calories_per_100g":103,"protein_per_100g":1.1}
+  ,{"name_en":"Breadnut","name_hi":"ब्रेडनट","name_hi_translit":"breadnut","category":"fruit","unit":"g","calories_per_100g":123,"protein_per_100g":2.3}
+  ,{"name_en":"Bilberry","name_hi":"बिलबेरी","name_hi_translit":"bilberry","category":"fruit","unit":"g","calories_per_100g":50,"protein_per_100g":0.7}
+  ,{"name_en":"Cloudberry","name_hi":"क्लाउडबेरी","name_hi_translit":"cloudberry","category":"fruit","unit":"g","calories_per_100g":53,"protein_per_100g":1.2}
+  ,{"name_en":"Cupuacu","name_hi":"कुपुआकू","name_hi_translit":"cupuacu","category":"fruit","unit":"g","calories_per_100g":120,"protein_per_100g":1.0}
+  ,{"name_en":"Feijoa","name_hi":"फेजोआ","name_hi_translit":"feijoa","category":"fruit","unit":"g","calories_per_100g":55,"protein_per_100g":0.9}
+  ,{"name_en":"Gooseberry (Cape)","name_hi":"केप गूसबेरी","name_hi_translit":"cape gooseberry","category":"fruit","unit":"g","calories_per_100g":53,"protein_per_100g":1.9}
+  ,{"name_en":"Horned melon (Kiwano)","name_hi":"कीवाना","name_hi_translit":"kiwano","category":"fruit","unit":"g","calories_per_100g":44,"protein_per_100g":1.8}
+  ,{"name_en":"Honeyberry","name_hi":"हनीबेरी","name_hi_translit":"honeyberry","category":"fruit","unit":"g","calories_per_100g":50,"protein_per_100g":0.8}
+  ,{"name_en":"Mirabelle plum","name_hi":"मिराबेल प्लम","name_hi_translit":"mirabelle","category":"fruit","unit":"g","calories_per_100g":46,"protein_per_100g":0.7}
+  ,{"name_en":"Mulberry (white)","name_hi":"शहतूत (सफ़ेद)","name_hi_translit":"shahtoot white","category":"fruit","unit":"g","calories_per_100g":43,"protein_per_100g":1.4}
+  ,{"name_en":"Physalis","name_hi":"फिजालिस","name_hi_translit":"physalis","category":"fruit","unit":"g","calories_per_100g":53,"protein_per_100g":1.9}
+  ,{"name_en":"Pawpaw (Papaya variant)","name_hi":"पपिता","name_hi_translit":"pawpaw","category":"fruit","unit":"g","calories_per_100g":43,"protein_per_100g":0.5}
+  ,{"name_en":"Rowan (Mountain ash)","name_hi":"रोजन","name_hi_translit":"rowan","category":"fruit","unit":"g","calories_per_100g":37,"protein_per_100g":1.0}
+  ,{"name_en":"Santol","name_hi":"सैंटोल","name_hi_translit":"santol","category":"fruit","unit":"g","calories_per_100g":60,"protein_per_100g":0.6}
+  ,{"name_en":"Santol (variant)","name_hi":"सेंटोल","name_hi_translit":"santol variant","category":"fruit","unit":"g","calories_per_100g":58,"protein_per_100g":0.6}
+  ,{"name_en":"Tamarind (fruit)","name_hi":"इमली","name_hi_translit":"imli","category":"fruit","unit":"g","calories_per_100g":239,"protein_per_100g":2.8}
+  ,{"name_en":"Yuzu","name_hi":"यूज़ु","name_hi_translit":"yuzu","category":"fruit","unit":"g","calories_per_100g":20,"protein_per_100g":0.8}
+]
