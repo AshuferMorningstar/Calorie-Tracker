@@ -283,11 +283,16 @@ export default function App(){
       <main ref={mainRef} style={{padding:16,maxWidth:720,margin:'0 auto',display:'grid',gap:16}}>
 
         <div className="dashboard-grid">
-          <div className="card">
+          <div className="card" style={{position:'relative',paddingRight:140}}>
             <strong>Maintenance calories</strong>
-            <div style={{fontSize:20,marginTop:8}}>{maintenanceUsed ? `${maintenanceUsed} kcal/day` : '—'}</div>
-            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed today`}</div>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,marginTop:8}}>
+              <div style={{display:'flex',flexDirection:'column',gap:6,paddingRight:12}}>
+                <div style={{fontSize:22,fontWeight:700}}>{maintenanceUsed ? `${maintenanceUsed} kcal/day` : '—'}</div>
+                <div style={{fontSize:13,color:'var(--muted)'}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed today`}</div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
+              </div>
+            </div>
+            <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
           </div>
 
           <div style={{display:'flex',gap:8,alignItems:'stretch'}}>
