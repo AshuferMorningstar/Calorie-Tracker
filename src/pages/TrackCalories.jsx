@@ -1016,9 +1016,6 @@ export default function TrackCalories(){
               <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
                 {items.map(it=> {
                   // compute display protein if missing
-                  // clear suggestions when an exact match is found
-                  setSuggestions([])
-                  setSelectedSuggestion(-1)
                   let displayProtein = null
                   if(it.protein !== null && it.protein !== undefined){ displayProtein = it.protein }
                   else {
