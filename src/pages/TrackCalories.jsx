@@ -13,6 +13,7 @@ const FOODS = [
   { id: 'brown_rice', name: 'Brown rice (cooked)', kcal: 123, protein: 2.6 },
   { id: 'brown_rice_raw', name: 'Brown rice (raw)', kcal: 370, protein: 7.5 },
   { id: 'chapati', name: 'Roti / Chapati (whole wheat)', kcal: 250, protein: 9.0 },
+  { id: 'chapati_unit', name: 'Roti / Chapati (whole wheat) - piece', unit: 'count', kcalPerUnit: 250, proteinPerUnit: 9.0 },
   { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340, protein: 13.2 },
   { id: 'besan', name: 'Besan (gram flour)', kcal: 387, protein: 22.4 },
   { id: 'moong_dal', name: 'Moong dal (cooked)', kcal: 105, protein: 7.0 },
@@ -48,6 +49,29 @@ const FOODS = [
   { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 62, proteinPer100g: 13.0, proteinPerUnit: 6.5 },
   { id: 'sugar', name: 'Sugar', kcal: 387, protein: 0 },
   { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383, protein: 0 },
+
+  // Common Indian breads / unit items
+  { id: 'naan_plain', name: 'Naan (plain)', unit: 'count', kcalPerUnit: 270, proteinPerUnit: 8.0 },
+  { id: 'naan_butter', name: 'Butter naan', unit: 'count', kcalPerUnit: 350, proteinPerUnit: 8.0 },
+  { id: 'naan_garlic', name: 'Garlic naan', unit: 'count', kcalPerUnit: 330, proteinPerUnit: 8.0 },
+  { id: 'naan_stuffed', name: 'Stuffed naan (cheese/keema)', unit: 'count', kcalPerUnit: 380, proteinPerUnit: 10.0 },
+  { id: 'kulcha', name: 'Kulcha', unit: 'count', kcalPerUnit: 260, proteinPerUnit: 7.0 },
+  { id: 'lachha_paratha', name: 'Lachha Paratha', unit: 'count', kcalPerUnit: 320, proteinPerUnit: 6.0 },
+  { id: 'paratha_plain', name: 'Paratha (plain)', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 6.0 },
+  { id: 'aloo_paratha', name: 'Aloo Paratha', unit: 'count', kcalPerUnit: 350, proteinPerUnit: 6.0 },
+  { id: 'sattu_paratha', name: 'Sattu Paratha', unit: 'count', kcalPerUnit: 330, proteinPerUnit: 8.0 },
+  { id: 'missi_roti', name: 'Missi Roti', unit: 'count', kcalPerUnit: 220, proteinPerUnit: 8.0 },
+  { id: 'roomali_roti', name: 'Roomali Roti', unit: 'count', kcalPerUnit: 200, proteinPerUnit: 5.0 },
+  { id: 'parotta', name: 'Parotta / Malabar Parotta', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 6.0 },
+  { id: 'puri', name: 'Puri', unit: 'count', kcalPerUnit: 165, proteinPerUnit: 2.0 },
+  { id: 'bhatura', name: 'Bhatura', unit: 'count', kcalPerUnit: 400, proteinPerUnit: 6.0 },
+
+  // South Indian breakfast items (unit-based)
+  { id: 'dosa_plain', name: 'Dosa (plain)', unit: 'count', kcalPerUnit: 168, proteinPerUnit: 4.0 },
+  { id: 'idli', name: 'Idli', unit: 'count', kcalPerUnit: 58, proteinPerUnit: 2.0 },
+  { id: 'medu_vada', name: 'Medu Vada', unit: 'count', kcalPerUnit: 135, proteinPerUnit: 3.5 },
+  { id: 'suji_chilla', name: 'Suji Chilla', unit: 'count', kcalPerUnit: 120, proteinPerUnit: 4.0 },
+  { id: 'besan_chilla', name: 'Besan Chilla', unit: 'count', kcalPerUnit: 150, proteinPerUnit: 6.0 },
 ]
 
 // common aliases -> preferred raw IDs
