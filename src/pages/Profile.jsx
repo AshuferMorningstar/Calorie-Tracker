@@ -22,6 +22,26 @@ export default function Profile(){
     }catch(e){ return {} }
   },[])
 
+  const calcs = useMemo(()=>{
+    try{
+      const currentKg = Number(data.currentKg || '') || null
+      const age = Number(data.age || '') || null
+      const height = Number(data.height || '') || null
+      const gender = data.gender || 'male'
+      const activity = data.activity || 'sedentary'
+
+      if(!currentKg || !age || !height) return null
+
+      const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
+      const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
+      const activityFactor = activity === 'custom' ? 1.2 : (activityFactors[activity] || 1.2)
+
+      const maintenanceNoWorkout = Math.round(bmr * activityFactor)
+
+      return { bmr, maintenanceNoWorkout }
+    }catch(e){ return null }
+  },[data])
+
   const goEdit = ()=> navigate('/onboard/details', { state: { from: '/profile' } })
 
   return (
@@ -68,6 +88,16 @@ export default function Profile(){
             <strong>Activity</strong>
             <div style={{color:'var(--muted)'}}>{data.activity || '—'}</div>
             {data.activity === 'custom' && <div style={{color:'var(--muted)'}}>Workout calories: {data.customCalories || '—'} — Days/week: {data.workoutDays || '—'}</div>}
+          </div>
+        </div>
+
+        <div className="card">
+          <div style={{flex:1}}>
+            <strong>BMR</strong>
+            <div style={{color:'var(--muted)'}}>{calcs ? `${calcs.bmr} kcal/day` : '—'}</div>
+            <div style={{height:8}} />
+            <strong>Maintenance (no workout)</strong>
+            <div style={{color:'var(--muted)'}}>{calcs ? `${calcs.maintenanceNoWorkout} kcal/day` : '—'}</div>
           </div>
         </div>
 
