@@ -179,6 +179,18 @@ const FOODS = [
   { id: 'korma_chicken', name: 'Chicken Korma (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 400, kcalPer100g: 182, proteinPerUnit: 24.0, proteinPer100g: 10.9, name_hi: 'चिकन कोरमा', name_hi_translit: 'chicken korma' },
   { id: 'bhuna_masala', name: 'Bhuna Masala (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 380, kcalPer100g: 173, proteinPerUnit: 20.0, proteinPer100g: 9.1, name_hi: 'भुना मसाला', name_hi_translit: 'bhuna masala' },
   { id: 'kolhapuri', name: 'Kolhapuri Curry (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 430, kcalPer100g: 195, proteinPerUnit: 26.0, proteinPer100g: 11.8, name_hi: 'कोल्हापुरी', name_hi_translit: 'kolhapuri' },
+  { id: 'baingan_bharta', name: 'Baingan Bharta (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 200, kcalPer100g: 100, proteinPerUnit: 5.0, proteinPer100g: 2.5, name_hi: 'बैंगन भरता', name_hi_translit: 'baingan bharta' },
+  { id: 'lauki_ki_sabzi', name: 'Lauki (Bottle Gourd) Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 90, kcalPer100g: 50, proteinPerUnit: 2.5, proteinPer100g: 1.4, name_hi: 'लौकी की सब्जी', name_hi_translit: 'lauki sabzi' },
+  { id: 'tinda_sabzi', name: 'Tinda Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 100, kcalPer100g: 55, proteinPerUnit: 2.5, proteinPer100g: 1.4, name_hi: 'टिंडा की सब्जी', name_hi_translit: 'tinda sabzi' },
+  { id: 'turai_sabzi', name: 'Turai / Ridge Gourd Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 90, kcalPer100g: 50, proteinPerUnit: 2.0, proteinPer100g: 1.1, name_hi: 'तुरई', name_hi_translit: 'turai' },
+  { id: 'karela_bhaji', name: 'Karela (Bitter Gourd) Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 120, kcalPer100g: 67, proteinPerUnit: 3.0, proteinPer100g: 1.7, name_hi: 'करेला', name_hi_translit: 'karela' },
+  { id: 'kaddu_curry', name: 'Kaddu / Pumpkin Curry (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 140, kcalPer100g: 78, proteinPerUnit: 2.5, proteinPer100g: 1.4, name_hi: 'कद्दू करी', name_hi_translit: 'kaddu curry' },
+  { id: 'mix_veg', name: 'Mixed Vegetable Sabzi (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 180, kcalPer100g: 90, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'मिक्स वेज', name_hi_translit: 'mixed veg' },
+  { id: 'aloo_matar', name: 'Aloo Matar (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 260, kcalPer100g: 130, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'आलू मटर', name_hi_translit: 'aloo matar' },
+  { id: 'aloo_shimla', name: 'Aloo Shimla Mirch (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 220, kcalPer100g: 110, proteinPerUnit: 5.0, proteinPer100g: 2.5, name_hi: 'आलू शिमला मिर्च', name_hi_translit: 'aloo shimla mirch' },
+  { id: 'veg_korma_bowl', name: 'Vegetable Korma (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 300, kcalPer100g: 150, proteinPerUnit: 7.0, proteinPer100g: 3.5, name_hi: 'वेज कोरमा', name_hi_translit: 'veg korma' },
+  { id: 'bhindi_aloo', name: 'Bhindi Aloo (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 240, kcalPer100g: 120, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'भिंडी आलू', name_hi_translit: 'bhindi aloo' },
+  { id: 'lauki_dal', name: 'Lauki with Dal (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 160, kcalPer100g: 80, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'लौकी दाल', name_hi_translit: 'lauki dal' },
 ]
 
 // common aliases -> preferred raw IDs
@@ -369,6 +381,26 @@ Object.assign(ALIASES, {
   'chicken korma': 'korma_chicken',
   'bhuna': 'bhuna_masala',
   'kolhapuri': 'kolhapuri',
+  // vegetable sabji aliases
+  'baingan bharta': 'baingan_bharta',
+  'baingan': 'baingan_bharta',
+  'lauki': 'lauki_ki_sabzi',
+  'lauki sabzi': 'lauki_ki_sabzi',
+  'tinda': 'tinda_sabzi',
+  'turai': 'turai_sabzi',
+  'ridge gourd': 'turai_sabzi',
+  'karela': 'karela_bhaji',
+  'bitter gourd': 'karela_bhaji',
+  'pumpkin': 'kaddu_curry',
+  'kaddu': 'kaddu_curry',
+  'mixed veg': 'mix_veg',
+  'mix veg': 'mix_veg',
+  'aloo matar': 'aloo_matar',
+  'aloo shimla': 'aloo_shimla',
+  'vegetable korma': 'veg_korma_bowl',
+  'veg korma': 'veg_korma_bowl',
+  'bhindi aloo': 'bhindi_aloo',
+  'lauki dal': 'lauki_dal',
 })
 
 // helper: small levenshtein for fuzzy alias matching (works well for short terms)
