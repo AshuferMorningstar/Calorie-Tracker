@@ -375,7 +375,7 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday, toggle
           return (
             <div key={d.iso}
               onClick={() => !isFuture && setSelectedIso(d.iso)}
-              style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:8,borderRadius:6,minHeight:72, cursor: isFuture ? 'default' : 'pointer', border: isSelected ? '2px solid var(--accent1)' : undefined, background: isSelected ? '#fff7f2' : undefined}}>
+              style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',padding:8,borderRadius:6,minHeight:72, cursor: isFuture ? 'default' : 'pointer', border: isSelected ? '2px solid var(--accent1)' : undefined, background: isSelected ? 'var(--selected-bg)' : undefined}}>
               <div style={{fontSize:12,color:'var(--muted)'}}>{d.dow}</div>
               <div style={{fontSize:12,color:'var(--muted)'}}>{d.month}</div>
               <div style={{fontSize:16,fontWeight:700,marginTop:6}}>{d.dayNum}</div>
@@ -397,7 +397,7 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday, toggle
         </div>
         <div style={{minWidth:96,display:'flex',justifyContent:'flex-end'}}>
           {selectedIso ? (
-            <button onClick={()=>setSelectedIso(null)} style={{padding:'6px 12px',borderRadius:6,border:'1px solid #ddd',background:'#fff',cursor:'pointer'}}>Done</button>
+            <button onClick={()=>setSelectedIso(null)} style={{padding:'6px 12px',borderRadius:6,border:'1px solid var(--card-border)',background:'var(--card-bg)',color:'var(--text)',cursor:'pointer'}}>Done</button>
           ) : null}
         </div>
       </div>
