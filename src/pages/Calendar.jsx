@@ -9,6 +9,13 @@ export default function Calendar(){
 
   const [view, setView] = useState({ year: currentYear, month: currentMonth })
   const [selectedDay, setSelectedDay] = useState(null)
+  const [storageTick, setStorageTick] = useState(0) // bump to force re-read of localStorage-driven memos
+
+  useEffect(()=>{
+    const handler = ()=> setStorageTick(x => x + 1)
+    try{ window.addEventListener('calorieWise.attendanceChanged', handler) }catch(e){}
+    return ()=>{ try{ window.removeEventListener('calorieWise.attendanceChanged', handler) }catch(e){} }
+  },[])
 
   const monthName = useMemo(()=> new Date(view.year, view.month, 1).toLocaleString(undefined,{month:'long', year:'numeric'}), [view])
 
@@ -107,7 +114,7 @@ export default function Calendar(){
       }
       return { total, loggedDays }
     }catch(e){ return null }
-  },[plan, view.year, view.month])
+  },[plan, view.year, view.month, storageTick])
 
   const goPrev = ()=>{
     let y = view.year
@@ -163,7 +170,7 @@ export default function Calendar(){
       }
     }catch(e){}
     return set
-  }, [view.year, view.month])
+  }, [view.year, view.month, storageTick])
 
   // compute attendance count for the visible month (calorieWise.attendance.YYYY-MM-DD === '1')
   const attendanceCount = useMemo(()=>{
@@ -186,7 +193,7 @@ export default function Calendar(){
       }
       return count
     }catch(e){ return 0 }
-  }, [view.year, view.month])
+  }, [view.year, view.month, storageTick])
 
   return (
     <div style={{padding:16,maxWidth:720,margin:'0 auto'}}>
@@ -268,18 +275,24 @@ export default function Calendar(){
     </div>
   )
 }
-
 function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
   try{
     const key = `calorieWise.entries.${isoFor(view.year, view.month, selectedDay)}`
+    const attendanceKey = `calorieWise.attendance.${isoFor(view.year, view.month, selectedDay)}`
     const raw = localStorage.getItem(key)
-    if(!raw) return <div style={{marginTop:8,textAlign:'center',color:'var(--muted)'}}>No entries for selected date</div>
-    const parsed = JSON.parse(raw)
+    const parsed = raw ? JSON.parse(raw) : null
     const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
-      const deficit = plan ? Math.round(plan.maintenanceNoWorkout + (plan.hasAttendance ? (localStorage.getItem(`calorieWise.attendance.${isoFor(view.year, view.month, selectedDay)}`) === '1' ? Number(plan.customCalories) : 0) : 0) - consumed) : null
+    const isAttended = localStorage.getItem(attendanceKey) === '1'
+    const deficit = plan ? Math.round(plan.maintenanceNoWorkout + (plan.hasAttendance ? (isAttended ? Number(plan.customCalories) : 0) : 0) - consumed) : null
+
     return (
       <div style={{marginTop:8,textAlign:'center',fontSize:13}}>
-        {deficit !== null ? `Deficit for ${isoFor(view.year, view.month, selectedDay)}: ${deficit} kcal` : `Consumed: ${Math.round(consumed)} kcal`}
+        {parsed ? (
+          <div>{deficit !== null ? `Deficit for ${isoFor(view.year, view.month, selectedDay)}: ${deficit} kcal` : `Consumed: ${Math.round(consumed)} kcal`}</div>
+        ) : (
+          <div style={{color:'var(--muted)'}}>No entries for selected date</div>
+        )}
+        <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>{isAttended ? 'Attendance: marked' : 'Attendance: not marked'}</div>
       </div>
     )
   }catch(e){
