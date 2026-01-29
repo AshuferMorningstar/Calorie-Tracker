@@ -249,19 +249,22 @@ export default function Calendar(){
         </div>
 
         <div className="card" style={{padding:12}}>
-        <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
-          <div style={{fontWeight:700}}>Total deficit this month</div>
-          <div>:</div>
-          <div style={{fontSize:20,fontWeight:800}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
-        </div>
-        <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
-          {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
-        </div>
-        {selectedDay ? (
-          <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
-        ) : null}
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
+            <div style={{fontWeight:700}}>Total deficit this month</div>
+            <div>:</div>
+            <div style={{fontSize:20,fontWeight:800}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
+          </div>
+          <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+            {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
+          </div>
         </div>
       </div>
+      {/* selected-day details: separate card so total deficit card remains unchanged */}
+      {selectedDay ? (
+        <div className="card" style={{padding:12,marginTop:12}}>
+          <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
+        </div>
+      ) : null}
     </div>
   )
 }
