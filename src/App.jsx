@@ -97,6 +97,33 @@ export default function App(){
     }catch(e){ return {} }
   },[location.pathname]) 
 
+  const [workoutToday, setWorkoutToday] = useState(()=>{
+    try{
+      const d = new Date()
+      const y = d.getFullYear()
+      const m = String(d.getMonth()+1).padStart(2,'0')
+      const day = String(d.getDate()).padStart(2,'0')
+      return localStorage.getItem(`calorieWise.attendance.${y}-${m}-${day}`) === '1'
+    }catch(e){ return false }
+  })
+
+  const toggleWorkoutToday = ()=>{
+    try{
+      const d = new Date()
+      const y = d.getFullYear()
+      const m = String(d.getMonth()+1).padStart(2,'0')
+      const day = String(d.getDate()).padStart(2,'0')
+      const key = `calorieWise.attendance.${y}-${m}-${day}`
+      if(localStorage.getItem(key) === '1'){
+        localStorage.removeItem(key)
+        setWorkoutToday(false)
+      }else{
+        localStorage.setItem(key, '1')
+        setWorkoutToday(true)
+      }
+    }catch(e){}
+  }
+
   const calories = useMemo(()=>{
     const { currentKg, targetKg, age, height, gender, activity, customCalories, workoutDays, timelineMonths, goal } = data || {}
     if(!currentKg || !age || !height) return null
@@ -108,12 +135,37 @@ export default function App(){
     const activityFactor = activity === 'custom' ? 1.2 : (activityFactors[activity] || 1.2)
 
     // include exercise calories when custom activity provided
-    const dailyExercise = activity === 'custom' && customCalories && workoutDays ? Math.round((customCalories * workoutDays) / 7) : 0
+    // If the user has marked attendance (calorieWise.attendance.YYYY-MM-DD keys) we treat exercise as occurring
+    // only on marked days (add `customCalories` on those days). Otherwise fall back to averaging weekly workouts across 7 days.
+    let dailyExercise = 0
+    if(activity === 'custom' && customCalories && workoutDays){
+      try{
+        // detect whether any attendance keys exist (user opted into marking days)
+        let hasAttendance = false
+        for(let i=0;i<localStorage.length;i++){
+          const k = localStorage.key(i)
+          if(k && k.startsWith('calorieWise.attendance.')){ hasAttendance = true; break }
+        }
 
-    const maintenance = Math.round(bmr * activityFactor + dailyExercise)
+        if(hasAttendance){
+          const d = new Date()
+          const y = d.getFullYear()
+          const m = String(d.getMonth()+1).padStart(2,'0')
+          const day = String(d.getDate()).padStart(2,'0')
+          const todayKey = `calorieWise.attendance.${y}-${m}-${day}`
+          const isTodayWorkout = localStorage.getItem(todayKey) === '1'
+          dailyExercise = isTodayWorkout ? Number(customCalories) : 0
+        }else{
+          dailyExercise = Math.round((customCalories * workoutDays) / 7)
+        }
+      }catch(e){ dailyExercise = Math.round((customCalories * workoutDays) / 7) }
+    }
+
+    const maintenanceNoWorkout = Math.round(bmr * activityFactor)
+    const maintenanceWithExercise = Math.round(bmr * activityFactor + dailyExercise)
 
     if(!targetKg || goal === 'maintain' || timelineMonths === 0){
-      return { maintenance, diet: maintenance, note: 'Maintenance — keep your current weight.' }
+      return { maintenanceNoWorkout, maintenanceWithExercise, dietNoWorkout: maintenanceNoWorkout, dietWithExercise: maintenanceWithExercise, note: 'Maintenance — keep your current weight.' }
     }
 
     const diffKg = currentKg - targetKg
@@ -123,14 +175,16 @@ export default function App(){
 
     if(diffKg > 0){
       // weight loss
-      const diet = Math.max(1000, maintenance - dailyKcal)
-      return { maintenance, diet, note: `Lose ${diffKg} kg in ${timelineMonths} month(s)` }
+      const dietNoWorkout = Math.max(1000, maintenanceNoWorkout - dailyKcal)
+      const dietWithExercise = Math.max(1000, maintenanceWithExercise - dailyKcal)
+      return { maintenanceNoWorkout, maintenanceWithExercise, dietNoWorkout, dietWithExercise, note: `Lose ${diffKg} kg in ${timelineMonths} month(s)` }
     }else{
       // weight gain
-      const diet = maintenance + dailyKcal
-      return { maintenance, diet, note: `Gain ${Math.abs(diffKg)} kg in ${timelineMonths} month(s)` }
+      const dietNoWorkout = maintenanceNoWorkout + dailyKcal
+      const dietWithExercise = maintenanceWithExercise + dailyKcal
+      return { maintenanceNoWorkout, maintenanceWithExercise, dietNoWorkout, dietWithExercise, note: `Gain ${Math.abs(diffKg)} kg in ${timelineMonths} month(s)` }
     }
-  },[data])
+  },[data, workoutToday])
 
   const todayISO = ()=>{
     const d = new Date()
@@ -150,6 +204,13 @@ export default function App(){
     }catch(e){ return 0 }
   },[location.pathname])
 
+  const maintenanceUsed = (()=>{
+    try{
+      if(!calories) return null
+      return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
+    }catch(e){ return null }
+  })()
+
   return (
     <div>
       <div className="dashboard-header profile-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
@@ -166,15 +227,15 @@ export default function App(){
         <div className="dashboard-grid">
           <div className="card">
             <strong>Maintenance calories</strong>
-            <div style={{fontSize:20,marginTop:8}}>{calories ? `${calories.maintenance} kcal/day` : '—'}</div>
-            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? calories.maintenance : '—'} kcal consumed today`}</div>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>Estimated calories to maintain current weight.</div>
+            <div style={{fontSize:20,marginTop:8}}>{maintenanceUsed ? `${maintenanceUsed} kcal/day` : '—'}</div>
+            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed today`}</div>
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
           </div>
 
           <div className="card">
             <strong>Diet calories</strong>
-            <div style={{fontSize:20,marginTop:8}}>{calories ? `${calories.diet} kcal/day` : '—'}</div>
-            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? calories.diet : '—'} kcal consumed today`}</div>
+            <div style={{fontSize:20,marginTop:8}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
+            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
           </div>
 
@@ -187,8 +248,11 @@ export default function App(){
                 <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
               </div>
             </button>
-            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:20}} title="Burn">
-              🔥
+            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={toggleWorkoutToday}>
+              <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                <div style={{fontSize:22}} aria-hidden>{workoutToday ? '🔥' : '⚪'}</div>
+                <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{workoutToday ? 'Workout marked' : 'Mark workout'}</div>
+              </div>
             </button>
           </div>
         </div>

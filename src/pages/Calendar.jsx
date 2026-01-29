@@ -35,11 +35,20 @@ export default function Calendar(){
       const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
       const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
       const activityFactor = activity === 'custom' ? 1.2 : (activityFactors[activity] || 1.2)
-      const dailyExercise = activity === 'custom' && customCalories && workoutDays ? Math.round((customCalories * workoutDays) / 7) : 0
-      const maintenance = Math.round(bmr * activityFactor + dailyExercise)
+      const avgDailyExercise = activity === 'custom' && customCalories && workoutDays ? Math.round((customCalories * workoutDays) / 7) : 0
+      const maintenanceNoWorkout = Math.round(bmr * activityFactor)
+
+      // detect whether user uses attendance keys anywhere in storage
+      let hasAttendance = false
+      try{
+        for(let i=0;i<localStorage.length;i++){
+          const k = localStorage.key(i)
+          if(k && k.startsWith('calorieWise.attendance.')){ hasAttendance = true; break }
+        }
+      }catch(e){}
 
       if(!targetKg || goal === 'maintain' || timelineMonths === 0){
-        return { maintenance, diet: maintenance }
+        return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, diet: maintenanceNoWorkout }
       }
 
       const diffKg = currentKg - targetKg
@@ -48,11 +57,13 @@ export default function Calendar(){
       const dailyKcal = Math.round(totalKcal / days)
 
       if(diffKg > 0){
-        const diet = Math.max(1000, maintenance - dailyKcal)
-        return { maintenance, diet }
+        const dietNoWorkout = Math.max(1000, maintenanceNoWorkout - dailyKcal)
+        const dietWithExercise = Math.max(1000, maintenanceNoWorkout + avgDailyExercise - dailyKcal)
+        return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, dietNoWorkout, dietWithExercise }
       }else{
-        const diet = maintenance + dailyKcal
-        return { maintenance, diet }
+        const dietNoWorkout = maintenanceNoWorkout + dailyKcal
+        const dietWithExercise = maintenanceNoWorkout + avgDailyExercise + dailyKcal
+        return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, dietNoWorkout, dietWithExercise }
       }
     }catch(e){ return null }
   },[])
@@ -76,7 +87,20 @@ export default function Calendar(){
           if(!raw) continue // only include days where user logged items
           const parsed = JSON.parse(raw)
           const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
-          const deficit = (plan.maintenance - consumed)
+          // compute per-day maintenance using attendance (or weekly average) — match Home logic
+          const dateIso = isoFor(view.year, view.month, day)
+          const attendanceKey = `calorieWise.attendance.${dateIso}`
+          const isWorkoutDay = plan.hasAttendance ? (localStorage.getItem(attendanceKey) === '1') : null
+          let dailyExercise = 0
+          if(plan && plan.customCalories && plan.workoutDays){
+            if(plan.hasAttendance){
+              dailyExercise = isWorkoutDay ? Number(plan.customCalories) : 0
+            }else{
+              dailyExercise = 0
+            }
+          }
+          const maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+          const deficit = (maintenanceForDay - consumed)
           total += deficit
           loggedDays += 1
         }catch(e){ continue }
@@ -213,7 +237,7 @@ function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
     if(!raw) return <div style={{marginTop:8,textAlign:'center',color:'var(--muted)'}}>No entries for selected date</div>
     const parsed = JSON.parse(raw)
     const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
-    const deficit = plan ? Math.round(plan.maintenance - consumed) : null
+      const deficit = plan ? Math.round(plan.maintenanceNoWorkout + (plan.hasAttendance ? (localStorage.getItem(`calorieWise.attendance.${isoFor(view.year, view.month, selectedDay)}`) === '1' ? Number(plan.customCalories) : 0) : 0) - consumed) : null
     return (
       <div style={{marginTop:8,textAlign:'center',fontSize:13}}>
         {deficit !== null ? `Deficit for ${isoFor(view.year, view.month, selectedDay)}: ${deficit} kcal` : `Consumed: ${Math.round(consumed)} kcal`}
