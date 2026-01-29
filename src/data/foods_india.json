@@ -1,0 +1,86 @@
+[
+  { "id": "naan_plain", "name": "Naan (plain)", "unit": "count", "kcalPerUnit": 270, "proteinPerUnit": 8.0 },
+  { "id": "naan_butter", "name": "Butter naan", "unit": "count", "kcalPerUnit": 350, "proteinPerUnit": 8.0 },
+  { "id": "naan_garlic", "name": "Garlic naan", "unit": "count", "kcalPerUnit": 330, "proteinPerUnit": 8.0 },
+  { "id": "naan_stuffed", "name": "Stuffed naan (cheese/keema)", "unit": "count", "kcalPerUnit": 380, "proteinPerUnit": 10.0 },
+  { "id": "kulcha", "name": "Kulcha", "unit": "count", "kcalPerUnit": 260, "proteinPerUnit": 7.0 },
+  { "id": "lachha_paratha", "name": "Lachha Paratha", "unit": "count", "kcalPerUnit": 320, "proteinPerUnit": 6.0 },
+  { "id": "paratha_plain", "name": "Paratha (plain)", "unit": "count", "kcalPerUnit": 300, "proteinPerUnit": 6.0 },
+  { "id": "aloo_paratha", "name": "Aloo Paratha", "unit": "count", "kcalPerUnit": 350, "proteinPerUnit": 6.0 },
+  { "id": "missi_roti", "name": "Missi Roti", "unit": "count", "kcalPerUnit": 220, "proteinPerUnit": 8.0 },
+  { "id": "parotta", "name": "Parotta / Malabar Parotta", "unit": "count", "kcalPerUnit": 300, "proteinPerUnit": 6.0 },
+  { "id": "puri", "name": "Puri", "unit": "count", "kcalPerUnit": 165, "proteinPerUnit": 2.0 },
+  { "id": "bhatura", "name": "Bhatura", "unit": "count", "kcalPerUnit": 400, "proteinPerUnit": 6.0 },
+
+  { "id": "dosa_plain", "name": "Dosa (plain)", "unit": "count", "kcalPerUnit": 168, "proteinPerUnit": 4.0 },
+  { "id": "idli", "name": "Idli", "unit": "count", "kcalPerUnit": 58, "proteinPerUnit": 2.0 },
+  { "id": "medu_vada", "name": "Medu Vada", "unit": "count", "kcalPerUnit": 135, "proteinPerUnit": 3.5 },
+
+  { "id": "samosa_plain", "name": "Samosa (vegetable)", "unit": "count", "kcalPerUnit": 150, "proteinPerUnit": 3.0 },
+  { "id": "samosa_aloo", "name": "Aloo Samosa", "unit": "count", "kcalPerUnit": 160, "proteinPerUnit": 3.0 },
+  { "id": "chicken_roll", "name": "Chicken roll", "unit": "count", "kcalPerUnit": 320, "proteinPerUnit": 18.0 },
+  { "id": "mutton_roll", "name": "Mutton / Goat meat roll", "unit": "count", "kcalPerUnit": 360, "proteinPerUnit": 20.0 },
+
+  { "id": "veg_momo", "name": "Momo (veg)", "unit": "count", "kcalPerUnit": 45, "proteinPerUnit": 1.0 },
+  { "id": "chicken_momo", "name": "Momo (chicken)", "unit": "count", "kcalPerUnit": 60, "proteinPerUnit": 4.0 },
+  { "id": "fried_momo", "name": "Fried momo", "unit": "count", "kcalPerUnit": 80, "proteinPerUnit": 3.5 },
+
+  { "id": "manchow_soup", "name": "Manchow soup (veg)", "unit": "bowl", "servingGrams": 250, "kcalPerUnit": 40, "kcalPer100g": 16, "proteinPerUnit": 1.2, "proteinPer100g": 0.48 },
+  { "id": "tomato_soup", "name": "Tomato soup", "unit": "bowl", "servingGrams": 250, "kcalPerUnit": 35, "kcalPer100g": 14, "proteinPerUnit": 1.0, "proteinPer100g": 0.4 },
+  { "id": "chicken_noodle_soup", "name": "Chicken noodle soup", "unit": "bowl", "servingGrams": 300, "kcalPerUnit": 80, "kcalPer100g": 27, "proteinPerUnit": 6.0, "proteinPer100g": 2.0 },
+
+  { "id": "paneer_butter_masala", "name": "Paneer Butter Masala (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 420, "kcalPer100g": 210, "proteinPerUnit": 12.0, "proteinPer100g": 6.0, "name_hi": "पनीर बटर मसाला", "name_hi_translit": "paneer butter masala" },
+  { "id": "dal_makhani", "name": "Dal Makhani (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 360, "kcalPer100g": 180, "proteinPerUnit": 14.0, "proteinPer100g": 7.0, "name_hi": "दाल मखनी", "name_hi_translit": "dal makhani" },
+  { "id": "palak_paneer", "name": "Palak Paneer (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 320, "kcalPer100g": 160, "proteinPerUnit": 13.0, "proteinPer100g": 6.5, "name_hi": "पालक पनीर", "name_hi_translit": "palak paneer" },
+  { "id": "mutter_paneer", "name": "Mutter Paneer (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 360, "kcalPer100g": 180, "proteinPerUnit": 14.0, "proteinPer100g": 7.0, "name_hi": "मटर पनीर", "name_hi_translit": "mutter paneer" },
+  { "id": "aloo_gobi_masala", "name": "Aloo Gobi Masala (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 240, "kcalPer100g": 120, "proteinPerUnit": 6.0, "proteinPer100g": 3.0, "name_hi": "आलू गोभी मसाला", "name_hi_translit": "aloo gobi masala" },
+  { "id": "bhindi_masala", "name": "Bhindi Masala (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 200, "kcalPer100g": 100, "proteinPerUnit": 5.0, "proteinPer100g": 2.5, "name_hi": "भिंडी मसाला", "name_hi_translit": "bhindi masala" },
+
+  { "id": "egg_curry", "name": "Egg Curry (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 280, "kcalPer100g": 140, "proteinPerUnit": 12.0, "proteinPer100g": 6.0, "name_hi": "अंडा करी", "name_hi_translit": "anda curry" },
+  { "id": "fish_curry", "name": "Fish Curry (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 300, "kcalPer100g": 136, "proteinPerUnit": 20.0, "proteinPer100g": 9.1, "name_hi": "मछली करी", "name_hi_translit": "machhli curry" },
+  { "id": "prawn_curry", "name": "Prawn Curry (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 320, "kcalPer100g": 145, "proteinPerUnit": 22.0, "proteinPer100g": 10.0, "name_hi": "झींगा करी", "name_hi_translit": "jhinga curry" },
+
+  { "id": "malai_kofta", "name": "Malai Kofta (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 420, "kcalPer100g": 210, "proteinPerUnit": 10.0, "proteinPer100g": 5.0, "name_hi": "मलाई कोफ्ता", "name_hi_translit": "malai kofta" },
+  { "id": "vindaloo", "name": "Vindaloo (spicy) (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 400, "kcalPer100g": 182, "proteinPerUnit": 22.0, "proteinPer100g": 10.0, "name_hi": "विंदालू", "name_hi_translit": "vindaloo" },
+  { "id": "rogan_josh", "name": "Rogan Josh (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 420, "kcalPer100g": 191, "proteinPerUnit": 24.0, "proteinPer100g": 10.9, "name_hi": "रोगन जोश", "name_hi_translit": "rogan josh" },
+
+  { "id": "saag", "name": "Saag (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 220, "kcalPer100g": 110, "proteinPerUnit": 8.0, "proteinPer100g": 4.0, "name_hi": "साग", "name_hi_translit": "saag" },
+  { "id": "kadai_chicken", "name": "Kadai Chicken (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 380, "kcalPer100g": 173, "proteinPerUnit": 26.0, "proteinPer100g": 11.8, "name_hi": "कड़ाही चिकन", "name_hi_translit": "kadai chicken" },
+  { "id": "chicken_curry", "name": "Chicken Curry (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 360, "kcalPer100g": 164, "proteinPerUnit": 26.0, "proteinPer100g": 11.8, "name_hi": "चिकन करी", "name_hi_translit": "chicken curry" },
+  { "id": "goat_curry", "name": "Goat / Mutton Curry (bowl)", "unit": "bowl", "servingGrams": 240, "kcalPerUnit": 450, "kcalPer100g": 188, "proteinPerUnit": 28.0, "proteinPer100g": 11.7, "name_hi": "मटन करी", "name_hi_translit": "mutton curry" },
+  { "id": "nihari", "name": "Nihari (bowl)", "unit": "bowl", "servingGrams": 240, "kcalPerUnit": 520, "kcalPer100g": 217, "proteinPerUnit": 30.0, "proteinPer100g": 12.5, "name_hi": "निहारी", "name_hi_translit": "nihari" },
+
+  { "id": "korma_chicken", "name": "Chicken Korma (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 400, "kcalPer100g": 182, "proteinPerUnit": 24.0, "proteinPer100g": 10.9, "name_hi": "चिकन कोरमा", "name_hi_translit": "chicken korma" },
+  { "id": "bhuna_masala", "name": "Bhuna Masala (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 380, "kcalPer100g": 173, "proteinPerUnit": 20.0, "proteinPer100g": 9.1, "name_hi": "भुना मसाला", "name_hi_translit": "bhuna masala" },
+  { "id": "kolhapuri", "name": "Kolhapuri Curry (bowl)", "unit": "bowl", "servingGrams": 220, "kcalPerUnit": 430, "kcalPer100g": 195, "proteinPerUnit": 26.0, "proteinPer100g": 11.8, "name_hi": "कोल्हापुरी", "name_hi_translit": "kolhapuri" },
+
+  { "id": "baingan_bharta", "name": "Baingan Bharta (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 200, "kcalPer100g": 100, "proteinPerUnit": 5.0, "proteinPer100g": 2.5, "name_hi": "बैंगन भरता", "name_hi_translit": "baingan bharta" },
+  { "id": "lauki_ki_sabzi", "name": "Lauki (Bottle Gourd) Sabzi (bowl)", "unit": "bowl", "servingGrams": 180, "kcalPerUnit": 90, "kcalPer100g": 50, "proteinPerUnit": 2.5, "proteinPer100g": 1.4, "name_hi": "लौकी की सब्जी", "name_hi_translit": "lauki sabzi" },
+  { "id": "tinda_sabzi", "name": "Tinda Sabzi (bowl)", "unit": "bowl", "servingGrams": 180, "kcalPerUnit": 100, "kcalPer100g": 55, "proteinPerUnit": 2.5, "proteinPer100g": 1.4, "name_hi": "टिंडा की सब्जी", "name_hi_translit": "tinda sabzi" },
+  { "id": "turai_sabzi", "name": "Turai / Ridge Gourd Sabzi (bowl)", "unit": "bowl", "servingGrams": 180, "kcalPerUnit": 90, "kcalPer100g": 50, "proteinPerUnit": 2.0, "proteinPer100g": 1.1, "name_hi": "तुरई", "name_hi_translit": "turai" },
+  { "id": "karela_bhaji", "name": "Karela (Bitter Gourd) Sabzi (bowl)", "unit": "bowl", "servingGrams": 180, "kcalPerUnit": 120, "kcalPer100g": 67, "proteinPerUnit": 3.0, "proteinPer100g": 1.7, "name_hi": "करेला", "name_hi_translit": "karela" },
+  { "id": "kaddu_curry", "name": "Kaddu / Pumpkin Curry (bowl)", "unit": "bowl", "servingGrams": 180, "kcalPerUnit": 140, "kcalPer100g": 78, "proteinPerUnit": 2.5, "proteinPer100g": 1.4, "name_hi": "कद्दू करी", "name_hi_translit": "kaddu curry" },
+  { "id": "mix_veg", "name": "Mixed Vegetable Sabzi (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 180, "kcalPer100g": 90, "proteinPerUnit": 6.0, "proteinPer100g": 3.0, "name_hi": "मिक्स वेज", "name_hi_translit": "mixed veg" },
+  { "id": "aloo_matar", "name": "Aloo Matar (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 260, "kcalPer100g": 130, "proteinPerUnit": 6.0, "proteinPer100g": 3.0, "name_hi": "आलू मटर", "name_hi_translit": "aloo matar" },
+  { "id": "aloo_shimla", "name": "Aloo Shimla Mirch (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 220, "kcalPer100g": 110, "proteinPerUnit": 5.0, "proteinPer100g": 2.5, "name_hi": "आलू शिमला मिर्च", "name_hi_translit": "aloo shimla mirch" },
+  { "id": "veg_korma_bowl", "name": "Vegetable Korma (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 300, "kcalPer100g": 150, "proteinPerUnit": 7.0, "proteinPer100g": 3.5, "name_hi": "वेज कोरमा", "name_hi_translit": "veg korma" },
+  { "id": "bhindi_aloo", "name": "Bhindi Aloo (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 240, "kcalPer100g": 120, "proteinPerUnit": 6.0, "proteinPer100g": 3.0, "name_hi": "भिंडी आलू", "name_hi_translit": "bhindi aloo" },
+  { "id": "lauki_dal", "name": "Lauki with Dal (bowl)", "unit": "bowl", "servingGrams": 200, "kcalPerUnit": 160, "kcalPer100g": 80, "proteinPerUnit": 6.0, "proteinPer100g": 3.0, "name_hi": "लौकी दाल", "name_hi_translit": "lauki dal" },
+
+  { "id": "vada_pav", "name": "Vada Pav", "unit": "count", "kcalPerUnit": 320, "proteinPerUnit": 6.0 },
+  { "id": "pav_bhaji", "name": "Pav Bhaji (plate)", "unit": "plate", "kcalPerUnit": 480, "proteinPerUnit": 9.0 },
+
+  { "id": "butter_chicken", "name": "Butter chicken (100g)", "kcal": 240, "protein": 18.0 },
+  { "id": "biryani_chicken", "name": "Chicken Biryani (plate)", "unit": "plate", "kcalPerUnit": 650, "proteinPerUnit": 28.0 },
+
+  { "id": "fil_adobo_chicken", "name": "Chicken Adobo (filipino)", "unit": "plate", "servingGrams": 250, "kcalPerUnit": 420, "kcalPer100g": 168, "proteinPerUnit": 30.0, "proteinPer100g": 12.0, "cuisine": "Filipino" },
+  { "id": "fil_adobo_pork", "name": "Pork Adobo (filipino)", "unit": "plate", "servingGrams": 250, "kcalPerUnit": 540, "kcalPer100g": 216, "proteinPerUnit": 28.0, "proteinPer100g": 11.2, "cuisine": "Filipino" },
+  { "id": "fil_sinigang_pork", "name": "Sinigang (pork)", "unit": "bowl", "servingGrams": 300, "kcalPerUnit": 260, "kcalPer100g": 87, "proteinPerUnit": 18.0, "proteinPer100g": 6.0, "cuisine": "Filipino" },
+  { "id": "fil_sinigang_fish", "name": "Sinigang (fish)", "unit": "bowl", "servingGrams": 300, "kcalPerUnit": 220, "kcalPer100g": 73, "proteinPerUnit": 20.0, "proteinPer100g": 6.7, "cuisine": "Filipino" },
+  { "id": "fil_kare_kare", "name": "Kare-Kare", "unit": "bowl", "servingGrams": 300, "kcalPerUnit": 480, "kcalPer100g": 160, "proteinPerUnit": 22.0, "proteinPer100g": 7.3, "cuisine": "Filipino" },
+  { "id": "fil_lechon", "name": "Lechon (roast pork)", "unit": "serving", "servingGrams": 150, "kcalPerUnit": 600, "kcalPer100g": 400, "proteinPerUnit": 25.0, "proteinPer100g": 16.7, "cuisine": "Filipino" },
+  { "id": "fil_pancit_canton", "name": "Pancit Canton", "unit": "plate", "servingGrams": 300, "kcalPerUnit": 420, "kcalPer100g": 140, "proteinPerUnit": 12.0, "proteinPer100g": 4.0, "cuisine": "Filipino" },
+  { "id": "fil_lumpia_fried", "name": "Lumpia (fried)", "unit": "count", "kcalPerUnit": 180, "proteinPerUnit": 3.5, "cuisine": "Filipino" },
+  { "id": "fil_lumpia_fresh", "name": "Lumpia (fresh)", "unit": "count", "kcalPerUnit": 90, "proteinPerUnit": 2.0, "cuisine": "Filipino" },
+  { "id": "fil_sisig", "name": "Sisig", "unit": "plate", "servingGrams": 200, "kcalPerUnit": 420, "kcalPer100g": 210, "proteinPerUnit": 20.0, "proteinPer100g": 10.0, "cuisine": "Filipino" }
+]

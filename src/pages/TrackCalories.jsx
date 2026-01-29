@@ -3,6 +3,7 @@ import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import vegetables from '../data/vegetables_india.json'
 import fruits from '../data/fruits.json'
+import foodsIndia from '../data/foods_india.json'
 import './TrackCalories.autocomplete.css'
 
 // small built-in food database (kcal per 100 g where applicable)
@@ -474,7 +475,13 @@ export default function TrackCalories(){
           extras.push({ id, name: f.name_en, kcal: f.calories_per_100g || f.calories_per_100g, protein: f.protein_per_100g || f.protein_per_100g, name_hi: f.name_hi || '', name_hi_translit: f.name_hi_translit || '', unit: f.unit || 'g' })
         })
       }
-      return [...FOODS, ...extras]
+      // combine base built-in FOODS, external India/Filipino dataset, and produce extras
+      const baseList = Array.isArray(foodsIndia) ? [...FOODS, ...foodsIndia] : [...FOODS]
+      const combined = [...baseList, ...extras]
+      // deduplicate by id, prefer earlier items (FOODS then foodsIndia then extras)
+      const seen = new Map()
+      combined.forEach(item => { if(item && item.id && !seen.has(item.id)) seen.set(item.id, item) })
+      return Array.from(seen.values())
     }catch(e){ return FOODS }
   },[])
   const [suggestions, setSuggestions] = useState([])
