@@ -124,6 +124,24 @@ export default function App(){
     }catch(e){}
   }
 
+  const toggleAttendance = (iso) => {
+    try{
+      const key = `calorieWise.attendance.${iso}`
+      if(localStorage.getItem(key) === '1'){
+        localStorage.removeItem(key)
+      }else{
+        localStorage.setItem(key, '1')
+      }
+      setStorageTick(x => x + 1)
+      const todayIso = new Date().toISOString().slice(0,10)
+      if(iso === todayIso){
+        const nowMarked = localStorage.getItem(key) === '1'
+        setWorkoutToday(nowMarked)
+      }
+      try{ window.dispatchEvent(new Event('calorieWise.attendanceChanged')) }catch(e){}
+    }catch(e){}
+  }
+
   const calories = useMemo(()=>{
     const { currentKg, targetKg, age, height, gender, activity, customCalories, workoutDays, timelineMonths, goal } = data || {}
     if(!currentKg || !age || !height) return null
@@ -187,6 +205,11 @@ export default function App(){
   },[data, workoutToday])
 
   const [storageTick, setStorageTick] = useState(0) // bump to force re-read of attendance keys
+  const [selectedAttendanceIso, setSelectedAttendanceIso] = useState(null)
+
+  const selectedMarked = selectedAttendanceIso ? (localStorage.getItem(`calorieWise.attendance.${selectedAttendanceIso}`) === '1') : null
+  const workoutButtonIcon = selectedAttendanceIso ? (selectedMarked ? '🔥' : '⚪') : (workoutToday ? '🔥' : '⚪')
+  const workoutButtonLabel = selectedAttendanceIso ? (selectedMarked ? 'Workout marked' : 'Mark workout') : (workoutToday ? 'Workout marked' : 'Mark workout')
 
   const todayISO = ()=>{
     const d = new Date()
@@ -250,16 +273,30 @@ export default function App(){
                 <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
               </div>
             </button>
-            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={toggleWorkoutToday}>
+            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={() => {
+              // if a past day is selected in WeeklyAttendance, mark/unmark that date; otherwise toggle today
+              try{
+                const iso = selectedAttendanceIso
+                if(iso){
+                  const isFuture = new Date(iso) > new Date()
+                  if(!isFuture){
+                    toggleAttendance(iso)
+                    setSelectedAttendanceIso(null)
+                    return
+                  }
+                }
+              }catch(e){}
+              toggleWorkoutToday()
+            }}>
               <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                <div style={{fontSize:22}} aria-hidden>{workoutToday ? '🔥' : '⚪'}</div>
-                <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{workoutToday ? 'Workout marked' : 'Mark workout'}</div>
+                <div style={{fontSize:22}} aria-hidden>{workoutButtonIcon}</div>
+                <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{workoutButtonLabel}</div>
               </div>
             </button>
           </div>
         </div>
 
-        <WeeklyAttendance storageTick={storageTick} setStorageTick={setStorageTick} setWorkoutToday={setWorkoutToday} />
+        <WeeklyAttendance storageTick={storageTick} setStorageTick={setStorageTick} setWorkoutToday={setWorkoutToday} toggleAttendance={toggleAttendance} selectedIso={selectedAttendanceIso} setSelectedIso={setSelectedAttendanceIso} />
 
         
       </main>
@@ -295,7 +332,7 @@ export default function App(){
   )
 }
 
-function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday }){
+function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday, toggleAttendance, selectedIso, setSelectedIso }){
   // ensure we have an install/reference date so week counting starts at user install
   try{ if(!localStorage.getItem('calorieWise.installDate')){ localStorage.setItem('calorieWise.installDate', new Date().toISOString().slice(0,10)) } }catch(e){}
   const installIso = localStorage.getItem('calorieWise.installDate') || new Date().toISOString().slice(0,10)
@@ -321,25 +358,9 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday }){
     const iso = `${y}-${String(d.getMonth()+1).padStart(2,'0')}-${String(dayNum).padStart(2,'0')}`
     days.push({ iso, dow: d.toLocaleString(undefined,{weekday:'short'}), month: m, dayNum })
   }
-  const [selectedIso, setSelectedIso] = useState(null)
   const todayIso = new Date().toISOString().slice(0,10)
 
-  const handleToggle = (iso)=>{
-    try{
-      const key = `calorieWise.attendance.${iso}`
-      if(localStorage.getItem(key) === '1'){
-        localStorage.removeItem(key)
-      }else{
-        localStorage.setItem(key, '1')
-      }
-      if(typeof setStorageTick === 'function') setStorageTick(x => x + 1)
-      if(typeof setWorkoutToday === 'function' && iso === todayIso){
-        const nowMarked = localStorage.getItem(`calorieWise.attendance.${iso}`) === '1'
-        setWorkoutToday(nowMarked)
-      }
-      try{ window.dispatchEvent(new Event('calorieWise.attendanceChanged')) }catch(e){}
-    }catch(e){}
-  }
+  // use the parent-provided `toggleAttendance` to avoid duplicating logic
 
   return (
     <div className="card" style={{padding:12}}>
@@ -366,13 +387,11 @@ function WeeklyAttendance({ storageTick, setStorageTick, setWorkoutToday }){
       <div style={{marginTop:10,display:'flex',justifyContent:'center'}}>
         {selectedIso ? (
           <div style={{textAlign:'center'}}>
-            <button onClick={()=>handleToggle(selectedIso)} style={{padding:'6px 16px',borderRadius:6,border:'1px solid var(--accent1)',background:'#f8f8f8',color:'var(--accent1)',fontWeight:600}}> 
-              {localStorage.getItem(`calorieWise.attendance.${selectedIso}`) === '1' ? 'Unmark Attendance' : 'Mark as Attended'}
-            </button>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>{new Date(selectedIso) > new Date() ? 'Cannot mark future days' : 'Select a day to mark attendance'}</div>
+            <div style={{fontSize:13}}><strong>Selected:</strong> {new Date(selectedIso).toLocaleDateString()}</div>
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>{new Date(selectedIso) > new Date() ? 'Cannot mark future days' : "Press 'Mark workout' card above to mark/unmark this day."}</div>
           </div>
         ) : (
-          <div style={{fontSize:13,color:'var(--muted)'}}>Tap a day to select and mark attendance</div>
+          <div style={{fontSize:13,color:'var(--muted)'}}>Tap a day to select and then use the 'Mark workout' button above</div>
         )}
       </div>
     </div>
