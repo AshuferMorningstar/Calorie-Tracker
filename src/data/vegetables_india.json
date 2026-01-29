@@ -1,0 +1,50 @@
+[
+  {"name_en":"Potato","name_hi":"आलू","name_hi_translit":"aalu","category":"vegetable","unit":"g","calories_per_100g":77,"protein_per_100g":2.0},
+  {"name_en":"Sweet potato","name_hi":"शकरकंद","name_hi_translit":"shakarkand","category":"vegetable","unit":"g","calories_per_100g":86,"protein_per_100g":1.6},
+  {"name_en":"Tomato","name_hi":"टमाटर","name_hi_translit":"tamatar","category":"vegetable","unit":"g","calories_per_100g":18,"protein_per_100g":0.9},
+  {"name_en":"Onion","name_hi":"प्याज़","name_hi_translit":"pyaaz","category":"vegetable","unit":"g","calories_per_100g":40,"protein_per_100g":1.1},
+  {"name_en":"Garlic","name_hi":"लहसुन","name_hi_translit":"lahsun","category":"vegetable","unit":"g","calories_per_100g":149,"protein_per_100g":6.4},
+  {"name_en":"Ginger","name_hi":"अदरक","name_hi_translit":"adrak","category":"vegetable","unit":"g","calories_per_100g":80,"protein_per_100g":1.8},
+  {"name_en":"Cauliflower","name_hi":"फूलगोभी","name_hi_translit":"phoolgobhi","category":"vegetable","unit":"g","calories_per_100g":25,"protein_per_100g":1.9},
+  {"name_en":"Cabbage","name_hi":"पत्ता गोभी","name_hi_translit":"patta gobhi","category":"vegetable","unit":"g","calories_per_100g":25,"protein_per_100g":1.3},
+  {"name_en":"Broccoli","name_hi":"ब्रोकोली","name_hi_translit":"broccoli","category":"vegetable","unit":"g","calories_per_100g":34,"protein_per_100g":2.8},
+  {"name_en":"Spinach","name_hi":"पालक","name_hi_translit":"palak","category":"vegetable","unit":"g","calories_per_100g":23,"protein_per_100g":2.9},
+  {"name_en":"Fenugreek leaves","name_hi":"मेथी","name_hi_translit":"methi","category":"vegetable","unit":"g","calories_per_100g":49,"protein_per_100g":3.0},
+  {"name_en":"Mustard greens","name_hi":"सरसों का साग","name_hi_translit":"sarson","category":"vegetable","unit":"g","calories_per_100g":27,"protein_per_100g":2.9},
+  {"name_en":"Coriander leaves","name_hi":"धनिया","name_hi_translit":"dhaniya","category":"vegetable","unit":"g","calories_per_100g":23,"protein_per_100g":2.1},
+  {"name_en":"Amaranth leaves","name_hi":"चौलाई","name_hi_translit":"chaulai","category":"vegetable","unit":"g","calories_per_100g":23,"protein_per_100g":2.5},
+  {"name_en":"Carrot","name_hi":"गाजर","name_hi_translit":"gajar","category":"vegetable","unit":"g","calories_per_100g":41,"protein_per_100g":0.9},
+  {"name_en":"Beetroot","name_hi":"चुकंदर","name_hi_translit":"chukandar","category":"vegetable","unit":"g","calories_per_100g":43,"protein_per_100g":1.6},
+  {"name_en":"Radish","name_hi":"मूली","name_hi_translit":"mooli","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":0.7},
+  {"name_en":"Turnip","name_hi":"शलजम","name_hi_translit":"shaljam","category":"vegetable","unit":"g","calories_per_100g":28,"protein_per_100g":0.9},
+  {"name_en":"Eggplant","name_hi":"बैंगन","name_hi_translit":"baingan","category":"vegetable","unit":"g","calories_per_100g":25,"protein_per_100g":1.0},
+  {"name_en":"Okra","name_hi":"भिंडी","name_hi_translit":"bhindi","category":"vegetable","unit":"g","calories_per_100g":33,"protein_per_100g":2.0},
+  {"name_en":"Bottle gourd","name_hi":"लौकी","name_hi_translit":"lauki","category":"vegetable","unit":"g","calories_per_100g":14,"protein_per_100g":0.6},
+  {"name_en":"Ridge gourd","name_hi":"तुरई","name_hi_translit":"turai","category":"vegetable","unit":"g","calories_per_100g":20,"protein_per_100g":1.0},
+  {"name_en":"Bitter gourd","name_hi":"करेला","name_hi_translit":"karela","category":"vegetable","unit":"g","calories_per_100g":17,"protein_per_100g":1.0},
+  {"name_en":"Pumpkin","name_hi":"कद्दू","name_hi_translit":"kaddu","category":"vegetable","unit":"g","calories_per_100g":26,"protein_per_100g":1.0},
+  {"name_en":"Green peas","name_hi":"हरी मटर","name_hi_translit":"matar","category":"vegetable","unit":"g","calories_per_100g":84,"protein_per_100g":5.4},
+  {"name_en":"Green beans","name_hi":"फ्रेंच बीन्स","name_hi_translit":"french beans","category":"vegetable","unit":"g","calories_per_100g":31,"protein_per_100g":1.8},
+  {"name_en":"Cluster beans","name_hi":"गवार फली","name_hi_translit":"guar phali","category":"vegetable","unit":"g","calories_per_100g":47,"protein_per_100g":3.7},
+  {"name_en":"Drumstick pods","name_hi":"सहजन (ड्रमस्टिक)","name_hi_translit":"sahjan","category":"vegetable","unit":"g","calories_per_100g":64,"protein_per_100g":2.0},
+  {"name_en":"Colocasia (taro)","name_hi":"अरबी","name_hi_translit":"arbi","category":"vegetable","unit":"g","calories_per_100g":142,"protein_per_100g":2.0},
+  {"name_en":"Yam (suran)","name_hi":"सुरन","name_hi_translit":"suran","category":"vegetable","unit":"g","calories_per_100g":118,"protein_per_100g":2.0},
+  {"name_en":"Bell pepper","name_hi":"शिमला मिर्च","name_hi_translit":"shimla mirch","category":"vegetable","unit":"g","calories_per_100g":31,"protein_per_100g":1.0},
+  {"name_en":"Cucumber","name_hi":"खीरा","name_hi_translit":"kheera","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":0.7},
+  {"name_en":"Sweet corn","name_hi":"मक्की/भुट्टा","name_hi_translit":"makki/bhutta","category":"vegetable","unit":"g","calories_per_100g":96,"protein_per_100g":3.4},
+  {"name_en":"Mushroom","name_hi":"मशरूम","name_hi_translit":"mushroom","category":"vegetable","unit":"g","calories_per_100g":22,"protein_per_100g":3.1},
+  {"name_en":"Spring onion","name_hi":"हरा प्याज़","name_hi_translit":"hara pyaaz","category":"vegetable","unit":"g","calories_per_100g":32,"protein_per_100g":1.8},
+  {"name_en":"Egg","name_hi":"अंडा","name_hi_translit":"anda","category":"protein","unit":"unit","unit_name":"egg","calories_per_unit":78,"protein_per_unit":6.3}
+  ,{"name_en":"Zucchini (Courgette)","name_hi":"ज़ुचिनी","name_hi_translit":"zucchini","category":"vegetable","unit":"g","calories_per_100g":17,"protein_per_100g":1.2}
+  ,{"name_en":"Kale","name_hi":"केल","name_hi_translit":"kale","category":"vegetable","unit":"g","calories_per_100g":49,"protein_per_100g":4.3}
+  ,{"name_en":"Swiss chard","name_hi":"स्विस चार्ड","name_hi_translit":"swiss chard","category":"vegetable","unit":"g","calories_per_100g":19,"protein_per_100g":1.8}
+  ,{"name_en":"Asparagus","name_hi":"एस्पैरेगस","name_hi_translit":"asparagus","category":"vegetable","unit":"g","calories_per_100g":20,"protein_per_100g":2.2}
+  ,{"name_en":"Artichoke","name_hi":"आर्टिचोक","name_hi_translit":"artichoke","category":"vegetable","unit":"g","calories_per_100g":47,"protein_per_100g":3.3}
+  ,{"name_en":"Brussels sprouts","name_hi":"ब्रसेल्स स्प्राउट्स","name_hi_translit":"brussels sprouts","category":"vegetable","unit":"g","calories_per_100g":43,"protein_per_100g":3.4}
+  ,{"name_en":"Leek","name_hi":"लीक","name_hi_translit":"leek","category":"vegetable","unit":"g","calories_per_100g":61,"protein_per_100g":1.5}
+  ,{"name_en":"Parsnip","name_hi":"पार्सनिप","name_hi_translit":"parsnip","category":"vegetable","unit":"g","calories_per_100g":75,"protein_per_100g":1.2}
+  ,{"name_en":"Celery","name_hi":"सेलेरी","name_hi_translit":"celery","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":0.7}
+  ,{"name_en":"Kohlrabi","name_hi":"कोहलरबी","name_hi_translit":"kohlrabi","category":"vegetable","unit":"g","calories_per_100g":27,"protein_per_100g":1.7}
+  ,{"name_en":"Napa cabbage (Chinese cabbage)","name_hi":"नापा गोभी","name_hi_translit":"napa cabbage","category":"vegetable","unit":"g","calories_per_100g":16,"protein_per_100g":1.2}
+  ,{"name_en":"Bok choy","name_hi":"बोक चॉय","name_hi_translit":"bok choy","category":"vegetable","unit":"g","calories_per_100g":13,"protein_per_100g":1.5}
+]
