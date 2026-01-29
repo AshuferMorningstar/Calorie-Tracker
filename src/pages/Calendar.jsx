@@ -10,6 +10,15 @@ export default function Calendar(){
   const [view, setView] = useState({ year: currentYear, month: currentMonth })
   const [selectedDay, setSelectedDay] = useState(null)
   const [storageTick, setStorageTick] = useState(0) // bump to force re-read of localStorage-driven memos
+  const [weekOffset, setWeekOffset] = useState(0) // 0 = current week, -1 = previous, etc.
+
+  // ensure we have an install/reference date so week counting starts at user install
+  try{ if(!localStorage.getItem('calorieWise.installDate')){ localStorage.setItem('calorieWise.installDate', new Date().toISOString().slice(0,10)) } }catch(e){}
+  const installIso = localStorage.getItem('calorieWise.installDate') || new Date().toISOString().slice(0,10)
+  const installDate = new Date(installIso)
+  const nowForWeek = new Date()
+  const daysSinceInstall = Math.floor((nowForWeek - installDate) / (24 * 60 * 60 * 1000))
+  const baseWeekIndex = Math.floor(daysSinceInstall / 7) + 1
 
   useEffect(()=>{
     const handler = ()=> setStorageTick(x => x + 1)
@@ -129,7 +138,7 @@ export default function Calendar(){
       const now = new Date()
       const weekStart = new Date(now)
       weekStart.setHours(0,0,0,0)
-      weekStart.setDate(now.getDate() - now.getDay())
+      weekStart.setDate(now.getDate() - now.getDay() + (weekOffset * 7))
 
       let total = 0
       let loggedDays = 0
@@ -162,9 +171,9 @@ export default function Calendar(){
         total += deficit
         loggedDays += 1
       }
-      return { total, loggedDays }
+      return { total, loggedDays, weekStart }
     }catch(e){ return null }
-  },[plan, storageTick])
+  },[plan, storageTick, weekOffset])
 
   const goPrev = ()=>{
     let y = view.year
@@ -306,7 +315,12 @@ export default function Calendar(){
         </div>
             <div className="card" style={{padding:12}}>
               <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
-                <div style={{fontWeight:700}}>Total deficit this week</div>
+                <button className="icon-btn" aria-label="Previous week" onClick={()=>setWeekOffset(o=>o-1)}>◀</button>
+                <div style={{fontWeight:700}}>{`Week ${Math.max(1, baseWeekIndex + weekOffset)}`}</div>
+                <button className="icon-btn" aria-label="Next week" onClick={()=> setWeekOffset(o=> Math.min(0, o+1))} disabled={weekOffset >= 0}>▶</button>
+              </div>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,marginTop:8}}>
+                <div style={{fontWeight:700}}>Total deficit</div>
                 <div>:</div>
                 <div style={{fontSize:20,fontWeight:800}}>{totalWeekLost !== null ? `${Math.round(totalWeekLost.total)} kcal` : '—'}</div>
               </div>
