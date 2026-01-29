@@ -142,6 +142,23 @@ export default function App(){
     }catch(e){}
   }
 
+  const [storageTick, setStorageTick] = useState(0) // bump to force re-read of attendance/burned keys
+  const [selectedAttendanceIso, setSelectedAttendanceIso] = useState(null)
+
+  useEffect(()=>{
+    const onChanged = ()=> setStorageTick(x=>x+1)
+    try{
+      window.addEventListener('calorieWise.burnedChanged', onChanged)
+      window.addEventListener('calorieWise.attendanceChanged', onChanged)
+    }catch(e){}
+    return ()=>{
+      try{
+        window.removeEventListener('calorieWise.burnedChanged', onChanged)
+        window.removeEventListener('calorieWise.attendanceChanged', onChanged)
+      }catch(e){}
+    }
+  },[])
+
   const calories = useMemo(()=>{
     const { currentKg, targetKg, age, height, gender, activity, customCalories, workoutDays, timelineMonths, goal } = data || {}
     if(!currentKg || !age || !height) return null
@@ -150,8 +167,9 @@ export default function App(){
     const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
 
     const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
-    // Show sedentary baseline unless a workout is marked for the day
-    const activityFactor = activityFactors['sedentary']
+    const sedentaryFactor = activityFactors['sedentary']
+    // chosenActivityFactor is the multiplier to apply when a workout is marked (non-custom activities)
+    const chosenActivityFactor = activity === 'custom' ? sedentaryFactor : (activityFactors[activity] || sedentaryFactor)
 
     // include exercise calories when custom activity provided
     // If the user has marked attendance (calorieWise.attendance.YYYY-MM-DD keys) we treat exercise as occurring
@@ -186,8 +204,18 @@ export default function App(){
       }catch(e){ dailyExercise = Math.round((customCalories * workoutDays) / 7) }
     }
 
-    const maintenanceNoWorkout = Math.round(bmr * activityFactor)
-    const maintenanceWithExercise = Math.round(bmr * activityFactor + dailyExercise)
+    const maintenanceNoWorkout = Math.round(bmr * sedentaryFactor)
+    // If the user entered per-day burned calories for this day, prefer that and add it to sedentary baseline
+    const todayIso = new Date().toISOString().slice(0,10)
+    const burnedToday = Number(localStorage.getItem(`calorieWise.burned.${todayIso}`) || 0)
+    let maintenanceWithExercise
+    if(burnedToday){
+      maintenanceWithExercise = Math.round(bmr * sedentaryFactor + burnedToday)
+    }else{
+      maintenanceWithExercise = activity === 'custom'
+        ? Math.round(bmr * sedentaryFactor + dailyExercise)
+        : Math.round(bmr * chosenActivityFactor)
+    }
 
     if(!targetKg || goal === 'maintain' || timelineMonths === 0){
       return { maintenanceNoWorkout, maintenanceWithExercise, dietNoWorkout: maintenanceNoWorkout, dietWithExercise: maintenanceWithExercise, note: 'Maintenance — keep your current weight.' }
@@ -209,10 +237,8 @@ export default function App(){
       const dietWithExercise = maintenanceWithExercise + dailyKcal
       return { maintenanceNoWorkout, maintenanceWithExercise, dietNoWorkout, dietWithExercise, note: `Gain ${Math.abs(diffKg)} kg in ${timelineMonths} month(s)` }
     }
-  },[data, workoutToday])
+  },[data, workoutToday, storageTick])
 
-  const [storageTick, setStorageTick] = useState(0) // bump to force re-read of attendance keys
-  const [selectedAttendanceIso, setSelectedAttendanceIso] = useState(null)
 
   const selectedMarked = selectedAttendanceIso ? (localStorage.getItem(`calorieWise.attendance.${selectedAttendanceIso}`) === '1') : null
   const workoutButtonIcon = selectedAttendanceIso ? (selectedMarked ? '🔥' : '⚪') : (workoutToday ? '🔥' : '⚪')
