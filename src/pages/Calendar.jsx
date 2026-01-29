@@ -165,6 +165,29 @@ export default function Calendar(){
     return set
   }, [view.year, view.month])
 
+  // compute attendance count for the visible month (calorieWise.attendance.YYYY-MM-DD === '1')
+  const attendanceCount = useMemo(()=>{
+    try{
+      let count = 0
+      for(let i=0;i<localStorage.length;i++){
+        const key = localStorage.key(i)
+        if(!key) continue
+        if(!key.startsWith('calorieWise.attendance.')) continue
+        const dateStr = key.slice('calorieWise.attendance.'.length)
+        const parts = dateStr.split('-')
+        if(parts.length !== 3) continue
+        const y = Number(parts[0])
+        const m = Number(parts[1]) - 1
+        if(y === view.year && m === view.month){
+          try{
+            if(localStorage.getItem(key) === '1') count += 1
+          }catch(e){}
+        }
+      }
+      return count
+    }catch(e){ return 0 }
+  }, [view.year, view.month])
+
   return (
     <div style={{padding:16,maxWidth:720,margin:'0 auto'}}>
       <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
@@ -213,7 +236,19 @@ export default function Calendar(){
           </div>
         </div>
       </div>
-      <div className="card" style={{padding:12,marginTop:12}}>
+      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,marginTop:12}}>
+        <div className="card" style={{padding:12}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
+            <div style={{fontWeight:700}}>Workout days this month</div>
+            <div>:</div>
+            <div style={{fontSize:20,fontWeight:800}}>{attendanceCount}</div>
+          </div>
+          <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+            {`Marked via attendance (${attendanceCount} ${attendanceCount === 1 ? 'day' : 'days'})`}
+          </div>
+        </div>
+
+        <div className="card" style={{padding:12}}>
         <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
           <div style={{fontWeight:700}}>Total deficit this month</div>
           <div>:</div>
@@ -225,6 +260,7 @@ export default function Calendar(){
         {selectedDay ? (
           <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
         ) : null}
+        </div>
       </div>
     </div>
   )
