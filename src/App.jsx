@@ -257,11 +257,17 @@ export default function App(){
             <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
           </div>
 
-          <div className="card">
-            <strong>Diet calories</strong>
-            <div style={{fontSize:20,marginTop:8}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
-            <div style={{fontSize:13,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
+          <div style={{display:'flex',gap:8,alignItems:'stretch'}}>
+            <div className="card" style={{flex:1,minWidth:0,padding:12}}>
+              <strong>Diet calories</strong>
+              <div style={{fontSize:16,marginTop:6}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
+              <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
+            </div>
+            <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/track')}>
+              <div style={{fontSize:20}}>🏃</div>
+              <div style={{fontSize:12,color:'var(--muted)'}}>Calories burned</div>
+            </button>
           </div>
 
           <div style={{gridColumn: '1 / -1', display:'flex', gap:8, alignItems:'stretch', flexWrap:'wrap'}}>
