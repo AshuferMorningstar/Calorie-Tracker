@@ -265,6 +265,17 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 
 .profile-top h2{margin:0;font-size:18px;font-weight:600}
 
+/* top header logo (constrain large SVGs to a compact icon) */
+.top-logo{
+  width:36px;
+  height:36px;
+  object-fit:contain;
+  display:inline-block;
+}
+
+@media (max-width:480px){
+  .top-logo{ width:32px; height:32px }
+}
 /* theme toggle (sun / moon) */
 .theme-toggle{
   display:inline-flex;

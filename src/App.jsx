@@ -272,7 +272,8 @@ export default function App(){
   return (
     <div>
       <div className="dashboard-header profile-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-        <div>
+        <div style={{display:'flex',alignItems:'center',gap:12}}>
+          <img src="/assets/caloriewiselogo.svg" alt="Calorie Wise logo" className="top-logo" />
           <h2>Calorie Wise</h2>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>

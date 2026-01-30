@@ -33,7 +33,7 @@ export default function Splash({onFinish}){
     <div className={`splash ${exiting? 'splash-exit':''}`} aria-hidden={!visible} data-visible={visible}>
       <div className="logo-wrap" role="img" aria-label="Calorie Wise logo and name">
         <img
-          src="/assets/Picsart_26-01-22_22-42-53-930.png"
+          src="/assets/caloriewiselogo.svg"
           alt="Calorie Wise logo"
           className={`splash-logo ${imgLoaded ? 'loaded' : 'loading'}`}
           loading="eager"
