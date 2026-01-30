@@ -6,20 +6,32 @@ export default function Splash({onFinish}){
   const [imgLoaded, setImgLoaded] = useState(false)
 
   useEffect(()=>{
-    console.log('[Splash] mounted')
-    const showTime = 1500
-    const exitTime = 420
-    const t = setTimeout(()=>{
-      console.log('[Splash] starting exit')
+    // keep the page from scrolling while splash is visible
+    try{ if(visible) document.body.style.overflow = 'hidden' }catch(e){}
+    return ()=>{ try{ document.body.style.overflow = '' }catch(e){} }
+  },[visible])
+
+  useEffect(()=>{
+    // When the logo is loaded, show it briefly then play exit animation.
+    // This mirrors Instagram's brief centered logo behavior.
+    const showTime = 800
+    const exitTime = 360
+
+    if(imgLoaded){
+      const t = setTimeout(()=>{
+        setExiting(true)
+        setTimeout(()=> setVisible(false), exitTime)
+      }, showTime)
+      return ()=> clearTimeout(t)
+    }
+
+    // Fallback: if image never loads, still dismiss after a short period
+    const fallback = setTimeout(()=>{
       setExiting(true)
       setTimeout(()=> setVisible(false), exitTime)
-    }, showTime)
-
-    return ()=>{
-      clearTimeout(t)
-      console.log('[Splash] unmounted')
-    }
-  },[])
+    }, 2000)
+    return ()=> clearTimeout(fallback)
+  },[imgLoaded])
 
   useEffect(()=>{
     if(!visible && typeof onFinish === 'function'){
