@@ -1,6 +1,7 @@
 import React from 'react'
 import { Navigate, useLocation } from 'react-router-dom'
 import App from './App'
+import SplashPage from './pages/SplashPage'
 
 export default function ConditionalHome(){
   // Decide whether to show the splash/onboarding flow or the main app.
@@ -28,6 +29,8 @@ export default function ConditionalHome(){
     }
   }catch(e){/* ignore */}
 
-  console.log('[ConditionalHome] redirecting to /splash')
-  return <Navigate to="/splash" replace />
+  console.log('[ConditionalHome] showing SplashPage (inline)')
+  // Render the splash inline to avoid adding a history entry via Navigate on initial load.
+  // This prevents the browser warning about session history items added without user interaction.
+  return <SplashPage />
 }
