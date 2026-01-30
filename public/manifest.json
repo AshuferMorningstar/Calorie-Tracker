@@ -8,14 +8,14 @@
   "theme_color": "#8fbf8a",
   "icons": [
     {
-      "src": "/assets/caloriewiselogo.svg",
+      "src": "/assets/Picsart_26-01-22_22-42-53-930.png",
       "sizes": "192x192",
-      "type": "image/svg+xml"
+      "type": "image/png"
     },
     {
-      "src": "/assets/caloriewiselogo.svg",
+      "src": "/assets/Picsart_26-01-22_22-42-53-930.png",
       "sizes": "512x512",
-      "type": "image/svg+xml"
+      "type": "image/png"
     }
   ]
 }
