@@ -101,4 +101,12 @@
   ,{"name_en":"Oca","name_hi":"ओका","name_hi_translit":"oca","category":"vegetable","unit":"g","calories_per_100g":70,"protein_per_100g":2.0}
   ,{"name_en":"Yacon","name_hi":"याकॉन","name_hi_translit":"yacon","category":"vegetable","unit":"g","calories_per_100g":54,"protein_per_100g":0.6}
   ,{"name_en":"Gobo (Japanese burdock)","name_hi":"गोबो","name_hi_translit":"gobo","category":"vegetable","unit":"g","calories_per_100g":72,"protein_per_100g":1.5}
+  ,{"name_en":"Soya Chunks (dry, raw)","name_hi":"सोया चंक्स (कच्चा)","name_hi_translit":"soya chunks (kaccha)","category":"protein","unit":"g","calories_per_100g":345,"protein_per_100g":52.0}
+  ,{"name_en":"Green Moong (whole, raw)","name_hi":"हरी मूंग (कच्चा)","name_hi_translit":"hari moong (kaccha)","category":"protein","unit":"g","calories_per_100g":347,"protein_per_100g":24.0}
+  ,{"name_en":"Green Moong Dal (cooked)","name_hi":"हरी मूंग दाल (पकी हुई)","name_hi_translit":"hari moong dal (paki hui)","category":"protein","unit":"g","calories_per_100g":105,"protein_per_100g":7.0}
+  ,{"name_en":"Coriander / Dhaniya (fresh)","name_hi":"धनिया","name_hi_translit":"dhaniya","category":"vegetable","unit":"g","calories_per_100g":23,"protein_per_100g":3.5}
+  ,{"name_en":"Aam ka Achar (mango pickle)","name_hi":"आम का अचार","name_hi_translit":"aam ka achar","category":"vegetable","unit":"g","calories_per_100g":400,"protein_per_100g":1.3}
+  ,{"name_en":"Nimbu ka Achar (lemon pickle)","name_hi":"निम्बू का अचार","name_hi_translit":"nimbu ka achar","category":"vegetable","unit":"g","calories_per_100g":133,"protein_per_100g":0.7}
+  ,{"name_en":"Mirch ka Achar (chilli pickle)","name_hi":"मिर्च का अचार","name_hi_translit":"mirch ka achar","category":"vegetable","unit":"g","calories_per_100g":333,"protein_per_100g":1.3}
+  ,{"name_en":"Mixed Achar (assorted pickle)","name_hi":"मिक्स अचार","name_hi_translit":"mixed achar","category":"vegetable","unit":"g","calories_per_100g":367,"protein_per_100g":2.0}
 ]
