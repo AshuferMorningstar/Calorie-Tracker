@@ -109,4 +109,6 @@
   ,{"name_en":"Nimbu ka Achar (lemon pickle)","name_hi":"निम्बू का अचार","name_hi_translit":"nimbu ka achar","category":"vegetable","unit":"g","calories_per_100g":133,"protein_per_100g":0.7}
   ,{"name_en":"Mirch ka Achar (chilli pickle)","name_hi":"मिर्च का अचार","name_hi_translit":"mirch ka achar","category":"vegetable","unit":"g","calories_per_100g":333,"protein_per_100g":1.3}
   ,{"name_en":"Mixed Achar (assorted pickle)","name_hi":"मिक्स अचार","name_hi_translit":"mixed achar","category":"vegetable","unit":"g","calories_per_100g":367,"protein_per_100g":2.0}
+  ,{"name_en":"Chia seeds","name_hi":"चिया बीज","name_hi_translit":"chia beej","category":"protein","unit":"g","calories_per_100g":486,"protein_per_100g":16.5}
+  ,{"name_en":"Flax seeds (roasted)","name_hi":"भुनी अलसी","name_hi_translit":"bhuni alsi","category":"protein","unit":"g","calories_per_100g":534,"protein_per_100g":18.3}
 ]
