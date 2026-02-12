@@ -31,8 +31,8 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 /* Instagram-like centered splash: only the logo, brief pop, then fade */
 .splash{height:100vh;display:flex;align-items:center;justify-content:center;background:var(--bg-start);z-index:2000}
 .logo-wrap{gap:0}
-.splash .app-name, .splash .subtitle{display:none}
-.splash-logo{width:140px;height:140px;opacity:0;transform:scale(.92);transition:none}
+.splash .app-name, .splash .subtitle{display:block;opacity:0.4;animation:fadeIn 300ms ease-in-out forwards}
+.splash-logo{width:140px;height:140px;opacity:0.2;transform:scale(.92);transition:none;animation:fadeIn 300ms ease-in-out forwards}
 .splash-logo.loaded{opacity:1;animation:instaPop 900ms cubic-bezier(.22,.9,.3,1) both}
 
 @keyframes instaPop{
@@ -41,6 +41,8 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
   60%{transform:scale(.96)}
   100%{transform:scale(1)}
 }
+
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
 
 .splash-exit{opacity:0;transition:opacity 360ms ease}
 

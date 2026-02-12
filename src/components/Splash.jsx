@@ -12,26 +12,30 @@ export default function Splash({onFinish}){
   },[visible])
 
   useEffect(()=>{
-    // When the logo is loaded, show it briefly then play exit animation.
-    // This mirrors Instagram's brief centered logo behavior.
-    const showTime = 800
+    // Show the splash briefly then exit
+    // On fast connections, wait for image + 3000ms
+    // On slow connections, fallback to 3000ms total
+    const showTime = imgLoaded ? 3000 : 3000
     const exitTime = 360
 
-    if(imgLoaded){
-      const t = setTimeout(()=>{
-        setExiting(true)
-        setTimeout(()=> setVisible(false), exitTime)
-      }, showTime)
-      return ()=> clearTimeout(t)
-    }
-
-    // Fallback: if image never loads, still dismiss after a short period
-    const fallback = setTimeout(()=>{
+    const t = setTimeout(()=>{
       setExiting(true)
       setTimeout(()=> setVisible(false), exitTime)
-    }, 2000)
-    return ()=> clearTimeout(fallback)
-  },[imgLoaded])
+    }, showTime)
+    
+    // Always dismiss after 3000ms max, regardless of image load
+    const fallback = setTimeout(()=>{
+      if(!exiting){
+        setExiting(true)
+        setTimeout(()=> setVisible(false), exitTime)
+      }
+    }, 3000)
+    
+    return ()=>{ 
+      clearTimeout(t)
+      clearTimeout(fallback)
+    }
+  },[imgLoaded, exiting])
 
   useEffect(()=>{
     if(!visible && typeof onFinish === 'function'){
@@ -49,6 +53,7 @@ export default function Splash({onFinish}){
           alt="Calorie Wise logo"
           className={`splash-logo ${imgLoaded ? 'loaded' : 'loading'}`}
           loading="eager"
+          fetchPriority="high"
           onLoad={() => setImgLoaded(true)}
         />
         <h1 className="app-name">Calorie Wise</h1>
