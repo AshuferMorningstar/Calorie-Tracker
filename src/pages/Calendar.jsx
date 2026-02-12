@@ -51,9 +51,9 @@ export default function Calendar(){
 
       const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
       const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
-      const activityFactor = activity === 'custom' ? 1.2 : (activityFactors[activity] || 1.2)
+      const sedentaryFactor = activityFactors['sedentary']
       const avgDailyExercise = activity === 'custom' && customCalories && workoutDays ? Math.round((customCalories * workoutDays) / 7) : 0
-      const maintenanceNoWorkout = Math.round(bmr * activityFactor)
+      const maintenanceNoWorkout = Math.round(bmr * sedentaryFactor)
 
       // detect whether user uses attendance keys anywhere in storage
       let hasAttendance = false
