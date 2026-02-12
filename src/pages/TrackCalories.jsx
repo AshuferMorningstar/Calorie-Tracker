@@ -34,6 +34,8 @@ const FOODS = [
   { id: 'mustard_oil', name: 'Mustard oil', kcal: 884, protein: 0 },
   { id: 'coconut_oil', name: 'Coconut oil', kcal: 892, protein: 0 },
   { id: 'peanut_oil', name: 'Peanut oil', kcal: 884, protein: 0 },
+  { id: 'sunflower_oil', name: 'Sunflower oil', kcal: 884, protein: 0 },
+  { id: 'soybean_oil', name: 'Soybean oil', kcal: 884, protein: 0 },
   { id: 'veg_oil', name: 'Vegetable oil', kcal: 884, protein: 0 },
   { id: 'potato', name: 'Potato (boiled)', kcal: 87, protein: 1.9 },
   { id: 'potato_raw', name: 'Potato (raw)', kcal: 77, protein: 2.0 },
@@ -244,6 +246,12 @@ const ALIASES = {
   'ragi roti': 'ragi_roti',
   'chapati': 'chapati',
   'roti': 'chapati',
+  // oils
+  'sunflower': 'sunflower_oil',
+  'sunflower oil': 'sunflower_oil',
+  'soybean': 'soybean_oil',
+  'soybean oil': 'soybean_oil',
+  'soy oil': 'soybean_oil',
   // south indian
   'dosa': 'dosa_plain',
   'masala dosa': 'masala_dosa',
