@@ -52,6 +52,7 @@ export default function Calendar(){
       const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
       const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
       const sedentaryFactor = activityFactors['sedentary']
+      const chosenActivityFactor = activity === 'custom' ? sedentaryFactor : (activityFactors[activity] || sedentaryFactor)
       const avgDailyExercise = activity === 'custom' && customCalories && workoutDays ? Math.round((customCalories * workoutDays) / 7) : 0
       const maintenanceNoWorkout = Math.round(bmr * sedentaryFactor)
 
@@ -65,7 +66,7 @@ export default function Calendar(){
       }catch(e){}
 
       if(!targetKg || goal === 'maintain' || timelineMonths === 0){
-        return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, diet: maintenanceNoWorkout }
+        return { bmr, maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, activity, chosenActivityFactor, sedentaryFactor, diet: maintenanceNoWorkout }
       }
 
       const diffKg = currentKg - targetKg
@@ -76,11 +77,11 @@ export default function Calendar(){
       if(diffKg > 0){
         const dietNoWorkout = Math.max(1000, maintenanceNoWorkout - dailyKcal)
         const dietWithExercise = Math.max(1000, maintenanceNoWorkout + avgDailyExercise - dailyKcal)
-        return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, dietNoWorkout, dietWithExercise }
+        return { bmr, maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, activity, chosenActivityFactor, sedentaryFactor, dietNoWorkout, dietWithExercise }
       }else{
         const dietNoWorkout = maintenanceNoWorkout + dailyKcal
         const dietWithExercise = maintenanceNoWorkout + avgDailyExercise + dailyKcal
-        return { maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, dietNoWorkout, dietWithExercise }
+        return { bmr, maintenanceNoWorkout, avgDailyExercise, hasAttendance, customCalories, workoutDays, activity, chosenActivityFactor, sedentaryFactor, dietNoWorkout, dietWithExercise }
       }
     }catch(e){ return null }
   },[storageTick])
@@ -121,7 +122,18 @@ export default function Calendar(){
               dailyExercise = Math.round((plan.customCalories * plan.workoutDays) / 7)
             }
           }
-          const maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+          // for non-custom activities, use the activity factor on workout days (only if tracking attendance)
+          let maintenanceForDay
+          if(burnedVal){
+            maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedVal)
+          }else if(plan.activity === 'custom'){
+            maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+          }else if(plan.hasAttendance && isWorkoutDay){
+            // non-custom activity with attendance tracking: use activity factor on marked workout days
+            maintenanceForDay = Math.round(plan.bmr * plan.chosenActivityFactor)
+          }else{
+            maintenanceForDay = plan.maintenanceNoWorkout
+          }
           const deficit = (maintenanceForDay - consumed)
           total += deficit
           loggedDays += 1
@@ -166,7 +178,18 @@ export default function Calendar(){
             dailyExercise = Math.round((plan.customCalories * plan.workoutDays) / 7)
           }
         }
-        const maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+        // for non-custom activities, use the activity factor on workout days (only if tracking attendance)
+        let maintenanceForDay
+        if(burnedVal){
+          maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedVal)
+        }else if(plan.activity === 'custom'){
+          maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+        }else if(plan.hasAttendance && isWorkoutDay){
+          // non-custom activity with attendance tracking: use activity factor on marked workout days
+          maintenanceForDay = Math.round(plan.bmr * plan.chosenActivityFactor)
+        }else{
+          maintenanceForDay = plan.maintenanceNoWorkout
+        }
         const deficit = (maintenanceForDay - consumed)
         total += deficit
         loggedDays += 1
@@ -375,7 +398,19 @@ function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
         dailyExercise = Math.round((plan.customCalories * plan.workoutDays) / 7)
       }
     }
-    const deficit = plan ? Math.round(plan.maintenanceNoWorkout + dailyExercise - consumed) : null
+    // for non-custom activities, use the activity factor on workout days (only if tracking attendance)
+    let maintenanceForDay
+    if(burnedVal){
+      maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedVal)
+    }else if(plan.activity === 'custom'){
+      maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
+    }else if(plan.hasAttendance && isAttended){
+      // non-custom activity with attendance tracking: use activity factor on marked workout days
+      maintenanceForDay = Math.round(plan.bmr * plan.chosenActivityFactor)
+    }else{
+      maintenanceForDay = plan.maintenanceNoWorkout
+    }
+    const deficit = plan ? Math.round(maintenanceForDay - consumed) : null
 
     return (
       <div style={{marginTop:8,textAlign:'center',fontSize:13}}>
