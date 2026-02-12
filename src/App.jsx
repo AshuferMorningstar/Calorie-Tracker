@@ -13,6 +13,7 @@ export default function App(){
   const [darkMode, setDarkMode] = useState(() => {
     try{ return localStorage.getItem('calorieWise.theme') === 'dark' }catch(e){return false}
   })
+  const [installPrompt, setInstallPrompt] = useState(null)
 
   useEffect(()=>{
     try{
@@ -21,6 +22,16 @@ export default function App(){
       localStorage.setItem('calorieWise.theme', darkMode ? 'dark' : 'light')
     }catch(e){}
   },[darkMode])
+
+  // Listen for PWA install prompt
+  useEffect(()=>{
+    const handleBeforeInstallPrompt = (e) => {
+      e.preventDefault()
+      setInstallPrompt(e)
+    }
+    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+  },[])
 
   // no inline profile editing in menu; profile is edited on the dedicated /profile page
 
@@ -75,6 +86,20 @@ export default function App(){
       }
     }catch(e){}
     setMenuOpen(false)
+  }
+
+  const handleInstallClick = async () => {
+    if(!installPrompt) return
+    try{
+      installPrompt.prompt()
+      const { outcome } = await installPrompt.userChoice
+      if(outcome === 'accepted'){
+        setInstallPrompt(null)
+      }
+      closeMenu()
+    }catch(e){
+      console.error('Install error:', e)
+    }
   }
 
   const toggleMenu = ()=> menuOpen ? closeMenu() : openMenu()
@@ -369,6 +394,9 @@ export default function App(){
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
             <button className="card" onClick={()=>{ navigate('/', { state: { fromSplash: true } }); closeMenu() }}>Home</button>
+            {installPrompt && (
+              <button className="card" onClick={handleInstallClick}>Download app</button>
+            )}
             <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
           </nav>
         </div>
