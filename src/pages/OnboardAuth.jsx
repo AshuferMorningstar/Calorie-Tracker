@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signInWithGoogle, signUpWithEmail, signInWithEmail } from '../services/auth'
+import { signInWithGoogle, signUpWithEmail, signInWithEmail, getGoogleRedirectResult } from '../services/auth'
 
 export default function OnboardAuth(){
   const navigate = useNavigate()
@@ -11,6 +11,30 @@ export default function OnboardAuth(){
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
 
+  useEffect(() => {
+    let cancelled = false
+    const checkRedirect = async () => {
+      try {
+        const user = await getGoogleRedirectResult()
+        if (!cancelled && user) {
+          console.log('[OnboardAuth] User signed in with Google (redirect):', user.email)
+          navigate('/onboard', { state: { fromAuth: true } })
+        }
+      } catch (e) {
+        if (!cancelled) {
+          console.error('[OnboardAuth] Google redirect failed:', e.message)
+          setError(e.message || 'Failed to complete Google sign-in. Please try again.')
+        }
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
+    }
+    checkRedirect()
+    return () => {
+      cancelled = true
+    }
+  }, [navigate])
+
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
     return emailRegex.test(email)
@@ -20,9 +44,11 @@ export default function OnboardAuth(){
     setLoading(true)
     setError(null)
     try{
-      const user = await signInWithGoogle()
-      console.log('[OnboardAuth] User signed in with Google:', user.email)
-      navigate('/onboard', { state: { fromAuth: true } })
+      const result = await signInWithGoogle()
+      if (result?.user) {
+        console.log('[OnboardAuth] User signed in with Google:', result.user.email)
+        navigate('/onboard', { state: { fromAuth: true } })
+      }
     }catch(e){
       console.error('[OnboardAuth] Google sign-in failed:', e.message)
       setError(e.message || 'Failed to sign in with Google. Please try again.')
