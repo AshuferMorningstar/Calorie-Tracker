@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client'
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import App from './App'
 import SplashPage from './pages/SplashPage'
+import OnboardAuth from './pages/OnboardAuth'
 import Onboard from './pages/Onboard'
 import OnboardDetails from './pages/OnboardDetails'
 import OnboardWeightGoal from './pages/OnboardWeightGoal'
@@ -20,6 +21,7 @@ root.render(
       <Routes>
         <Route path="/" element={<ConditionalHome/>} />
         <Route path="/splash" element={<SplashPage/>} />
+        <Route path="/onboard/auth" element={<OnboardAuth/>} />
         <Route path="/onboard" element={<Onboard/>} />
         <Route path="/onboard/details" element={<OnboardDetails/>} />
         <Route path="/onboard/weight" element={<OnboardWeightGoal/>} />

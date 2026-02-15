@@ -14,9 +14,9 @@ export default function SplashPage(){
         return
       }
     }catch(e){}
-    console.log('[SplashPage] finished; navigating to /onboard')
-    // navigate to onboarding (login-like) page
-    navigate('/onboard')
+    console.log('[SplashPage] finished; navigating to /onboard/auth')
+    // navigate to authentication page
+    navigate('/onboard/auth')
   }
 
   useEffect(()=>{

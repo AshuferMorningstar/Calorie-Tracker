@@ -1,5 +1,7 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { onAuthChange, signInWithGoogle, signOut } from './services/auth'
+import { loadUserDataFromFirestore, saveUserDataToFirestore, syncDataBeforeLogout } from './services/firestore'
 
 export default function App(){
   const navigate = useNavigate()
@@ -14,6 +16,10 @@ export default function App(){
     try{ return localStorage.getItem('calorieWise.theme') === 'dark' }catch(e){return false}
   })
   const [installPrompt, setInstallPrompt] = useState(null)
+  const [currentUser, setCurrentUser] = useState(null)
+  const [authLoading, setAuthLoading] = useState(true)
+  const [isOnline, setIsOnline] = useState(() => navigator.onLine)
+  const [syncStatus, setSyncStatus] = useState('synced')
 
   useEffect(()=>{
     try{
@@ -31,6 +37,64 @@ export default function App(){
     }
     window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
     return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
+  },[])
+
+  // Listen for online/offline status
+  useEffect(()=>{
+    const handleOnline = () => {
+      setIsOnline(true)
+      setSyncStatus('syncing')
+      if(currentUser){
+        syncLocalDataToFirestore(currentUser.uid)
+      }
+    }
+    const handleOffline = () => {
+      setIsOnline(false)
+      setSyncStatus('offline')
+    }
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  },[currentUser])
+
+  const syncLocalDataToFirestore = async (userId) => {
+    if(!isOnline) return
+    try{
+      setSyncStatus('syncing')
+      await saveUserDataToFirestore(userId)
+      setSyncStatus('synced')
+    }catch(e){
+      console.warn('[App] Sync failed:', e.message)
+      setSyncStatus('offline')
+    }
+  }
+
+  // Listen for auth state changes and load user data from Firestore when signed in
+  useEffect(()=>{
+    const unsubscribe = onAuthChange(async (user) => {
+      setCurrentUser(user)
+      setAuthLoading(false)
+      if(user){
+        try{
+          console.log('[App] User signed in:', user.email)
+          // Load user data from Firestore and restore to localStorage
+          await loadUserDataFromFirestore(user.uid)
+          setSyncStatus('synced')
+        }catch(e){
+          console.warn('[App] Failed to load cloud data:', e.message)
+          if(isOnline){
+            setSyncStatus('offline')
+          }
+        }
+      }else{
+        console.log('[App] User signed out')
+        setSyncStatus('synced')
+      }
+    })
+    return () => unsubscribe()
   },[])
 
   // no inline profile editing in menu; profile is edited on the dedicated /profile page
@@ -86,6 +150,32 @@ export default function App(){
       }
     }catch(e){}
     setMenuOpen(false)
+  }
+
+  const handleSignIn = async () => {
+    try{
+      const user = await signInWithGoogle()
+      console.log('[App] User signed in:', user.email)
+      // Save current data to Firestore
+      await saveUserDataToFirestore(user.uid)
+      closeMenu()
+    }catch(e){
+      console.error('[App] Sign-in failed:', e.message)
+    }
+  }
+
+  const handleSignOut = async () => {
+    try{
+      if(currentUser && isOnline){
+        // Sync data before signing out if online
+        await syncDataBeforeLogout(currentUser.uid)
+      }
+      await signOut()
+      setSyncStatus('synced')
+      closeMenu()
+    }catch(e){
+      console.error('[App] Sign-out failed:', e.message)
+    }
   }
 
   const handleInstallClick = async () => {
@@ -302,6 +392,11 @@ export default function App(){
           <h2>Calorie Wise</h2>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
+          {currentUser && !authLoading && (
+            <div style={{fontSize:12,color:'var(--muted)',marginRight:4}} title={currentUser.email}>
+              {currentUser.displayName || currentUser.email?.split('@')[0]}
+            </div>
+          )}
           <button ref={hamburgerRef} className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu" onClick={toggleMenu}>☰</button>
         </div>
       </div>
@@ -333,17 +428,18 @@ export default function App(){
               <div style={{fontSize:12,color:'var(--muted)'}}>Calories burned</div>
             </button>
           </div>
+        </div>
 
-          <div style={{gridColumn: '1 / -1', display:'flex', gap:8, alignItems:'stretch', flexWrap:'wrap'}}>
-            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/track')}>Track calories</button>
-            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/calendar')}>
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{new Date().toLocaleString(undefined,{weekday:'short'})}</div>
-                <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{new Date().getDate()}</div>
-                <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
-              </div>
-            </button>
-            <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={() => {
+        <div style={{gridColumn: '1 / -1', display:'flex', gap:8, alignItems:'stretch', flexWrap:'wrap'}}>
+          <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/track')}>Track calories</button>
+          <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/calendar')}>
+            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+              <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{new Date().toLocaleString(undefined,{weekday:'short'})}</div>
+              <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{new Date().getDate()}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
+            </div>
+          </button>
+          <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={() => {
               // if a past day is selected in WeeklyAttendance, mark/unmark that date; otherwise toggle today
               try{
                 const iso = selectedAttendanceIso
@@ -363,15 +459,24 @@ export default function App(){
                 <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{workoutButtonLabel}</div>
               </div>
             </button>
-          </div>
         </div>
 
         <WeeklyAttendance storageTick={storageTick} setStorageTick={setStorageTick} setWorkoutToday={setWorkoutToday} toggleAttendance={toggleAttendance} selectedIso={selectedAttendanceIso} setSelectedIso={setSelectedAttendanceIso} />
-
-        
       </main>
 
-      { /* backdrop to dim page while panel open; clicking closes the panel */ }
+      {/* Offline/Sync indicator banners */}
+      {!isOnline && (
+        <div className="offline-banner" role="status" aria-live="polite">
+          📡 You're offline • Changes will sync when online
+        </div>
+      )}
+      {isOnline && syncStatus === 'syncing' && (
+        <div className="sync-banner" role="status" aria-live="polite">
+          ⚡ Syncing your data...
+        </div>
+      )}
+
+      {/* backdrop to dim page while panel open; clicking closes the panel */}
       <div className={`panel-backdrop ${menuOpen ? 'open' : ''}`} onClick={closeMenu} aria-hidden="true" />
 
       <div ref={panelRef} className={`slide-panel ${menuOpen ? 'open' : ''}`} role="dialog" aria-hidden={!menuOpen}>
@@ -394,8 +499,16 @@ export default function App(){
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
             <button className="card" onClick={()=>{ navigate('/', { state: { fromSplash: true } }); closeMenu() }}>Home</button>
+            {currentUser ? (
+              <>
+                <div style={{fontSize:12,color:'var(--muted)',padding:'0 12px',marginTop:4}}>Signed in as {currentUser.email}</div>
+                <button className="card" style={{color:'var(--accent1)'}} onClick={handleSignOut}>Sign out</button>
+              </>
+            ) : (
+              <button className="card" style={{color:'var(--accent1)'}} onClick={handleSignIn}>Sign in with Google</button>
+            )}
             {installPrompt && (
-              <button className="card" onClick={handleInstallClick}>Download app</button>
+              <button className="card" onClick={handleInstallClick}>Install app</button>
             )}
             <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
           </nav>
