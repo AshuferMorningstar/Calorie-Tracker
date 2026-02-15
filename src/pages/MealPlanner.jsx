@@ -1,14 +1,23 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const MAX_RECIPES = 30
 
 export default function MealPlanner() {
   const navigate = useNavigate()
-  const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10))
+  const todayISO = () => {
+    const d = new Date()
+    const y = d.getFullYear()
+    const m = String(d.getMonth() + 1).padStart(2, '0')
+    const day = String(d.getDate()).padStart(2, '0')
+    return `${y}-${m}-${day}`
+  }
+
+  const [selectedDate, setSelectedDate] = useState(() => todayISO())
   const [savedRecipes, setSavedRecipes] = useState([])
   const [entriesForDate, setEntriesForDate] = useState([])
   const [selectedRecipeIds, setSelectedRecipeIds] = useState(new Set())
+  const prevTodayRef = useRef(todayISO())
   
   // Load saved recipes
   useEffect(() => {
@@ -24,6 +33,31 @@ export default function MealPlanner() {
   // Load added recipes for selected date
   useEffect(() => {
     loadAddedRecipesForDate()
+  }, [selectedDate])
+
+  // Auto-advance date when the day changes if user is on "today"
+  useEffect(() => {
+    let timer = null
+    const schedule = () => {
+      const now = new Date()
+      const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1)
+      const ms = Math.max(1000, next.getTime() - now.getTime() + 50)
+      timer = setTimeout(() => {
+        try {
+          const newToday = todayISO()
+          if (selectedDate === prevTodayRef.current) {
+            setSelectedDate(newToday)
+          }
+          prevTodayRef.current = newToday
+        } catch (e) {}
+        schedule()
+      }, ms)
+    }
+    prevTodayRef.current = todayISO()
+    schedule()
+    return () => {
+      if (timer) clearTimeout(timer)
+    }
   }, [selectedDate])
 
   const loadRecipes = () => {
@@ -67,12 +101,6 @@ export default function MealPlanner() {
       saveRecipes(updated)
     }
   
-    const isMealPlannerEntry = (item) => {
-      if (!item) return false
-      if (item.source === 'mealplanner') return true
-      return Array.isArray(item.ingredients)
-    }
-
     const handleAddRecipeToDate = (recipe) => {
       const item = {
         id: Date.now(),
@@ -99,18 +127,6 @@ export default function MealPlanner() {
       }
     }
   
-    const handleRemoveFromDate = (itemId) => {
-      const key = `calorieWise.entries.${selectedDate}`
-      const updated = entriesForDate.filter(item => item.id !== itemId)
-      try {
-        if (updated.length > 0) localStorage.setItem(key, JSON.stringify(updated))
-        else localStorage.removeItem(key)
-        setEntriesForDate(updated)
-        window.dispatchEvent(new Event('calorieWise.entriesChanged'))
-      } catch (e) {
-        console.error('Failed to remove recipe:', e)
-      }
-    }
   
     const toggleRecipeSelect = (recipeId) => {
       setSelectedRecipeIds(prev => {
@@ -148,10 +164,6 @@ export default function MealPlanner() {
         console.error('Failed to add recipes to date:', e)
       }
     }
-  
-    const mealPlannerEntries = entriesForDate.filter(isMealPlannerEntry)
-    const totalCalories = mealPlannerEntries.reduce((sum, item) => sum + (item.calories || 0), 0)
-    const totalProtein = mealPlannerEntries.reduce((sum, item) => sum + (item.protein || 0), 0)
   
     const handleBack = () => {
       try {
@@ -193,66 +205,6 @@ export default function MealPlanner() {
               }}
             />
           </div>
-  
-          {/* Added Recipes for Selected Date - Only show if there are recipes */}
-          {mealPlannerEntries.length > 0 && (
-            <div className="card" style={{ marginBottom: 16, padding: 12 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
-                <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
-                  {new Date(selectedDate + 'T00:00:00').toLocaleDateString(undefined, {
-                    weekday: 'short',
-                    month: 'short',
-                    day: 'numeric'
-                  })}
-                </h2>
-                <div style={{ fontSize: 14, fontWeight: 500 }}>
-                  {totalCalories} kcal • {totalProtein}g protein
-                </div>
-              </div>
-  
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {mealPlannerEntries.map(item => (
-                  <div 
-                    key={item.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'start',
-                      padding: 10,
-                      borderRadius: 6,
-                      background: 'var(--bg)',
-                      border: '1px solid var(--border)'
-                    }}
-                  >
-                    <div style={{ flex: 1 }}>
-                      <div style={{ fontSize: 14, fontWeight: 500 }}>
-                        {item.name}
-                      </div>
-                      <div style={{ fontSize: 12, opacity: 0.7, marginTop: 4 }}>
-                        {item.calories} kcal
-                        {item.protein !== null && ` • ${item.protein}g protein`}
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleRemoveFromDate(item.id)}
-                      style={{
-                        padding: '6px 12px',
-                        fontSize: 12,
-                        background: 'transparent',
-                        color: '#ef4444',
-                        border: '1px solid #ef4444',
-                        borderRadius: 4,
-                        cursor: 'pointer',
-                        fontWeight: 500
-                      }}
-                    >
-                      Remove
-                    </button>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
   
           {/* Add Recipe Button */}
           <button
