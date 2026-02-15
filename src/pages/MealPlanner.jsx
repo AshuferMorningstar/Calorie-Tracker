@@ -7,7 +7,7 @@ export default function MealPlanner() {
   const navigate = useNavigate()
   const [selectedDate, setSelectedDate] = useState(() => new Date().toISOString().slice(0, 10))
   const [savedRecipes, setSavedRecipes] = useState([])
-  const [addedRecipes, setAddedRecipes] = useState([])
+  const [entriesForDate, setEntriesForDate] = useState([])
   const [selectedRecipeIds, setSelectedRecipeIds] = useState(new Set())
   
   // Load saved recipes
@@ -43,9 +43,9 @@ export default function MealPlanner() {
         const stored = localStorage.getItem(key)
         if (stored) {
           const entries = JSON.parse(stored)
-          setAddedRecipes(entries)
+          setEntriesForDate(entries)
         } else {
-          setAddedRecipes([])
+          setEntriesForDate([])
         }
       } catch (e) {
         console.error('Failed to load entries:', e)
@@ -67,9 +67,16 @@ export default function MealPlanner() {
       saveRecipes(updated)
     }
   
+    const isMealPlannerEntry = (item) => {
+      if (!item) return false
+      if (item.source === 'mealplanner') return true
+      return Array.isArray(item.ingredients)
+    }
+
     const handleAddRecipeToDate = (recipe) => {
       const item = {
         id: Date.now(),
+        source: 'mealplanner',
         name: recipe.recipeName || recipe.name,
         amount: recipe.ingredients ? null : recipe.amount,
         kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
@@ -82,10 +89,10 @@ export default function MealPlanner() {
         ingredients: recipe.ingredients || null,
       }
       const key = `calorieWise.entries.${selectedDate}`
-      const updated = [...addedRecipes, item]
+      const updated = [...entriesForDate, item]
       try {
         localStorage.setItem(key, JSON.stringify(updated))
-        setAddedRecipes(updated)
+        setEntriesForDate(updated)
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
       } catch (e) {
         console.error('Failed to add recipe to date:', e)
@@ -94,11 +101,11 @@ export default function MealPlanner() {
   
     const handleRemoveFromDate = (itemId) => {
       const key = `calorieWise.entries.${selectedDate}`
-      const updated = addedRecipes.filter(item => item.id !== itemId)
+      const updated = entriesForDate.filter(item => item.id !== itemId)
       try {
         if (updated.length > 0) localStorage.setItem(key, JSON.stringify(updated))
         else localStorage.removeItem(key)
-        setAddedRecipes(updated)
+        setEntriesForDate(updated)
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
       } catch (e) {
         console.error('Failed to remove recipe:', e)
@@ -119,6 +126,7 @@ export default function MealPlanner() {
       const recipesToAdd = savedRecipes.filter(r => selectedRecipeIds.has(r.id))
       const newItems = recipesToAdd.map(recipe => ({
         id: Date.now() + Math.random(),
+        source: 'mealplanner',
         name: recipe.recipeName || recipe.name,
         amount: recipe.ingredients ? null : recipe.amount,
         kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
@@ -130,10 +138,10 @@ export default function MealPlanner() {
         protein: recipe.totalProtein || recipe.protein,
         ingredients: recipe.ingredients || null
       }))
-      const updated = [...addedRecipes, ...newItems]
+      const updated = [...entriesForDate, ...newItems]
       try {
         localStorage.setItem(key, JSON.stringify(updated))
-        setAddedRecipes(updated)
+        setEntriesForDate(updated)
         setSelectedRecipeIds(new Set())
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
       } catch (e) {
@@ -141,8 +149,9 @@ export default function MealPlanner() {
       }
     }
   
-    const totalCalories = addedRecipes.reduce((sum, item) => sum + (item.calories || 0), 0)
-    const totalProtein = addedRecipes.reduce((sum, item) => sum + (item.protein || 0), 0)
+    const mealPlannerEntries = entriesForDate.filter(isMealPlannerEntry)
+    const totalCalories = mealPlannerEntries.reduce((sum, item) => sum + (item.calories || 0), 0)
+    const totalProtein = mealPlannerEntries.reduce((sum, item) => sum + (item.protein || 0), 0)
   
     const handleBack = () => {
       try {
@@ -186,7 +195,7 @@ export default function MealPlanner() {
           </div>
   
           {/* Added Recipes for Selected Date - Only show if there are recipes */}
-          {addedRecipes.length > 0 && (
+          {mealPlannerEntries.length > 0 && (
             <div className="card" style={{ marginBottom: 16, padding: 12 }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                 <h2 style={{ fontSize: 18, fontWeight: 600, margin: 0 }}>
@@ -202,7 +211,7 @@ export default function MealPlanner() {
               </div>
   
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                {addedRecipes.map(item => (
+                {mealPlannerEntries.map(item => (
                   <div 
                     key={item.id}
                     style={{
