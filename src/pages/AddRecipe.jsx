@@ -1,0 +1,831 @@
+import React, { useState, useEffect, useMemo, useRef } from 'react'
+import { createPortal } from 'react-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
+import vegetables from '../data/vegetables_india.json'
+import fruits from '../data/fruits.json'
+import foodsIndia from '../data/foods_india.json'
+import './TrackCalories.autocomplete.css'
+
+// small built-in food database (kcal per 100 g where applicable)
+const FOODS = [
+  { id: 'chicken', name: 'Chicken breast', kcal: 165, protein: 31.0 },
+  { id: 'rice', name: 'White rice (cooked)', kcal: 130, protein: 2.7 },
+  { id: 'rice_raw', name: 'White rice (raw)', kcal: 365, protein: 7.1 },
+  { id: 'basmati_rice', name: 'Basmati rice (cooked)', kcal: 130, protein: 2.6 },
+  { id: 'basmati_rice_raw', name: 'Basmati rice (raw)', kcal: 365, protein: 7.1 },
+  { id: 'brown_rice', name: 'Brown rice (cooked)', kcal: 123, protein: 2.6 },
+  { id: 'brown_rice_raw', name: 'Brown rice (raw)', kcal: 370, protein: 7.5 },
+  { id: 'chapati', name: 'Roti / Chapati (whole wheat)', kcal: 250, protein: 9.0 },
+  { id: 'chapati_unit', name: 'Roti / Chapati (whole wheat) - piece', unit: 'count', kcalPerUnit: 250, proteinPerUnit: 9.0 },
+  { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340, protein: 13.2 },
+  { id: 'besan', name: 'Besan (gram flour)', kcal: 387, protein: 22.4 },
+  { id: 'moong_dal', name: 'Moong dal (cooked)', kcal: 105, protein: 7.0 },
+  { id: 'moong_dal_raw', name: 'Moong dal (raw/dry)', kcal: 347, protein: 24.0 },
+  { id: 'toor_dal', name: 'Toor dal (cooked)', kcal: 120, protein: 7.0 },
+  { id: 'toor_dal_raw', name: 'Toor dal (raw/dry)', kcal: 360, protein: 22.0 },
+  { id: 'masoor_dal', name: 'Masoor dal (cooked)', kcal: 116, protein: 9.0 },
+  { id: 'masoor_dal_raw', name: 'Masoor dal (raw/dry)', kcal: 352, protein: 25.8 },
+  { id: 'chickpeas', name: 'Chickpeas (cooked)', kcal: 164, protein: 8.9 },
+  { id: 'chickpeas_raw', name: 'Chickpeas (raw/dry)', kcal: 364, protein: 19.3 },
+  { id: 'rajma', name: 'Kidney beans (cooked)', kcal: 140, protein: 8.7 },
+  { id: 'rajma_raw', name: 'Kidney beans (raw/dry)', kcal: 337, protein: 21.6 },
+  { id: 'paneer', name: 'Paneer (cottage cheese)', kcal: 265, protein: 18.3 },
+  { id: 'ghee', name: 'Ghee', kcal: 900, protein: 0 },
+  { id: 'mustard_oil', name: 'Mustard oil', kcal: 884, protein: 0 },
+  { id: 'coconut_oil', name: 'Coconut oil', kcal: 892, protein: 0 },
+  { id: 'peanut_oil', name: 'Peanut oil', kcal: 884, protein: 0 },
+  { id: 'sunflower_oil', name: 'Sunflower oil', kcal: 884, protein: 0 },
+  { id: 'soybean_oil', name: 'Soybean oil', kcal: 884, protein: 0 },
+  { id: 'veg_oil', name: 'Vegetable oil', kcal: 884, protein: 0 },
+  { id: 'potato', name: 'Potato (boiled)', kcal: 87, protein: 1.9 },
+  { id: 'potato_raw', name: 'Potato (raw)', kcal: 77, protein: 2.0 },
+  { id: 'onion', name: 'Onion', kcal: 40, protein: 1.1 },
+  { id: 'tomato', name: 'Tomato', kcal: 18, protein: 0.9 },
+  { id: 'garlic', name: 'Garlic', kcal: 149, protein: 6.4 },
+  { id: 'ginger', name: 'Ginger', kcal: 80, protein: 1.8 },
+  { id: 'spinach', name: 'Spinach (cooked)', kcal: 23, protein: 2.9 },
+  { id: 'spinach_raw', name: 'Spinach (raw)', kcal: 23, protein: 2.9 },
+  { id: 'cauliflower', name: 'Cauliflower (cooked)', kcal: 25, protein: 1.9 },
+  { id: 'cauliflower_raw', name: 'Cauliflower (raw)', kcal: 25, protein: 1.9 },
+  { id: 'banana', name: 'Banana', kcal: 89, protein: 1.1 },
+  { id: 'apple', name: 'Apple', kcal: 52, protein: 0.3 },
+  { id: 'milk', name: 'Milk (whole)', kcal: 60, protein: 3.2 },
+  { id: 'bread', name: 'Bread (white)', kcal: 265, protein: 9.0 },
+  { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 62, proteinPer100g: 13.0, proteinPerUnit: 6.5 },
+  { id: 'sugar', name: 'Sugar', kcal: 387, protein: 0 },
+  { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383, protein: 0 },
+
+  // Common Indian breads / unit items
+  { id: 'naan_plain', name: 'Naan (plain)', unit: 'count', kcalPerUnit: 270, proteinPerUnit: 8.0 },
+  { id: 'naan_butter', name: 'Butter naan', unit: 'count', kcalPerUnit: 350, proteinPerUnit: 8.0 },
+  { id: 'naan_garlic', name: 'Garlic naan', unit: 'count', kcalPerUnit: 330, proteinPerUnit: 8.0 },
+  { id: 'naan_stuffed', name: 'Stuffed naan (cheese/keema)', unit: 'count', kcalPerUnit: 380, proteinPerUnit: 10.0 },
+  { id: 'kulcha', name: 'Kulcha', unit: 'count', kcalPerUnit: 260, proteinPerUnit: 7.0 },
+  { id: 'lachha_paratha', name: 'Lachha Paratha', unit: 'count', kcalPerUnit: 320, proteinPerUnit: 6.0 },
+  { id: 'paratha_plain', name: 'Paratha (plain)', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 6.0 },
+  { id: 'aloo_paratha', name: 'Aloo Paratha', unit: 'count', kcalPerUnit: 350, proteinPerUnit: 6.0 },
+  { id: 'sattu_paratha', name: 'Sattu Paratha', unit: 'count', kcalPerUnit: 330, proteinPerUnit: 8.0 },
+  { id: 'missi_roti', name: 'Missi Roti', unit: 'count', kcalPerUnit: 220, proteinPerUnit: 8.0 },
+  { id: 'roomali_roti', name: 'Roomali Roti', unit: 'count', kcalPerUnit: 200, proteinPerUnit: 5.0 },
+  { id: 'parotta', name: 'Parotta / Malabar Parotta', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 6.0 },
+  { id: 'puri_small', name: 'Puri (small)', unit: 'count', kcalPerUnit: 110, proteinPerUnit: 1.5 },
+  { id: 'puri', name: 'Puri (medium)', unit: 'count', kcalPerUnit: 140, proteinPerUnit: 2.0 },
+  { id: 'puri_large', name: 'Puri (large)', unit: 'count', kcalPerUnit: 180, proteinPerUnit: 2.8 },
+  { id: 'maida_puri_small', name: 'Maida Puri small (refined flour)', unit: 'count', kcalPerUnit: 120, proteinPerUnit: 1.8 },
+  { id: 'maida_puri', name: 'Maida Puri medium (refined flour)', unit: 'count', kcalPerUnit: 150, proteinPerUnit: 2.5 },
+  { id: 'maida_puri_large', name: 'Maida Puri large (refined flour)', unit: 'count', kcalPerUnit: 190, proteinPerUnit: 3.2 },
+  { id: 'aata_puri_small', name: 'Aata Puri small (whole wheat)', unit: 'count', kcalPerUnit: 115, proteinPerUnit: 2.2 },
+  { id: 'aata_puri', name: 'Aata Puri medium (whole wheat)', unit: 'count', kcalPerUnit: 145, proteinPerUnit: 3.0 },
+  { id: 'aata_puri_large', name: 'Aata Puri large (whole wheat)', unit: 'count', kcalPerUnit: 180, proteinPerUnit: 3.8 },
+  { id: 'bhatura', name: 'Bhatura', unit: 'count', kcalPerUnit: 400, proteinPerUnit: 6.0 },
+
+  // South Indian breakfast items (unit-based)
+  { id: 'dosa_plain', name: 'Dosa (plain)', unit: 'count', kcalPerUnit: 168, proteinPerUnit: 4.0 },
+  { id: 'idli', name: 'Idli', unit: 'count', kcalPerUnit: 58, proteinPerUnit: 2.0 },
+  { id: 'medu_vada', name: 'Medu Vada', unit: 'count', kcalPerUnit: 135, proteinPerUnit: 3.5 },
+  { id: 'suji_chilla', name: 'Suji Chilla (with vegetables)', unit: 'count', kcalPerUnit: 130, proteinPerUnit: 4.5 },
+  { id: 'besan_chilla', name: 'Besan Chilla (with vegetables)', unit: 'count', kcalPerUnit: 160, proteinPerUnit: 6.5 },
+  { id: 'suji_besan_chilla', name: 'Suji Besan Mix Chilla (with vegetables)', unit: 'count', kcalPerUnit: 145, proteinPerUnit: 5.5 },
+  // additional breads and regional flatbreads
+  { id: 'paneer_paratha', name: 'Paneer Paratha', unit: 'count', kcalPerUnit: 380, proteinPerUnit: 9.0 },
+  { id: 'gobi_paratha', name: 'Gobi Paratha', unit: 'count', kcalPerUnit: 340, proteinPerUnit: 6.0 },
+  { id: 'mooli_paratha', name: 'Mooli Paratha', unit: 'count', kcalPerUnit: 330, proteinPerUnit: 6.0 },
+  { id: 'methi_paratha', name: 'Methi Paratha', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 6.0 },
+  { id: 'onion_paratha', name: 'Onion Paratha', unit: 'count', kcalPerUnit: 320, proteinPerUnit: 6.0 },
+  { id: 'keema_naan', name: 'Keema Naan', unit: 'count', kcalPerUnit: 390, proteinPerUnit: 12.0 },
+  { id: 'peshawari_naan', name: 'Peshawari Naan', unit: 'count', kcalPerUnit: 410, proteinPerUnit: 8.0 },
+  { id: 'cheese_naan', name: 'Cheese Naan', unit: 'count', kcalPerUnit: 400, proteinPerUnit: 10.0 },
+  { id: 'amritsari_kulcha', name: 'Amritsari Kulcha', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 8.0 },
+  { id: 'luchi', name: 'Luchi', unit: 'count', kcalPerUnit: 150, proteinPerUnit: 2.0 },
+  { id: 'bhakri', name: 'Bhakri', unit: 'count', kcalPerUnit: 190, proteinPerUnit: 4.0 },
+  { id: 'thepla', name: 'Thepla', unit: 'count', kcalPerUnit: 180, proteinPerUnit: 5.0 },
+  { id: 'bajra_roti', name: 'Bajra Roti', unit: 'count', kcalPerUnit: 210, proteinPerUnit: 5.0 },
+  { id: 'jowar_roti', name: 'Jowar Roti', unit: 'count', kcalPerUnit: 200, proteinPerUnit: 5.0 },
+  { id: 'makki_roti', name: 'Makki Roti', unit: 'count', kcalPerUnit: 230, proteinPerUnit: 4.0 },
+  { id: 'ragi_roti', name: 'Ragi Roti', unit: 'count', kcalPerUnit: 200, proteinPerUnit: 5.0 },
+  { id: 'parotta_kothu', name: 'Kothu Parotta (serving)', unit: 'count', kcalPerUnit: 420, proteinPerUnit: 8.0 },
+  { id: 'kulcha_paneer', name: 'Paneer Kulcha', unit: 'count', kcalPerUnit: 320, proteinPerUnit: 9.0 },
+  { id: 'batata_vada', name: 'Batata Vada', unit: 'count', kcalPerUnit: 160, proteinPerUnit: 2.0 },
+  { id: 'pav', name: 'Pav (bread roll)', unit: 'count', kcalPerUnit: 74, proteinPerUnit: 2.2 },
+  { id: 'amritsari_puri', name: 'Amritsari Puri', unit: 'count', kcalPerUnit: 180, proteinPerUnit: 3.0 },
+  { id: 'set_dosa', name: 'Set Dosa (plate)', unit: 'count', kcalPerUnit: 220, proteinPerUnit: 5.0 },
+  { id: 'masala_dosa', name: 'Masala Dosa', unit: 'count', kcalPerUnit: 240, proteinPerUnit: 6.0 },
+  { id: 'rava_dosa', name: 'Rava Dosa', unit: 'count', kcalPerUnit: 200, proteinPerUnit: 4.0 },
+  { id: 'onion_dosa', name: 'Onion Dosa', unit: 'count', kcalPerUnit: 180, proteinPerUnit: 4.0 },
+  { id: 'pesarattu', name: 'Pesarattu', unit: 'count', kcalPerUnit: 200, proteinPerUnit: 7.0 },
+  { id: 'rava_idli', name: 'Rava Idli', unit: 'count', kcalPerUnit: 80, proteinPerUnit: 2.0 },
+  { id: 'vada_bonda', name: 'Bonda / Vada (deep-fried)', unit: 'count', kcalPerUnit: 140, proteinPerUnit: 2.5 },
+  // Pokara - fried vegetable fritters
+  { id: 'aloo_pokara', name: 'Aloo Pokara (Potato fritter)', unit: 'count', kcalPerUnit: 80, proteinPerUnit: 1.5, name_hi: 'आलू पकौड़े', name_hi_translit: 'aloo pokara' },
+  { id: 'baingan_pokara', name: 'Baingan Pokara (Eggplant fritter)', unit: 'count', kcalPerUnit: 75, proteinPerUnit: 1.2, name_hi: 'बैंगन पकौड़े', name_hi_translit: 'baingan pokara' },
+  { id: 'gobhi_pokara', name: 'Gobhi Pokara (Cauliflower fritter)', unit: 'count', kcalPerUnit: 85, proteinPerUnit: 2.0, name_hi: 'गोभी पकौड़े', name_hi_translit: 'gobhi pokara' },
+  { id: 'pyaz_pokara', name: 'Pyaz Pokara (Onion fritter)', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 1.0, name_hi: 'प्याज़ पकौड़े', name_hi_translit: 'pyaz pokara' },
+  { id: 'matar_pokara', name: 'Matar Pokara (Peas fritter)', unit: 'count', kcalPerUnit: 65, proteinPerUnit: 1.8, name_hi: 'मटर पकौड़े', name_hi_translit: 'matar pokara' },
+  { id: 'mixed_veg_pokara', name: 'Mixed Vegetable Pokara', unit: 'count', kcalPerUnit: 80, proteinPerUnit: 1.8, name_hi: 'मिक्स वेज़ पकौड़े', name_hi_translit: 'mixed veg pokara' },
+  { id: 'spinach_pokara', name: 'Spinach Pokara (Palak pokara)', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 2.0, name_hi: 'पालक पकौड़े', name_hi_translit: 'palak pokara' },
+  // Additional Indian snacks, rolls, sweets, momos, soups
+  { id: 'samosa_plain', name: 'Samosa (vegetable)', unit: 'count', kcalPerUnit: 150, proteinPerUnit: 3.0 },
+  { id: 'samosa_aloo', name: 'Aloo Samosa', unit: 'count', kcalPerUnit: 160, proteinPerUnit: 3.0, name_hi: 'आलू समोसा', name_hi_translit: 'aaloo samosa' },
+  { id: 'singhara', name: 'Singhara / Water chestnut (fried patty)', unit: 'count', kcalPerUnit: 140, proteinPerUnit: 2.0 },
+  { id: 'aloo_tikki', name: 'Aloo Tikki / Patty', unit: 'count', kcalPerUnit: 120, proteinPerUnit: 2.0, name_hi: 'आलू टिक्की', name_hi_translit: 'aaloo tikki' },
+  { id: 'chicken_roll', name: 'Chicken roll', unit: 'count', kcalPerUnit: 320, proteinPerUnit: 18.0, name_hi: 'चिकन रोल', name_hi_translit: 'chicken roll' },
+  { id: 'egg_chicken_roll', name: 'Egg + Chicken roll', unit: 'count', kcalPerUnit: 380, proteinPerUnit: 22.0, name_hi: 'अंडा + चिकन रोल', name_hi_translit: 'anda + chicken roll' },
+  { id: 'double_egg_chicken_roll', name: 'Double egg + Chicken roll', unit: 'count', kcalPerUnit: 440, proteinPerUnit: 28.0, name_hi: 'डबल अंडा चिकन रोल', name_hi_translit: 'double anda chicken roll' },
+  { id: 'mutton_roll', name: 'Mutton / Goat meat roll', unit: 'count', kcalPerUnit: 360, proteinPerUnit: 20.0, name_hi: 'मटन रोल', name_hi_translit: 'mutton roll' },
+  { id: 'kathi_roll', name: 'Kathi Roll (vegetable)', unit: 'count', kcalPerUnit: 300, proteinPerUnit: 7.0, name_hi: 'काठी रोल', name_hi_translit: 'kathi roll' },
+  { id: 'rasgulla', name: 'Rasgulla', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 1.0 },
+  { id: 'gulab_jamun', name: 'Gulab Jamun', unit: 'count', kcalPerUnit: 120, proteinPerUnit: 1.5, name_hi: 'गुलाब जामुन', name_hi_translit: 'gulab jamun' },
+  { id: 'jalebi', name: 'Jalebi', unit: 'piece', kcalPerUnit: 100, proteinPerUnit: 0.5, name_hi: 'जलेबी', name_hi_translit: 'jalebi' },
+  { id: 'barfi', name: 'Barfi (milk sweet)', unit: 'piece', kcalPerUnit: 150, proteinPerUnit: 3.0 },
+  { id: 'ladoo', name: 'Ladoo', unit: 'piece', kcalPerUnit: 120, proteinPerUnit: 2.0, name_hi: 'लड्डू', name_hi_translit: 'ladoo' },
+  { id: 'kaju_burfi', name: 'Kaju Burfi', unit: 'piece', kcalPerUnit: 140, proteinPerUnit: 3.0, name_hi: 'काजू बर्फी', name_hi_translit: 'kaju burfi' },
+  { id: 'veg_momo', name: 'Momo (veg)', unit: 'count', kcalPerUnit: 45, proteinPerUnit: 1.0 },
+  { id: 'chicken_momo', name: 'Momo (chicken)', unit: 'count', kcalPerUnit: 60, proteinPerUnit: 4.0, name_hi: 'चिकन मोमो', name_hi_translit: 'chicken momo' },
+  { id: 'fried_momo', name: 'Fried momo', unit: 'count', kcalPerUnit: 80, proteinPerUnit: 3.5, name_hi: 'फ्राइड मोमो', name_hi_translit: 'fried momo' },
+  { id: 'steamed_momo', name: 'Steamed momo', unit: 'count', kcalPerUnit: 50, proteinPerUnit: 2.5, name_hi: 'गाॅरी मोमो', name_hi_translit: 'steamed momo' },
+  { id: 'manchow_soup', name: 'Manchow soup (veg)', unit: 'bowl', kcalPerUnit: 40, proteinPerUnit: 1.2, name_hi: 'मंचो सूप', name_hi_translit: 'manchow soup' },
+  { id: 'tomato_soup', name: 'Tomato soup', unit: 'bowl', kcalPerUnit: 35, proteinPerUnit: 1.0, name_hi: 'टमाटर सूप', name_hi_translit: 'tomato soup' },
+  { id: 'chicken_noodle_soup', name: 'Chicken noodle soup', unit: 'bowl', kcalPerUnit: 80, proteinPerUnit: 6.0, name_hi: 'चिकन नूडल सूप', name_hi_translit: 'chicken noodle soup' },
+  { id: 'hot_sour_soup', name: 'Hot & Sour soup', unit: 'bowl', kcalPerUnit: 60, proteinPerUnit: 2.0, name_hi: 'हॉट एंड सॉर सूप', name_hi_translit: 'hot and sour soup' },
+  { id: 'mutton_piece', name: 'Mutton (goat meat) curry - 100g', kcal: 250, protein: 26.0, name_hi: 'मटन', name_hi_translit: 'mutton' },
+  { id: 'chicken_piece', name: 'Chicken (cooked) - 100g', kcal: 195, protein: 27.0, name_hi: 'चिकन', name_hi_translit: 'chicken' },
+  // More momo variants and Nepali / Indian street-foods
+  { id: 'kurkure_momo', name: 'Kurkure / Spicy coated momo', unit: 'count', kcalPerUnit: 90, proteinPerUnit: 3.0 },
+  { id: 'cheese_momo', name: 'Cheese momo', unit: 'count', kcalPerUnit: 75, proteinPerUnit: 3.0, name_hi: 'चीज़ मोमो', name_hi_translit: 'cheese momo' },
+  { id: 'paneer_momo', name: 'Paneer momo', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 4.0, name_hi: 'पनीर मोमो', name_hi_translit: 'paneer momo' },
+  { id: 'pork_momo', name: 'Momo (pork)', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 5.0, name_hi: 'पोर्क मोमो', name_hi_translit: 'pork momo' },
+  { id: 'buff_momo', name: 'Buff momo (buffalo)', unit: 'count', kcalPerUnit: 75, proteinPerUnit: 6.0, name_hi: 'भैंस मोमो', name_hi_translit: 'buff momo' },
+  { id: 'chili_chicken_momo', name: 'Chili chicken momo', unit: 'count', kcalPerUnit: 85, proteinPerUnit: 6.0, name_hi: 'चिल्ली चिकन मोमो', name_hi_translit: 'chili chicken momo' },
+  { id: 'schezwan_momo', name: 'Schezwan momo', unit: 'count', kcalPerUnit: 90, proteinPerUnit: 5.0, name_hi: 'शेज़वान मोमो', name_hi_translit: 'schezwan momo' },
+  { id: 'veg_fried_momo', name: 'Veg fried momo', unit: 'count', kcalPerUnit: 85, proteinPerUnit: 2.5, name_hi: 'वेग फ्राइड मोमो', name_hi_translit: 'veg fried momo' },
+
+  // Nepali dishes and breads
+  { id: 'dal_bhat', name: 'Dal Bhat (rice + lentil soup)', unit: 'plate', kcalPerUnit: 520, proteinPerUnit: 18.0, name_hi: 'दाल भात', name_hi_translit: 'dal bhat' },
+  { id: 'sel_roti', name: 'Sel Roti (Nepali fried bread)', unit: 'piece', kcalPerUnit: 180, proteinPerUnit: 3.0 },
+  { id: 'gundruk', name: 'Gundruk (fermented leafy greens)', kcal: 40, protein: 3.0, name_hi: 'गुन्द्रुक', name_hi_translit: 'gundruk' },
+  { id: 'thukpa', name: 'Thukpa (Tibetan/Nepali noodle soup)', unit: 'bowl', kcalPerUnit: 220, proteinPerUnit: 8.0, name_hi: 'थुक्पा', name_hi_translit: 'thukpa' },
+  { id: 'chowmein_nepali', name: 'Nepali Chowmein', unit: 'plate', kcalPerUnit: 420, proteinPerUnit: 12.0, name_hi: 'चाउमीन', name_hi_translit: 'chowmein' },
+
+  // Common Indian street foods and sweets additions
+  { id: 'vada_pav', name: 'Vada Pav', unit: 'count', kcalPerUnit: 320, proteinPerUnit: 6.0, name_hi: 'वडा पाव', name_hi_translit: 'vada pav' },
+  { id: 'pav_bhaji', name: 'Pav Bhaji (plate)', unit: 'plate', kcalPerUnit: 480, proteinPerUnit: 9.0, name_hi: 'पाव भाजी', name_hi_translit: 'pav bhaji' },
+  { id: 'kebabs', name: 'Seekh Kebab (per piece)', unit: 'count', kcalPerUnit: 120, proteinPerUnit: 8.0, name_hi: 'सीख कबाब', name_hi_translit: 'seekh kebab' },
+  { id: 'tandoori_chicken', name: 'Tandoori chicken (100g)', kcal: 170, protein: 26.0, name_hi: 'तंदूरी चिकन', name_hi_translit: 'tandoori chicken' },
+  { id: 'butter_chicken', name: 'Butter chicken (100g)', kcal: 240, protein: 18.0, name_hi: 'बटर चिकन', name_hi_translit: 'butter chicken' },
+  { id: 'biryani_chicken', name: 'Chicken Biryani (plate)', unit: 'plate', kcalPerUnit: 650, proteinPerUnit: 28.0, name_hi: 'चिकन बिरयानी', name_hi_translit: 'chicken biryani' },
+  { id: 'biryani_mutton', name: 'Mutton Biryani (plate)', unit: 'plate', kcalPerUnit: 720, proteinPerUnit: 30.0, name_hi: 'मटन बिरयानी', name_hi_translit: 'mutton biryani' },
+  { id: 'korma', name: 'Korma (100g)', kcal: 260, protein: 10.0 },
+  { id: 'chana_masala', name: 'Chana Masala (100g)', kcal: 160, protein: 8.0, name_hi: 'चना मसाला', name_hi_translit: 'chana masala' },
+  { id: 'papdi_chaat', name: 'Papdi Chaat', unit: 'plate', kcalPerUnit: 210, proteinPerUnit: 5.0, name_hi: 'पापड़ी चाट', name_hi_translit: 'papdi chaat' },
+  // Indian restaurant-style curry bowls (approx per small bowl)
+  { id: 'paneer_butter_masala', name: 'Paneer Butter Masala (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 420, kcalPer100g: 210, proteinPerUnit: 12.0, proteinPer100g: 6.0, name_hi: 'पनीर बटर मसाला', name_hi_translit: 'paneer butter masala' },
+  { id: 'dal_makhani', name: 'Dal Makhani (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 360, kcalPer100g: 180, proteinPerUnit: 14.0, proteinPer100g: 7.0, name_hi: 'दाल मखनी', name_hi_translit: 'dal makhani' },
+  { id: 'palak_paneer', name: 'Palak Paneer (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 320, kcalPer100g: 160, proteinPerUnit: 13.0, proteinPer100g: 6.5, name_hi: 'पालक पनीर', name_hi_translit: 'palak paneer' },
+  { id: 'mutter_paneer', name: 'Mutter Paneer (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 360, kcalPer100g: 180, proteinPerUnit: 14.0, proteinPer100g: 7.0, name_hi: 'मटर पनीर', name_hi_translit: 'mutter paneer' },
+  { id: 'aloo_gobi_masala', name: 'Aloo Gobi Masala (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 240, kcalPer100g: 120, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'आलू गोभी मसाला', name_hi_translit: 'aloo gobi masala' },
+  { id: 'bhindi_masala', name: 'Bhindi Masala (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 200, kcalPer100g: 100, proteinPerUnit: 5.0, proteinPer100g: 2.5, name_hi: 'भिंडी मसाला', name_hi_translit: 'bhindi masala' },
+  { id: 'egg_curry', name: 'Egg Curry (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 280, kcalPer100g: 140, proteinPerUnit: 12.0, proteinPer100g: 6.0, name_hi: 'अंडा करी', name_hi_translit: 'anda curry' },
+  { id: 'fish_curry', name: 'Fish Curry (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 300, kcalPer100g: 136, proteinPerUnit: 20.0, proteinPer100g: 9.1, name_hi: 'मछली करी', name_hi_translit: 'machhli curry' },
+  { id: 'prawn_curry', name: 'Prawn Curry (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 320, kcalPer100g: 145, proteinPerUnit: 22.0, proteinPer100g: 10.0, name_hi: 'झींगा करी', name_hi_translit: 'jhinga curry' },
+  { id: 'malai_kofta', name: 'Malai Kofta (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 420, kcalPer100g: 210, proteinPerUnit: 10.0, proteinPer100g: 5.0, name_hi: 'मलाई कोफ्ता', name_hi_translit: 'malai kofta' },
+  { id: 'vindaloo', name: 'Vindaloo (spicy) (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 400, kcalPer100g: 182, proteinPerUnit: 22.0, proteinPer100g: 10.0, name_hi: 'विंदालू', name_hi_translit: 'vindaloo' },
+  { id: 'rogan_josh', name: 'Rogan Josh (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 420, kcalPer100g: 191, proteinPerUnit: 24.0, proteinPer100g: 10.9, name_hi: 'रोगन जोश', name_hi_translit: 'rogan josh' },
+  { id: 'saag', name: 'Saag (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 220, kcalPer100g: 110, proteinPerUnit: 8.0, proteinPer100g: 4.0, name_hi: 'साग', name_hi_translit: 'saag' },
+  { id: 'kadai_chicken', name: 'Kadai Chicken (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 380, kcalPer100g: 173, proteinPerUnit: 26.0, proteinPer100g: 11.8, name_hi: 'कड़ाही चिकन', name_hi_translit: 'kadai chicken' },
+  { id: 'chicken_curry', name: 'Chicken Curry (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 360, kcalPer100g: 164, proteinPerUnit: 26.0, proteinPer100g: 11.8, name_hi: 'चिकन करी', name_hi_translit: 'chicken curry' },
+  { id: 'goat_curry', name: 'Goat / Mutton Curry (bowl)', unit: 'bowl', servingGrams: 240, kcalPerUnit: 450, kcalPer100g: 188, proteinPerUnit: 28.0, proteinPer100g: 11.7, name_hi: 'मटन करी', name_hi_translit: 'mutton curry' },
+  { id: 'nihari', name: 'Nihari (bowl)', unit: 'bowl', servingGrams: 240, kcalPerUnit: 520, kcalPer100g: 217, proteinPerUnit: 30.0, proteinPer100g: 12.5, name_hi: 'निहारी', name_hi_translit: 'nihari' },
+  { id: 'korma_chicken', name: 'Chicken Korma (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 400, kcalPer100g: 182, proteinPerUnit: 24.0, proteinPer100g: 10.9, name_hi: 'चिकन कोरमा', name_hi_translit: 'chicken korma' },
+  { id: 'bhuna_masala', name: 'Bhuna Masala (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 380, kcalPer100g: 173, proteinPerUnit: 20.0, proteinPer100g: 9.1, name_hi: 'भुना मसाला', name_hi_translit: 'bhuna masala' },
+  { id: 'kolhapuri', name: 'Kolhapuri Curry (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 430, kcalPer100g: 195, proteinPerUnit: 26.0, proteinPer100g: 11.8, name_hi: 'कोल्हापुरी', name_hi_translit: 'kolhapuri' },
+  { id: 'baingan_bharta', name: 'Baingan Bharta (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 200, kcalPer100g: 100, proteinPerUnit: 5.0, proteinPer100g: 2.5, name_hi: 'बैंगन भरता', name_hi_translit: 'baingan bharta' },
+  { id: 'lauki_ki_sabzi', name: 'Lauki (Bottle Gourd) Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 90, kcalPer100g: 50, proteinPerUnit: 2.5, proteinPer100g: 1.4, name_hi: 'लौकी की सब्जी', name_hi_translit: 'lauki sabzi' },
+  { id: 'tinda_sabzi', name: 'Tinda Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 100, kcalPer100g: 55, proteinPerUnit: 2.5, proteinPer100g: 1.4, name_hi: 'टिंडा की सब्जी', name_hi_translit: 'tinda sabzi' },
+  { id: 'turai_sabzi', name: 'Turai / Ridge Gourd Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 90, kcalPer100g: 50, proteinPerUnit: 2.0, proteinPer100g: 1.1, name_hi: 'तुरई', name_hi_translit: 'turai' },
+  { id: 'karela_bhaji', name: 'Karela (Bitter Gourd) Sabzi (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 120, kcalPer100g: 67, proteinPerUnit: 3.0, proteinPer100g: 1.7, name_hi: 'करेला', name_hi_translit: 'karela' },
+  { id: 'kaddu_curry', name: 'Kaddu / Pumpkin Curry (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 140, kcalPer100g: 78, proteinPerUnit: 2.5, proteinPer100g: 1.4, name_hi: 'कद्दू करी', name_hi_translit: 'kaddu curry' },
+  { id: 'mix_veg', name: 'Mixed Vegetable Sabzi (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 180, kcalPer100g: 90, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'मिक्स वेज', name_hi_translit: 'mixed veg' },
+  { id: 'aloo_matar', name: 'Aloo Matar (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 260, kcalPer100g: 130, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'आलू मटर', name_hi_translit: 'aloo matar' },
+  { id: 'gobhi_aloo', name: 'Gobhi Aloo (Cauliflower Potato) (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 200, kcalPer100g: 100, proteinPerUnit: 5.0, proteinPer100g: 2.5, name_hi: 'गोभी आलू', name_hi_translit: 'gobhi aloo' },
+  { id: 'chola_aloo', name: 'Chola Aloo (Chickpea Potato) (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 280, kcalPer100g: 127, proteinPerUnit: 10.0, proteinPer100g: 4.5, name_hi: 'छोले आलू', name_hi_translit: 'chola aloo' },
+  { id: 'soya_matar_aloo', name: 'Soya Chunks Matar Aloo (bowl)', unit: 'bowl', servingGrams: 220, kcalPerUnit: 240, kcalPer100g: 109, proteinPerUnit: 12.0, proteinPer100g: 5.5, name_hi: 'सोया मटर आलू', name_hi_translit: 'soya matar aloo' },
+  { id: 'dhaniya_sabzi', name: 'Dhaniya (Coriander Curry) (bowl)', unit: 'bowl', servingGrams: 180, kcalPerUnit: 140, kcalPer100g: 78, proteinPerUnit: 4.0, proteinPer100g: 2.2, name_hi: 'धनिया सब्जी', name_hi_translit: 'dhaniya sabzi' },
+  { id: 'aloo_shimla', name: 'Aloo Shimla Mirch (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 220, kcalPer100g: 110, proteinPerUnit: 5.0, proteinPer100g: 2.5, name_hi: 'आलू शिमला मिर्च', name_hi_translit: 'aloo shimla mirch' },
+  { id: 'veg_korma_bowl', name: 'Vegetable Korma (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 300, kcalPer100g: 150, proteinPerUnit: 7.0, proteinPer100g: 3.5, name_hi: 'वेज कोरमा', name_hi_translit: 'veg korma' },
+  { id: 'bhindi_aloo', name: 'Bhindi Aloo (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 240, kcalPer100g: 120, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'भिंडी आलू', name_hi_translit: 'bhindi aloo' },
+  { id: 'lauki_dal', name: 'Lauki with Dal (bowl)', unit: 'bowl', servingGrams: 200, kcalPerUnit: 160, kcalPer100g: 80, proteinPerUnit: 6.0, proteinPer100g: 3.0, name_hi: 'लौकी दाल', name_hi_translit: 'lauki dal' },
+]
+
+const MAX_RECIPES = 30
+
+export default function AddRecipe() {
+  const navigate = useNavigate()
+  const location = useLocation()
+  const editingRecipe = location.state?.recipe || null
+
+  const [recipeName, setRecipeName] = useState(editingRecipe?.recipeName || '')
+  const [ingredients, setIngredients] = useState(editingRecipe?.ingredients || [])
+  
+  const [name, setName] = useState('')
+  const [amount, setAmount] = useState('')
+  const [unit, setUnit] = useState('g')
+  const [kcalPer100g, setKcalPer100g] = useState('')
+  const [kcalPerUnit, setKcalPerUnit] = useState('')
+  const [proteinPer100g, setProteinPer100g] = useState('')
+  const [proteinPerUnit, setProteinPerUnit] = useState('')
+  const [manualKcalNeeded, setManualKcalNeeded] = useState(false)
+  
+  const [suggestions, setSuggestions] = useState([])
+  const [selectedSuggestion, setSelectedSuggestion] = useState(-1)
+  const [suggestionCoords, setSuggestionCoords] = useState(null)
+  
+  const [editMode, setEditMode] = useState(false)
+  const [selectedIds, setSelectedIds] = useState(new Set())
+  
+  const inputRef = useRef(null)
+  const containerRef = useRef(null)
+
+  // Build complete food database (same as TrackCalories)
+  const ALL_FOODS = useMemo(() => {
+    try {
+      const extras = []
+      if (Array.isArray(vegetables)) {
+        vegetables.forEach((v, idx) => {
+          const id = `veg_${idx}_${(v.name_en || '').toLowerCase().replace(/\s+/g, '_')}`
+          extras.push({
+            id,
+            name: v.name_en,
+            kcal: v.calories_per_100g,
+            protein: v.protein_per_100g,
+            name_hi: v.name_hi || '',
+            name_hi_translit: v.name_hi_translit || '',
+            unit: v.unit || 'g'
+          })
+        })
+      }
+      if (Array.isArray(fruits)) {
+        fruits.forEach((f, idx) => {
+          const id = `fruit_${idx}_${(f.name_en || '').toLowerCase().replace(/\s+/g, '_')}`
+          extras.push({
+            id,
+            name: f.name_en,
+            kcal: f.calories_per_100g,
+            protein: f.protein_per_100g,
+            name_hi: f.name_hi || '',
+            name_hi_translit: f.name_hi_translit || '',
+            unit: f.unit || 'g'
+          })
+        })
+      }
+      // combine base built-in FOODS, external India dataset, and produce extras
+      const baseList = Array.isArray(foodsIndia) ? [...FOODS, ...foodsIndia, ...extras] : [...FOODS, ...extras]
+      // Deduplicate by id
+      const seen = new Map()
+      baseList.forEach(item => {
+        if (item && item.id && !seen.has(item.id)) seen.set(item.id, item)
+      })
+      return Array.from(seen.values())
+    } catch (e) {
+      return []
+    }
+  }, [])
+
+  const isSubsequence = (needle, haystack) => {
+    if (!needle || !haystack) return false
+    const n = needle.toLowerCase()
+    const h = haystack.toLowerCase()
+    let i = 0
+    for (let j = 0; j < h.length && i < n.length; j++) {
+      if (n[i] === h[j]) i++
+    }
+    return i === n.length
+  }
+
+  const applyFound = (found) => {
+    setName(found.name || found.name_en || '')
+    if (found.unit === 'count' || found.kcalPerUnit) {
+      setUnit('count')
+      setKcalPerUnit(found.kcalPerUnit || found.kcal || '')
+      setProteinPerUnit(found.proteinPerUnit || found.protein || '')
+      setKcalPer100g('')
+      setProteinPer100g('')
+      setManualKcalNeeded(false)
+    } else {
+      setUnit('g')
+      setKcalPer100g(found.kcal || '')
+      setProteinPer100g(found.protein || '')
+      setKcalPerUnit('')
+      setProteinPerUnit('')
+      setManualKcalNeeded(false)
+    }
+  }
+
+  const previewCalories = (() => {
+    const amt = parseFloat(amount)
+    const kcal100 = parseFloat(kcalPer100g)
+    const kcalUnit = parseFloat(kcalPerUnit)
+    if (unit === 'count') {
+      if (!isNaN(amt) && amt > 0 && !isNaN(kcalUnit) && kcalUnit > 0) {
+        return Math.round(amt * kcalUnit)
+      }
+      return null
+    }
+    if (!isNaN(amt) && amt > 0 && !isNaN(kcal100) && kcal100 > 0) {
+      return Math.round((amt * kcal100) / 100)
+    }
+    return null
+  })()
+
+  const previewProtein = (() => {
+    const amt = parseFloat(amount)
+    const protein100 = parseFloat(proteinPer100g)
+    const protUnit = parseFloat(proteinPerUnit)
+    if (unit === 'count') {
+      if (!isNaN(amt) && amt > 0 && !isNaN(protUnit) && protUnit >= 0) {
+        return Math.round((amt * protUnit) * 10) / 10
+      }
+      return null
+    }
+    if (!isNaN(amt) && amt > 0 && !isNaN(protein100) && protein100 >= 0) {
+      return Math.round((amt * protein100) / 100 * 10) / 10
+    }
+    return null
+  })()
+
+  const onNameKeyDown = (e) => {
+    if (!suggestions || suggestions.length === 0) return
+    if (e.key === 'ArrowDown') {
+      e.preventDefault()
+      setSelectedSuggestion(s => Math.min(s + 1, suggestions.length - 1))
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault()
+      setSelectedSuggestion(s => Math.max(s - 1, 0))
+    } else if (e.key === 'Enter') {
+      if (selectedSuggestion >= 0 && suggestions[selectedSuggestion]) {
+        e.preventDefault()
+        const s = suggestions[selectedSuggestion]
+        applyFound(s)
+        setSuggestions([])
+        setSelectedSuggestion(-1)
+      }
+    } else if (e.key === 'Escape') {
+      setSuggestions([])
+      setSelectedSuggestion(-1)
+    }
+  }
+
+  const handleNameChange = (e) => {
+    const v = e.target.value
+    setName(v)
+    const raw = (v || '').trim().toLowerCase()
+
+    if (!raw) {
+      setSuggestions([])
+      setSelectedSuggestion(-1)
+      return
+    }
+
+    // Simple search through ALL_FOODS
+    const matches = ALL_FOODS.filter(f => {
+      const lname = (f.name || f.name_en || '').toLowerCase()
+      const lhi = (f.name_hi || '').toLowerCase()
+      const ltr = (f.name_hi_translit || '').toLowerCase()
+      return lname.includes(raw) || lhi.includes(raw) || ltr.includes(raw) || isSubsequence(raw, lname)
+    }).slice(0, 12)
+
+    setSuggestions(matches)
+    setSelectedSuggestion(matches.length ? 0 : -1)
+
+    // Position suggestions
+    try {
+      const el = inputRef.current
+      if (el) {
+        const r = el.getBoundingClientRect()
+        setSuggestionCoords({
+          top: Math.round(r.bottom + window.scrollY + 6) + 'px',
+          left: Math.round(r.left + window.scrollX) + 'px',
+          width: Math.round(r.width) + 'px'
+        })
+      }
+    } catch (e) {
+      setSuggestionCoords(null)
+    }
+  }
+
+  const handleAddIngredient = (e) => {
+    e.preventDefault()
+    const trimmedIngredient = name.trim()
+    if (!trimmedIngredient) return
+
+    const amt = parseFloat(amount)
+    const kcal100 = parseFloat(kcalPer100g)
+    const kcalUnit = parseFloat(kcalPerUnit)
+    const protein100 = parseFloat(proteinPer100g)
+    const protUnit = parseFloat(proteinPerUnit)
+
+    let calories = null
+    let protein = null
+    let caloriesPerGram = null
+    let proteinPerGram = null
+
+    if (unit === 'count') {
+      if (!isNaN(amt) && amt > 0 && !isNaN(kcalUnit) && kcalUnit > 0) {
+        calories = Math.round(amt * kcalUnit)
+      }
+      if (!isNaN(amt) && amt > 0 && !isNaN(protUnit) && protUnit >= 0) {
+        protein = Math.round((amt * protUnit) * 10) / 10
+      }
+    } else {
+      if (!isNaN(kcal100) && kcal100 > 0) {
+        caloriesPerGram = Number((kcal100 / 100).toFixed(2))
+      }
+      if (!isNaN(amt) && amt > 0 && caloriesPerGram !== null) {
+        calories = Math.round(amt * caloriesPerGram)
+      }
+      if (!isNaN(protein100) && protein100 >= 0) {
+        proteinPerGram = Number((protein100 / 100).toFixed(3))
+      }
+      if (!isNaN(amt) && amt > 0 && proteinPerGram !== null) {
+        protein = Math.round((amt * proteinPerGram) * 10) / 10
+      }
+    }
+
+    const ingredient = {
+      id: Date.now(),
+      name: trimmedIngredient,
+      amount: !isNaN(amt) && amt > 0 ? amt : null,
+      unit: unit,
+      kcalPer100g: unit === 'g' && !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null,
+      kcalPerUnit: unit === 'count' && !isNaN(kcalUnit) && kcalUnit > 0 ? kcalUnit : null,
+      proteinPer100g: unit === 'g' && !isNaN(protein100) && protein100 >= 0 ? protein100 : null,
+      proteinPerUnit: unit === 'count' && !isNaN(protUnit) && protUnit >= 0 ? protUnit : null,
+      caloriesPerGram: caloriesPerGram,
+      calories: calories,
+      protein: protein,
+    }
+
+    setIngredients([...ingredients, ingredient])
+    
+    // Clear form
+    setName('')
+    setAmount('')
+    setKcalPer100g('')
+    setProteinPer100g('')
+    setKcalPerUnit('')
+    setProteinPerUnit('')
+    setUnit('g')
+    setManualKcalNeeded(false)
+  }
+
+  const handleSaveRecipe = () => {
+    const trimmedRecipeName = recipeName.trim()
+    if (!trimmedRecipeName) {
+      alert('Please enter a recipe name')
+      return
+    }
+    if (ingredients.length === 0) {
+      alert('Please add at least one ingredient')
+      return
+    }
+
+    // Load existing recipes
+    let savedRecipes = []
+    try {
+      const stored = localStorage.getItem('calorieWise.recipes')
+      if (stored) savedRecipes = JSON.parse(stored)
+    } catch (e) {}
+
+    // Check limit
+    if (!editingRecipe && savedRecipes.length >= MAX_RECIPES) {
+      alert(`Maximum ${MAX_RECIPES} recipes allowed`)
+      return
+    }
+
+    const totalCalories = ingredients.reduce((sum, ing) => sum + (ing.calories || 0), 0)
+    const totalProtein = ingredients.reduce((sum, ing) => sum + (ing.protein || 0), 0)
+
+    const recipe = {
+      id: editingRecipe ? editingRecipe.id : Date.now(),
+      recipeName: trimmedRecipeName,
+      ingredients: ingredients,
+      totalCalories: totalCalories,
+      totalProtein: Math.round(totalProtein * 10) / 10,
+    }
+
+    let updatedRecipes
+    if (editingRecipe) {
+      updatedRecipes = savedRecipes.map(r => r.id === editingRecipe.id ? recipe : r)
+    } else {
+      updatedRecipes = [...savedRecipes, recipe]
+    }
+
+    try {
+      localStorage.setItem('calorieWise.recipes', JSON.stringify(updatedRecipes))
+      navigate('/meal-planner')
+    } catch (e) {
+      console.error('Failed to save recipe:', e)
+    }
+  }
+
+  const toggleSelect = (id) => {
+    setSelectedIds(prev => {
+      const next = new Set(prev)
+      if (next.has(id)) next.delete(id)
+      else next.add(id)
+      return next
+    })
+  }
+
+  const deleteSelected = () => {
+    setIngredients(ingredients.filter(ing => !selectedIds.has(ing.id)))
+    setSelectedIds(new Set())
+    setEditMode(false)
+  }
+
+  const handleBack = () => {
+    try { if (window.history && window.history.length > 1) { navigate(-1); return } } catch (e) {}
+    navigate('/', { state: { fromSplash: true } })
+  }
+
+  // Click outside to close suggestions
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (containerRef.current && !containerRef.current.contains(e.target)) {
+        setSuggestions([])
+        setSelectedSuggestion(-1)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  const totalCalories = ingredients.reduce((sum, ing) => sum + (ing.calories || 0), 0)
+  const totalProtein = ingredients.reduce((sum, ing) => sum + (ing.protein || 0), 0)
+
+  return (
+    <div style={{ padding: 16, maxWidth: 900, margin: '0 auto' }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+        <button className="icon-btn" onClick={handleBack} style={{ fontSize: 20, lineHeight: 1 }}>←</button>
+        <h2 style={{ margin: 0 }}>{editingRecipe ? 'Edit Recipe' : 'Add Recipe'}</h2>
+      </div>
+
+      <div className="track-grid">
+        <div className="card">
+          <form onSubmit={handleAddIngredient} className="track-form">
+            <div className="form-row">
+              <label>Recipe Name</label>
+              <input
+                type="text"
+                value={recipeName}
+                onChange={(e) => setRecipeName(e.target.value)}
+                placeholder="e.g. Chicken Biryani"
+                style={{
+                  width: '100%',
+                  padding: '8px',
+                  fontSize: 14,
+                  border: '1px solid var(--border)',
+                  borderRadius: 4,
+                  background: 'var(--card-bg)',
+                  color: 'var(--text)'
+                }}
+              />
+            </div>
+
+            <div className="form-row">
+              <label>Ingredients</label>
+              <div className="tc-autocomplete" ref={containerRef}>
+                <input
+                  ref={inputRef}
+                  value={name}
+                  onKeyDown={onNameKeyDown}
+                  onChange={handleNameChange}
+                  placeholder="Start typing (e.g. Chicken breast)"
+                  aria-autocomplete="list"
+                  aria-controls="tc-suggestions"
+                  aria-haspopup="listbox"
+                  aria-expanded={suggestions && suggestions.length > 0}
+                />
+                <div className="sr-only" aria-live="polite">
+                  {suggestions && suggestions.length ? `${suggestions.length} suggestions` : ''}
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
+              <div style={{ flex: 1 }} className="form-row">
+                <label>{unit === 'count' ? 'Count' : 'Amount (g)'}</label>
+                <input
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  placeholder={unit === 'count' ? '1' : '100'}
+                  type="number"
+                  step={unit === 'count' ? '1' : 'any'}
+                  min={unit === 'count' ? '1' : undefined}
+                />
+              </div>
+
+              <div style={{ width: 120 }} className="form-row">
+                <label>{unit === 'count' ? 'kcal / unit' : 'kcal / 100g'}</label>
+                {unit === 'count' ? (
+                  <input
+                    value={kcalPerUnit}
+                    onChange={(e) => { setKcalPerUnit(e.target.value); setManualKcalNeeded(false) }}
+                    placeholder="auto"
+                    type="number"
+                    step="any"
+                  />
+                ) : (
+                  <input
+                    value={kcalPer100g}
+                    onChange={(e) => { setKcalPer100g(e.target.value); setManualKcalNeeded(false) }}
+                    placeholder="auto"
+                    type="number"
+                    step="any"
+                  />
+                )}
+              </div>
+
+              <div style={{ width: 120 }} className="form-row">
+                <label>{unit === 'count' ? 'protein / unit' : 'protein / 100g'}</label>
+                {unit === 'count' ? (
+                  <input
+                    value={proteinPerUnit}
+                    onChange={(e) => { setProteinPerUnit(e.target.value); setManualKcalNeeded(false) }}
+                    placeholder="auto"
+                    type="number"
+                    step="any"
+                  />
+                ) : (
+                  <input
+                    value={proteinPer100g}
+                    onChange={(e) => { setProteinPer100g(e.target.value); setManualKcalNeeded(false) }}
+                    placeholder="auto"
+                    type="number"
+                    step="any"
+                  />
+                )}
+                {manualKcalNeeded && (
+                  <div style={{ fontSize: 11, color: 'var(--muted)' }}>
+                    Unknown — enter kcal/{unit === 'count' ? 'unit' : '100g'}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {previewCalories !== null && (
+              <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+                {previewCalories} kcal{previewProtein !== null ? ` • ${previewProtein} g protein` : ''}
+              </div>
+            )}
+
+            <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
+              <button
+                className="card"
+                type="submit"
+                style={{ background: 'var(--accent1)', color: '#fff', border: 'none', padding: '8px 12px' }}
+              >
+                Add Ingredient
+              </button>
+              <button
+                className="icon-btn"
+                type="button"
+                onClick={() => {
+                  setName('')
+                  setAmount('')
+                  setKcalPer100g('')
+                  setProteinPer100g('')
+                  setKcalPerUnit('')
+                  setProteinPerUnit('')
+                  setUnit('g')
+                  setManualKcalNeeded(false)
+                }}
+              >
+                Clear
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* Logged Ingredients */}
+        {ingredients.length > 0 && (
+          <div className="card">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+              <div style={{ fontWeight: 700 }}>Ingredients</div>
+              <div style={{ fontSize: 14, fontWeight: 700, textAlign: 'right', minWidth: 140, marginLeft: 12 }}>
+                {totalCalories} kcal • {Math.round(totalProtein * 10) / 10} g
+              </div>
+            </div>
+
+            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+              {ingredients.map((ing) => (
+                <li
+                  key={ing.id}
+                  className="card"
+                  style={{
+                    position: 'relative',
+                    padding: 6,
+                    overflow: 'visible',
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    maxWidth: '100%',
+                    flex: '0 0 100%',
+                    alignSelf: 'stretch',
+                    display: 'grid',
+                    gridTemplateColumns: '14px minmax(20px,1fr) 64px 140px',
+                    alignItems: 'center',
+                    gap: 4,
+                    paddingLeft: 6,
+                    cursor: editMode ? 'pointer' : 'default'
+                  }}
+                  onClick={() => { if (editMode) toggleSelect(ing.id) }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {editMode ? (
+                      <input
+                        type="checkbox"
+                        checked={selectedIds.has(ing.id)}
+                        onClick={(e) => e.stopPropagation()}
+                        onChange={(e) => { e.stopPropagation(); toggleSelect(ing.id) }}
+                      />
+                    ) : null}
+                  </div>
+                  <div title={ing.name} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                    {ing.name}
+                  </div>
+                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 13, color: 'var(--muted)' }}>
+                    {ing.amount} {ing.unit === 'count' ? 'pcs' : 'g'}
+                  </div>
+                  <div style={{ textAlign: 'right', fontSize: 13, fontWeight: 700 }}>
+                    {ing.calories !== null ? `${ing.calories} kcal` : ''}
+                    {ing.protein !== null && ing.protein !== undefined ? ` • ${ing.protein} g` : ''}
+                  </div>
+                </li>
+              ))}
+            </ul>
+
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
+              {!editMode ? (
+                <button className="icon-btn" onClick={() => { setEditMode(true); setSelectedIds(new Set()) }}>Edit</button>
+              ) : (
+                <>
+                  <button className="icon-btn" onClick={deleteSelected} disabled={!selectedIds || selectedIds.size === 0}>Delete</button>
+                  <button className="icon-btn" onClick={() => { setEditMode(false); setSelectedIds(new Set()) }}>Cancel</button>
+                </>
+              )}
+              <button className="icon-btn" onClick={() => setIngredients([])}>Clear</button>
+            </div>
+
+            <button
+              className="card"
+              type="button"
+              onClick={handleSaveRecipe}
+              style={{ background: 'var(--accent2)', color: '#fff', border: 'none', padding: '12px', width: '100%', marginTop: 12, fontWeight: 600 }}
+            >
+              {editingRecipe ? 'Update Recipe' : 'Save Recipe'}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Autocomplete suggestions portal */}
+      {suggestions && suggestions.length > 0 && suggestionCoords && createPortal(
+        <ul
+          id="tc-suggestions"
+          className="tc-suggestions"
+          role="listbox"
+          style={{
+            position: 'absolute',
+            top: suggestionCoords.top,
+            left: suggestionCoords.left,
+            width: suggestionCoords.width,
+            zIndex: 9999
+          }}
+        >
+          {suggestions.map((s, i) => (
+            <li
+              key={s.id}
+              id={`tc-option-${s.id}`}
+              role="option"
+              aria-selected={i === selectedSuggestion}
+              className={i === selectedSuggestion ? 'selected' : ''}
+              onMouseDown={(e) => {
+                e.preventDefault()
+                applyFound(s)
+                setSuggestions([])
+                setSelectedSuggestion(-1)
+              }}
+              onMouseEnter={() => setSelectedSuggestion(i)}
+            >
+              <div className="tc-sugg-name">{s.name || s.name_en}</div>
+              {s.name_hi && <div className="tc-sugg-hi">{s.name_hi}</div>}
+              <div className="tc-sugg-kcal">
+                {s.unit === 'count' || s.kcalPerUnit ? `${s.kcalPerUnit || s.kcal} kcal/unit` : `${s.kcal} kcal/100g`}
+              </div>
+            </li>
+          ))}
+        </ul>,
+        document.body
+      )}
+    </div>
+  )
+}

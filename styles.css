@@ -93,6 +93,77 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
 .card .meta{min-width:0}
 .cal-badge{min-width:48px;flex-shrink:0;padding:6px 10px}
 
+/* Meal Planner saved recipes layout adjustments */
+.saved-recipes-wrapper{display:flex;flex-wrap:wrap;gap:8px;width:100%}
+.mealplanner-recipe-card{flex:0 1 auto;min-width:0;display:flex;align-items:center;gap:8px;flex-wrap:nowrap}
+/* ensure content starts at left edge of the card */
+.mealplanner-recipe-card{justify-content:flex-start}
+
+@media (max-width:520px){
+  /* On narrow screens make each recipe card take full width so its contents stay on one line */
+  .mealplanner-recipe-card{flex:1 1 100% !important;max-width:100% !important;padding:10px 12px}
+  .mealplanner-recipe-card > div{min-width:0}
+}
+
+/* Further shrink internals on very small phones so long names fit on single line */
+@media (max-width:420px){
+  .mealplanner-recipe-card{padding:8px 10px;gap:6px}
+  .mealplanner-recipe-card .recipe-name{max-width:90px;font-size:12px}
+  .mealplanner-recipe-card .recipe-meta{max-width:70px;font-size:11px;opacity:0.8}
+  .mealplanner-recipe-card button{padding:2px 6px;font-size:10px}
+  .mealplanner-recipe-card input[type="checkbox"]{width:14px;height:14px}
+}
+
+/* Ensure actions container sits at the right and buttons don't wrap */
+.mealplanner-recipe-card .recipe-actions{margin-left:auto;display:flex;gap:6px;align-items:center}
+.mealplanner-recipe-card .recipe-actions button{flex-shrink:0}
+.mealplanner-recipe-card .recipe-actions input{flex-shrink:0}
+
+/* Recipe text wrapper to ensure single-line truncation */
+.mealplanner-recipe-card .recipe-text{display:inline-flex;align-items:center;gap:8px;white-space:nowrap;min-width:0;overflow:hidden}
+.mealplanner-recipe-card .recipe-text .recipe-name{overflow:hidden;text-overflow:ellipsis}
+.mealplanner-recipe-card .recipe-text .recipe-meta{flex:0 0 auto;opacity:0.8}
+
+@media (max-width:420px){
+  .mealplanner-recipe-card .recipe-text{gap:6px}
+  .mealplanner-recipe-card .recipe-text .recipe-name{max-width:70px;font-size:12px}
+  /* hide calorie/protein meta on very small screens to ensure single-line layout */
+  .mealplanner-recipe-card .recipe-text .recipe-meta{display:none}
+}
+
+/* Force vertical centering so text and buttons share the same horizontal baseline */
+.mealplanner-recipe-card{align-items:center !important;justify-content:flex-start !important;text-align:left !important;padding-left:6px;padding-right:6px}
+.mealplanner-recipe-card .recipe-text{display:flex;align-items:center;flex:1 1 auto;min-width:0;margin-left:0;justify-content:flex-start;align-self:center;padding:0}
+.mealplanner-recipe-card .recipe-text .recipe-name,
+.mealplanner-recipe-card .recipe-text .recipe-meta{line-height:1;display:inline-block}
+.mealplanner-recipe-card .recipe-actions{align-items:center}
+.mealplanner-recipe-card .recipe-actions button,
+.mealplanner-recipe-card .recipe-actions input{align-self:center}
+
+/* Normalize heights and line-heights so text and buttons share the same baseline */
+.mealplanner-recipe-card{min-height:40px}
+.mealplanner-recipe-card .recipe-text,
+.mealplanner-recipe-card .recipe-actions{display:flex;align-items:center;height:100%}
+.mealplanner-recipe-card .recipe-name,
+.mealplanner-recipe-card .recipe-meta,
+.mealplanner-recipe-card .recipe-actions button{display:inline-flex;align-items:center;line-height:1;height:100%;padding-top:0;padding-bottom:0}
+.mealplanner-recipe-card input[type="checkbox"]{vertical-align:middle;margin-top:0}
+
+/* Ensure recipe name and meta always vertically center with actions */
+.mealplanner-recipe-card .recipe-name,
+.mealplanner-recipe-card .recipe-meta{
+  align-self: center !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start;
+  margin: 0;
+  padding: 0;
+  height: auto !important;
+}
+
+/* Make top/bottom padding symmetric so content visually centers */
+.mealplanner-recipe-card{padding-top:6px;padding-bottom:6px}
+
 .content{padding:28px;background:transparent}
 
 /* Dashboard grid used on the home screen */

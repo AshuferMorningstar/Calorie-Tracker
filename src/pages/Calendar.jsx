@@ -277,13 +277,16 @@ export default function Calendar(){
     }catch(e){ return 0 }
   }, [view.year, view.month, storageTick])
 
+  const handleBack = () => {
+    try { if (window.history && window.history.length > 1) { navigate(-1); return } } catch (e) {}
+    navigate('/', { state: { fromSplash: true } })
+  }
+
   return (
     <div style={{padding:16,maxWidth:720,margin:'0 auto'}}>
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:12}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+        <button className="icon-btn" onClick={handleBack} style={{fontSize:20,lineHeight:1}}>←</button>
         <h2 style={{margin:0}}>Calendar</h2>
-        <div style={{display:'flex',gap:8}}>
-          <button className="icon-btn" onClick={()=>navigate('/', { state: { fromSplash: true } })}>Back</button>
-        </div>
       </div>
 
       <div className="card" style={{padding:12}}>

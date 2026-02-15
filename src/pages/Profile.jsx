@@ -49,7 +49,7 @@ export default function Profile(){
     <main style={{padding:24,maxWidth:900,margin:'0 auto'}}>
       <div className="profile-top" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
-          <button className="icon-btn back-btn" aria-label="Go back" onClick={()=>navigate(-1)}>←</button>
+          <button className="icon-btn" onClick={()=>{ try{ if(window.history && window.history.length > 1){ navigate(-1); return } }catch(e){} navigate('/', { state: { fromSplash: true } }) }} style={{fontSize:20,lineHeight:1}}>←</button>
           <h2 style={{margin:0}}>Your profile</h2>
         </div>
       </div>

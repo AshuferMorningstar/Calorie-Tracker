@@ -11,6 +11,8 @@ import Profile from './pages/Profile'
 import TrackCalories from './pages/TrackCalories'
 import CaloriesBurned from './pages/CaloriesBurned'
 import Calendar from './pages/Calendar'
+import MealPlanner from './pages/MealPlanner'
+import AddRecipe from './pages/AddRecipe'
 import ConditionalHome from './ConditionalHome'
 import '../styles.css'
 
@@ -29,6 +31,8 @@ root.render(
         <Route path="/track" element={<TrackCalories/>} />
         <Route path="/burned" element={<CaloriesBurned/>} />
         <Route path="/calendar" element={<Calendar/>} />
+        <Route path="/meal-planner" element={<MealPlanner/>} />
+        <Route path="/add-recipe" element={<AddRecipe/>} />
       </Routes>
     </BrowserRouter>
   </React.StrictMode>
