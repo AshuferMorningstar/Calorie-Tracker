@@ -67,6 +67,7 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
   gap:12px;
   align-items:center;
   border: 1px solid var(--card-border);
+  color: var(--text);
 }
 .card .meta{flex:1}
 .card .title{margin:0;font-weight:600;color:var(--text)}
