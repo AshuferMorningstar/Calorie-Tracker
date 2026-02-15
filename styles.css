@@ -154,6 +154,40 @@ html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-s
   color:white;
 }
 
+/* Name Edit Button */
+.name-edit-btn:hover{
+  background:var(--hover-bg) !important;
+  color:var(--text) !important;
+}
+
+/* Name Edit Modal */
+.name-edit-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.4);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+  animation:fadeIn 200ms ease;
+}
+
+.name-edit-card{
+  background:var(--card-bg);
+  border-radius:12px;
+  padding:24px;
+  box-shadow:0 20px 40px rgba(0,0,0,0.2);
+  max-width:400px;
+  width:90%;
+  border:1px solid var(--card-border);
+  animation:scaleIn 250ms cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+@keyframes scaleIn{
+  from{opacity:0;transform:scale(0.95)}
+  to{opacity:1;transform:scale(1)}
+}
+
 /* Authentication Container (Instagram-like design) */
 .auth-container{
   position:fixed;inset:0;

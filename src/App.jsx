@@ -20,6 +20,10 @@ export default function App(){
   const [authLoading, setAuthLoading] = useState(true)
   const [isOnline, setIsOnline] = useState(() => navigator.onLine)
   const [syncStatus, setSyncStatus] = useState('synced')
+  const [editNameOpen, setEditNameOpen] = useState(false)
+  const [displayName, setDisplayName] = useState(() => {
+    try{ return localStorage.getItem('calorieWise.displayName') || '' }catch(e){ return '' }
+  })
 
   useEffect(()=>{
     try{
@@ -189,6 +193,19 @@ export default function App(){
       closeMenu()
     }catch(e){
       console.error('Install error:', e)
+    }
+  }
+
+  const handleSaveDisplayName = () => {
+    try{
+      localStorage.setItem('calorieWise.displayName', displayName.trim())
+      setEditNameOpen(false)
+      // Sync to cloud if user is signed in
+      if(currentUser && isOnline){
+        saveUserDataToFirestore(currentUser.uid).catch(e => console.warn('Sync failed:', e))
+      }
+    }catch(e){
+      console.error('Failed to save display name:', e)
     }
   }
 
@@ -377,12 +394,10 @@ export default function App(){
     }catch(e){ return 0 }
   },[location.pathname])
 
-  const maintenanceUsed = (()=>{
-    try{
-      if(!calories) return null
-      return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
-    }catch(e){ return null }
-  })()
+  const maintenanceUsed = useMemo(()=>{
+    if(!calories) return null
+    return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
+  },[calories, workoutToday])
 
   return (
     <div>
@@ -393,9 +408,24 @@ export default function App(){
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
           {currentUser && !authLoading && (
-            <div style={{fontSize:12,color:'var(--muted)',marginRight:4}} title={currentUser.email}>
-              {currentUser.displayName || currentUser.email?.split('@')[0]}
-            </div>
+            <button
+              onClick={() => setEditNameOpen(true)}
+              style={{
+                fontSize:12,
+                color:'var(--muted)',
+                marginRight:4,
+                background:'transparent',
+                border:'none',
+                cursor:'pointer',
+                padding:'4px 8px',
+                borderRadius:4,
+                transition:'all 0.2s'
+              }}
+              className="name-edit-btn"
+              title="Click to edit your name"
+            >
+              {displayName || currentUser.displayName || currentUser.email?.split('@')[0]}
+            </button>
           )}
           <button ref={hamburgerRef} className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu" onClick={toggleMenu}>☰</button>
         </div>
@@ -463,6 +493,84 @@ export default function App(){
 
         <WeeklyAttendance storageTick={storageTick} setStorageTick={setStorageTick} setWorkoutToday={setWorkoutToday} toggleAttendance={toggleAttendance} selectedIso={selectedAttendanceIso} setSelectedIso={setSelectedAttendanceIso} />
       </main>
+
+      {/* Edit Name Modal */}
+      {editNameOpen && (
+        <div className="name-edit-modal" onClick={() => setEditNameOpen(false)}>
+          <div className="name-edit-card" onClick={(e) => e.stopPropagation()}>
+            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
+              <h3 style={{margin:0,fontSize:18}}>Edit Display Name</h3>
+              <button
+                onClick={() => setEditNameOpen(false)}
+                className="icon-btn"
+                aria-label="Close"
+              >
+                ✕
+              </button>
+            </div>
+            <div style={{marginBottom:16}}>
+              <label style={{display:'block',fontSize:13,color:'var(--muted)',marginBottom:8}}>
+                Your name
+              </label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="Enter your name"
+                autoFocus
+                style={{
+                  width:'100%',
+                  padding:'10px 12px',
+                  fontSize:14,
+                  border:'1px solid var(--card-border)',
+                  borderRadius:6,
+                  background:'var(--bg-start)',
+                  color:'var(--text)'
+                }}
+                onKeyDown={(e) => {
+                  if(e.key === 'Enter'){
+                    handleSaveDisplayName()
+                  }
+                }}
+              />
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>
+                This name will appear in the app instead of your email
+              </div>
+            </div>
+            <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
+              <button
+                onClick={() => setEditNameOpen(false)}
+                style={{
+                  padding:'8px 16px',
+                  fontSize:14,
+                  border:'1px solid var(--card-border)',
+                  borderRadius:6,
+                  background:'transparent',
+                  color:'var(--text)',
+                  cursor:'pointer'
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveDisplayName}
+                style={{
+                  padding:'8px 16px',
+                  fontSize:14,
+                  border:'none',
+                  borderRadius:6,
+                  background:'var(--accent1)',
+                  color:'white',
+                  cursor:'pointer',
+                  fontWeight:600
+                }}
+              >
+                Save
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Offline/Sync indicator banners */}
       {!isOnline && (
