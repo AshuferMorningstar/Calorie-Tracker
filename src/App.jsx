@@ -608,10 +608,7 @@ export default function App(){
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
             <button className="card" onClick={()=>{ navigate('/', { state: { fromSplash: true } }); closeMenu() }}>Home</button>
             {currentUser ? (
-              <>
-                <div style={{fontSize:12,color:'var(--muted)',padding:'0 12px',marginTop:4}}>Signed in as {currentUser.email}</div>
-                <button className="card" style={{color:'var(--accent1)'}} onClick={handleSignOut}>Sign out</button>
-              </>
+              <button className="card" onClick={handleSignOut}>Sign out</button>
             ) : (
               <button className="card" style={{color:'var(--accent1)'}} onClick={handleSignIn}>Sign in with Google</button>
             )}
