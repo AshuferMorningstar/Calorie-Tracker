@@ -26,6 +26,7 @@ root.render(
         <Route path="/" element={<ConditionalHome/>} />
         <Route path="/splash" element={<SplashPage/>} />
         <Route path="/onboard/auth" element={<OnboardAuth/>} />
+        <Route path="/onboard-auth" element={<OnboardAuth/>} />
         <Route path="/onboard" element={<Onboard/>} />
         <Route path="/onboard/details" element={<OnboardDetails/>} />
         <Route path="/onboard/weight" element={<OnboardWeightGoal/>} />

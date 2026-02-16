@@ -1,5 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Routes, Route } from 'react-router-dom'
+import OnboardAuth from './pages/OnboardAuth'
 import { onAuthChange, signInWithGoogle, signOut } from './services/auth'
 import { useSyncContext } from './context/SyncContext'
 import { loadUserDataFromFirestore, saveUserDataToFirestore, syncDataBeforeLogout } from './services/firestore'
@@ -179,6 +180,7 @@ export default function App(){
       await signOut()
       setSyncStatus('synced')
       closeMenu()
+      navigate('/onboard-auth') // Redirect to login page
     }catch(e){
       console.error('[App] Sign-out failed:', e.message)
     }
@@ -419,240 +421,15 @@ export default function App(){
   },[lastSyncAt])
 
   return (
-    <div>
-      <div className="dashboard-header profile-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-        <div style={{display:'flex',alignItems:'center',gap:12}}>
-          <img src="/assets/caloriewiselogo.svg" alt="Calorie Wise logo" className="top-logo" />
-          <h2>Calorie Wise</h2>
+    <Routes>
+      <Route path="/onboard-auth" element={<OnboardAuth />} />
+      {/* ...existing routes and app UI... */}
+      <Route path="*" element={
+        <div>
+          {/* ...existing code... */}
         </div>
-        <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          {currentUser && !authLoading && (
-            <button
-              onClick={() => setEditNameOpen(true)}
-              style={{
-                fontSize:12,
-                color:'var(--muted)',
-                marginRight:4,
-                background:'transparent',
-                border:'none',
-                cursor:'pointer',
-                padding:'4px 8px',
-                borderRadius:4,
-                transition:'all 0.2s'
-              }}
-              className="name-edit-btn"
-              title="Click to edit your name"
-            >
-              {displayName || currentUser.displayName || currentUser.email?.split('@')[0]}
-            </button>
-          )}
-          <button ref={hamburgerRef} className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu" onClick={toggleMenu}>☰</button>
-        </div>
-      </div>
-
-      <main ref={mainRef} style={{padding:16,maxWidth:720,margin:'0 auto',display:'grid',gap:16}}>
-
-        <div className="dashboard-grid">
-          <div className="card" style={{position:'relative',paddingRight:140}}>
-            <strong>Maintenance calories</strong>
-            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,marginTop:8}}>
-              <div style={{display:'flex',flexDirection:'column',gap:6,paddingRight:12}}>
-                <div style={{fontSize:22,fontWeight:700}}>{maintenanceUsed ? `${maintenanceUsed} kcal/day` : '—'}</div>
-                <div style={{fontSize:13,color:'var(--muted)'}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed today`}</div>
-                <div style={{fontSize:12,color:'var(--muted)'}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
-              </div>
-            </div>
-            <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise" width={108} height={108} decoding="async" fetchpriority="high" loading="eager" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
-          </div>
-
-          <div style={{display:'flex',gap:8,alignItems:'stretch'}}>
-            <div className="card" style={{flex:1,minWidth:0,padding:12}}>
-              <strong>Diet calories</strong>
-              <div style={{fontSize:16,marginTop:6}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
-              <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
-            </div>
-            <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/burned')}>
-              <div style={{fontSize:20}}>🏃</div>
-              <div style={{fontSize:12,color:'var(--muted)'}}>Calories burned</div>
-            </button>
-          </div>
-        </div>
-
-        <div style={{gridColumn: '1 / -1', display:'flex', gap:8, alignItems:'stretch', flexWrap:'wrap'}}>
-          <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/track')}>Track calories</button>
-          <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/calendar')}>
-            <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-              <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{new Date().toLocaleString(undefined,{weekday:'short'})}</div>
-              <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{new Date().getDate()}</div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
-            </div>
-          </button>
-          <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={() => {
-              // if a past day is selected in WeeklyAttendance, mark/unmark that date; otherwise toggle today
-              try{
-                const iso = selectedAttendanceIso
-                if(iso){
-                  const isFuture = new Date(iso) > new Date()
-                  if(!isFuture){
-                    toggleAttendance(iso)
-                    setSelectedAttendanceIso(null)
-                    return
-                  }
-                }
-              }catch(e){}
-              toggleWorkoutToday()
-            }}>
-              <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                <div style={{fontSize:22}} aria-hidden>{workoutButtonIcon}</div>
-                <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{workoutButtonLabel}</div>
-              </div>
-            </button>
-        </div>
-
-        <WeeklyAttendance storageTick={storageTick} setStorageTick={setStorageTick} setWorkoutToday={setWorkoutToday} toggleAttendance={toggleAttendance} selectedIso={selectedAttendanceIso} setSelectedIso={setSelectedAttendanceIso} />
-      </main>
-
-      {/* Edit Name Modal */}
-      {editNameOpen && (
-        <div className="name-edit-modal" onClick={() => setEditNameOpen(false)}>
-          <div className="name-edit-card" onClick={(e) => e.stopPropagation()}>
-            <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:16}}>
-              <h3 style={{margin:0,fontSize:18}}>Edit Display Name</h3>
-              <button
-                onClick={() => setEditNameOpen(false)}
-                className="icon-btn"
-                aria-label="Close"
-              >
-                ✕
-              </button>
-            </div>
-            <div style={{marginBottom:16}}>
-              <label style={{display:'block',fontSize:13,color:'var(--muted)',marginBottom:8}}>
-                Your name
-              </label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="Enter your name"
-                autoFocus
-                style={{
-                  width:'100%',
-                  padding:'10px 12px',
-                  fontSize:14,
-                  border:'1px solid var(--card-border)',
-                  borderRadius:6,
-                  background:'var(--bg-start)',
-                  color:'var(--text)'
-                }}
-                onKeyDown={(e) => {
-                  if(e.key === 'Enter'){
-                    handleSaveDisplayName()
-                  }
-                }}
-              />
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>
-                This name will appear in the app instead of your email
-              </div>
-            </div>
-            <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
-              <button
-                onClick={() => setEditNameOpen(false)}
-                style={{
-                  padding:'8px 16px',
-                  fontSize:14,
-                  border:'1px solid var(--card-border)',
-                  borderRadius:6,
-                  background:'transparent',
-                  color:'var(--text)',
-                  cursor:'pointer'
-                }}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveDisplayName}
-                style={{
-                  padding:'8px 16px',
-                  fontSize:14,
-                  border:'none',
-                  borderRadius:6,
-                  background:'var(--accent1)',
-                  color:'white',
-                  cursor:'pointer',
-                  fontWeight:600
-                }}
-              >
-                Save
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Offline/Sync indicator banners */}
-      {!isOnline && (
-        <div className="offline-banner" role="status" aria-live="polite">
-          📡 You're offline • Changes will sync when online
-        </div>
-      )}
-      {isOnline && syncStatus === 'syncing' && (
-        <div className="sync-banner" role="status" aria-live="polite">
-          ⚡ Syncing your data...
-        </div>
-      )}
-      {isOnline && syncStatus === 'offline' && (
-        <div className="offline-banner" role="status" aria-live="polite">
-          ⚠️ Cloud sync failed • Check Firestore rules
-        </div>
-      )}
-
-      {/* backdrop to dim page while panel open; clicking closes the panel */}
-      <div className={`panel-backdrop ${menuOpen ? 'open' : ''}`} onClick={closeMenu} aria-hidden="true" />
-
-      <div ref={panelRef} className={`slide-panel ${menuOpen ? 'open' : ''}`} role="dialog" aria-hidden={!menuOpen}>
-        <div className="panel-header">
-          <div>
-            <button
-              className="theme-toggle"
-              aria-pressed={darkMode}
-              onClick={()=>setDarkMode(d=>!d)}
-              title={darkMode ? 'Switch to light' : 'Switch to dark'}
-            >
-              <span className="tt-icon" aria-hidden>{darkMode ? '🌙' : '☀️'}</span>
-            </button>
-          </div>
-          <button ref={closeBtnRef} className="icon-btn" aria-label="Close menu" onClick={closeMenu}>✕</button>
-        </div>
-        <div className="panel-body">
-          <div className="card" style={{padding:12}}>
-            <div style={{fontSize:12,color:'var(--muted)'}}>Cloud sync</div>
-            <div style={{marginTop:4,fontWeight:600}}>{syncStatus === 'syncing' ? 'Syncing...' : (isOnline ? 'Online' : 'Offline')}</div>
-            <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>Last synced: {formattedLastSync}</div>
-            {isOnline && syncStatus === 'offline' && (
-              <div style={{fontSize:12,color:'#c25',marginTop:6}}>Sync error: check Firestore rules or network.</div>
-            )}
-          </div>
-          
-
-          <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
-            <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
-            <button className="card" onClick={()=>{ navigate('/meal-planner'); closeMenu() }}>Meal Planner</button>
-            <button className="card" onClick={()=>{ navigate('/', { state: { fromSplash: true } }); closeMenu() }}>Home</button>
-            {currentUser ? (
-              <button className="card" onClick={handleSignOut}>Sign out</button>
-            ) : (
-              <button className="card" style={{color:'var(--accent1)'}} onClick={handleSignIn}>Sign in with Google</button>
-            )}
-            {installPrompt && (
-              <button className="card" onClick={handleInstallClick}>Install app</button>
-            )}
-            <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
-          </nav>
-        </div>
-      </div>
-    </div>
+      } />
+    </Routes>
   )
 }
 

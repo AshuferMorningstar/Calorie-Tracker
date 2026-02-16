@@ -1,10 +1,12 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 
-export default function Profile(){
+export default function Profile() {
   const navigate = useNavigate()
-  const data = useMemo(()=>{
-    try{
+  const { currentUser } = useSyncContext()
+  const data = useMemo(() => {
+    try {
       return {
         dob: localStorage.getItem('calorieWise.dob') || '',
         age: localStorage.getItem('calorieWise.age') || '',
@@ -19,31 +21,31 @@ export default function Profile(){
         targetBand: localStorage.getItem('calorieWise.targetBand') || '',
         timelineMonths: localStorage.getItem('calorieWise.timelineMonths') || ''
       }
-    }catch(e){ return {} }
-  },[])
+    } catch (e) { return {} }
+  }, [])
 
-  const calcs = useMemo(()=>{
-    try{
+  const calcs = useMemo(() => {
+    try {
       const currentKg = Number(data.currentKg || '') || null
       const age = Number(data.age || '') || null
       const height = Number(data.height || '') || null
       const gender = data.gender || 'male'
       const activity = data.activity || 'sedentary'
 
-      if(!currentKg || !age || !height) return null
+      if (!currentKg || !age || !height) return null
 
       const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
-      const activityFactors = { sedentary:1.2, light:1.375, moderate:1.55, active:1.725, very:1.9 }
+      const activityFactors = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very: 1.9 }
       // Use sedentary baseline for display unless a workout is marked for a given day
       const activityFactor = activityFactors['sedentary']
 
       const maintenanceNoWorkout = Math.round(bmr * activityFactor)
 
       return { bmr, maintenanceNoWorkout }
-    }catch(e){ return null }
-  },[data])
+    } catch (e) { return null }
+  }, [data])
 
-  const goEdit = ()=> navigate('/onboard/details', { state: { from: '/profile' } })
+  const goEdit = () => navigate('/onboard/details', { state: { from: '/profile' } })
 
   return (
     <main style={{padding:24,maxWidth:900,margin:'0 auto'}}>
@@ -56,6 +58,12 @@ export default function Profile(){
       <div style={{color:'var(--muted)',marginTop:12}}>Review and edit your personal info and plan.</div>
 
       <section style={{marginTop:20,display:'grid',gap:12}}>
+        <div className="card">
+          <div style={{flex:1}}>
+            <strong>Email</strong>
+            <div style={{color:'var(--muted)'}}>{currentUser?.email || '—'}</div>
+          </div>
+        </div>
         <div className="card">
           <div style={{flex:1}}>
             <strong>DOB</strong>
