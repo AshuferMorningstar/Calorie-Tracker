@@ -8,8 +8,48 @@ import {
   setPersistence,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword
+  signInWithEmailAndPassword,
+  EmailAuthProvider,
+  linkWithCredential
 } from 'firebase/auth'
+// Helper: Link Google to email/password account if same email
+export const linkGoogleToEmailAccount = async (email, password) => {
+  try {
+    const userCred = await signInWithEmailAndPassword(auth, email, password)
+    const googleResult = await signInWithPopup(auth, googleProvider)
+    if (userCred.user.email === googleResult.user.email) {
+      // Link Google to this email/password account
+      await linkWithCredential(userCred.user, GoogleAuthProvider.credentialFromResult(googleResult))
+      return userCred.user
+    }
+    return null
+  } catch (error) {
+    if (error.code === 'auth/credential-already-in-use') {
+      // Already linked
+      return auth.currentUser
+    }
+    throw error
+  }
+}
+
+// Helper: Link email/password to Google account if same email
+export const linkEmailToGoogleAccount = async (email, password) => {
+  try {
+    const googleResult = await signInWithPopup(auth, googleProvider)
+    const credential = EmailAuthProvider.credential(email, password)
+    if (googleResult.user.email === email) {
+      await linkWithCredential(googleResult.user, credential)
+      return googleResult.user
+    }
+    return null
+  } catch (error) {
+    if (error.code === 'auth/credential-already-in-use') {
+      // Already linked
+      return auth.currentUser
+    }
+    throw error
+  }
+}
 import { auth } from './firebase'
 
 const googleProvider = new GoogleAuthProvider()
