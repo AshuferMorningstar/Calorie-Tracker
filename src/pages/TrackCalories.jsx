@@ -8,13 +8,36 @@ import './TrackCalories.autocomplete.css'
 
 // small built-in food database (kcal per 100 g where applicable)
 const FOODS = [
-  { id: 'chicken', name: 'Chicken breast', kcal: 165, protein: 31.0 },
+  // Chicken and poultry
+  { id: 'chicken_breast', name: 'Chicken breast', kcal: 165, protein: 31.0, name_hi: 'चिकन ब्रेस्ट', name_hi_translit: 'chicken breast' },
+  { id: 'chicken_whole', name: 'Chicken (whole)', kcal: 239, protein: 27.3, name_hi: 'पूरा चिकन', name_hi_translit: 'poora chicken' },
+  { id: 'chicken_thighs', name: 'Chicken thighs', kcal: 209, protein: 26.0, name_hi: 'चिकन जांघ', name_hi_translit: 'chicken thigh' },
+  { id: 'chicken_drumstick', name: 'Chicken drumstick / leg', kcal: 172, protein: 28.3, name_hi: 'चिकन टांग', name_hi_translit: 'chicken taang' },
+  { id: 'chicken_wings', name: 'Chicken wings', kcal: 203, protein: 30.5, name_hi: 'चिकन विंग्स', name_hi_translit: 'chicken wings' },
+  { id: 'chicken_liver', name: 'Chicken liver', kcal: 119, protein: 16.9, name_hi: 'चिकन कलेजी', name_hi_translit: 'chicken kaleji' },
+  { id: 'chicken_gizzard', name: 'Chicken gizzard', kcal: 94, protein: 17.7, name_hi: 'चिकन गिज़ार्ड', name_hi_translit: 'chicken gizzard' },
+  { id: 'chicken_heart', name: 'Chicken heart', kcal: 153, protein: 15.6, name_hi: 'चिकन दिल', name_hi_translit: 'chicken dil' },
+  { id: 'chicken_meat', name: 'Chicken meat (general)', kcal: 195, protein: 27.0, name_hi: 'चिकन मीट', name_hi_translit: 'chicken meat' },
+  
+  // Dairy products
+  { id: 'dahi', name: 'Dahi / Curd / Yogurt (plain)', kcal: 60, protein: 3.5, name_hi: 'दही', name_hi_translit: 'dahi' },
+  { id: 'dahi_full_fat', name: 'Dahi / Yogurt (full fat)', kcal: 97, protein: 3.3, name_hi: 'फुल फैट दही', name_hi_translit: 'full fat dahi' },
+  { id: 'dahi_low_fat', name: 'Dahi / Yogurt (low fat)', kcal: 63, protein: 5.3, name_hi: 'लो फैट दही', name_hi_translit: 'low fat dahi' },
+
+  // Rice varieties
   { id: 'rice', name: 'White rice (cooked)', kcal: 130, protein: 2.7 },
   { id: 'rice_raw', name: 'White rice (raw)', kcal: 365, protein: 7.1 },
   { id: 'basmati_rice', name: 'Basmati rice (cooked)', kcal: 130, protein: 2.6 },
   { id: 'basmati_rice_raw', name: 'Basmati rice (raw)', kcal: 365, protein: 7.1 },
   { id: 'brown_rice', name: 'Brown rice (cooked)', kcal: 123, protein: 2.6 },
   { id: 'brown_rice_raw', name: 'Brown rice (raw)', kcal: 370, protein: 7.5 },
+  
+  // Flattened rice / Poha / Chura
+  { id: 'chura', name: 'Chura / Poha / Flattened rice (dry)', kcal: 350, protein: 7.0, name_hi: 'चूड़ा / पोहा', name_hi_translit: 'chura / poha' },
+  { id: 'basmati_chura', name: 'Basmati Chura / Basmati Poha (dry)', kcal: 360, protein: 7.5, name_hi: 'बासमती चूड़ा', name_hi_translit: 'basmati chura' },
+  { id: 'thick_chura', name: 'Thick Chura / Mota Poha (dry)', kcal: 355, protein: 7.2, name_hi: 'मोटा पोहा', name_hi_translit: 'mota poha' },
+  { id: 'thin_chura', name: 'Thin Chura / Patla Poha (dry)', kcal: 345, protein: 6.8, name_hi: 'पतला पोहा', name_hi_translit: 'patla poha' },
+  
   { id: 'chapati', name: 'Roti / Chapati (whole wheat)', kcal: 250, protein: 9.0 },
   { id: 'chapati_unit', name: 'Roti / Chapati (whole wheat) - piece', unit: 'count', kcalPerUnit: 250, proteinPerUnit: 9.0 },
   { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340, protein: 13.2 },
@@ -219,6 +242,34 @@ const FOODS = [
 
 // common aliases -> preferred raw IDs
 const ALIASES = {
+  // chicken variants
+  'chicken': 'chicken_breast',
+  'chicken breast': 'chicken_breast',
+  'whole chicken': 'chicken_whole',
+  'chicken thigh': 'chicken_thighs',
+  'chicken leg': 'chicken_drumstick',
+  'chicken drumstick': 'chicken_drumstick',
+  'chicken wing': 'chicken_wings',
+  'chicken kaleji': 'chicken_liver',
+  'kaleji': 'chicken_liver',
+  'chicken liver': 'chicken_liver',
+  // dairy
+  'dahi': 'dahi',
+  'yogurt': 'dahi',
+  'curd': 'dahi',
+  'dahee': 'dahi',
+  // flattened rice
+  'chura': 'chura',
+  'poha': 'chura',
+  'flattened rice': 'chura',
+  'beaten rice': 'chura',
+  'basmati chura': 'basmati_chura',
+  'basmati poha': 'basmati_chura',
+  'mota poha': 'thick_chura',
+  'thick poha': 'thick_chura',
+  'patla poha': 'thin_chura',
+  'thin poha': 'thin_chura',
+  // rice
   'rice': 'rice_raw',
   'white rice': 'rice_raw',
   'basmati': 'basmati_rice_raw',
