@@ -6035,72 +6035,72 @@
     "cuisine": "Australian"
   },
   {
-    "id": "chicken_breast",
-    "name": "Chicken breast",
+    "id": "chicken_breast_raw",
+    "name": "Chicken breast (raw)",
     "kcal": 165,
     "protein": 31,
     "name_hi": "चिकन ब्रेस्ट",
     "name_hi_translit": "chicken breast"
   },
   {
-    "id": "chicken_whole",
-    "name": "Chicken (whole)",
+    "id": "chicken_whole_raw",
+    "name": "Chicken (whole) (raw)",
     "kcal": 239,
     "protein": 27.3,
     "name_hi": "पूरा चिकन",
     "name_hi_translit": "poora chicken"
   },
   {
-    "id": "chicken_thighs",
-    "name": "Chicken thighs",
+    "id": "chicken_thighs_raw",
+    "name": "Chicken thighs (raw)",
     "kcal": 209,
     "protein": 26,
     "name_hi": "चिकन जांघ",
     "name_hi_translit": "chicken thigh"
   },
   {
-    "id": "chicken_drumstick",
-    "name": "Chicken drumstick / leg",
+    "id": "chicken_drumstick_raw",
+    "name": "Chicken drumstick / leg (raw)",
     "kcal": 172,
     "protein": 28.3,
     "name_hi": "चिकन टांग",
     "name_hi_translit": "chicken taang"
   },
   {
-    "id": "chicken_wings",
-    "name": "Chicken wings",
+    "id": "chicken_wings_raw",
+    "name": "Chicken wings (raw)",
     "kcal": 203,
     "protein": 30.5,
     "name_hi": "चिकन विंग्स",
     "name_hi_translit": "chicken wings"
   },
   {
-    "id": "chicken_liver",
-    "name": "Chicken liver",
+    "id": "chicken_liver_raw",
+    "name": "Chicken liver (raw)",
     "kcal": 119,
     "protein": 16.9,
     "name_hi": "चिकन कलेजी",
     "name_hi_translit": "chicken kaleji"
   },
   {
-    "id": "chicken_gizzard",
-    "name": "Chicken gizzard",
+    "id": "chicken_gizzard_raw",
+    "name": "Chicken gizzard (raw)",
     "kcal": 94,
     "protein": 17.7,
     "name_hi": "चिकन गिज़ार्ड",
     "name_hi_translit": "chicken gizzard"
   },
   {
-    "id": "chicken_heart",
-    "name": "Chicken heart",
+    "id": "chicken_heart_raw",
+    "name": "Chicken heart (raw)",
     "kcal": 153,
     "protein": 15.6,
     "name_hi": "चिकन दिल",
     "name_hi_translit": "chicken dil"
   },
   {
-    "id": "chicken_meat",
-    "name": "Chicken meat (general)",
+    "id": "chicken_meat_raw",
+    "name": "Chicken meat (general) (raw)",
     "kcal": 195,
     "protein": 27,
     "name_hi": "चिकन मीट",

@@ -220,16 +220,16 @@ const FOODS = [
 // common aliases -> preferred raw IDs
 const ALIASES = {
   // chicken variants
-  'chicken': 'chicken_breast',
-  'chicken breast': 'chicken_breast',
-  'whole chicken': 'chicken_whole',
-  'chicken thigh': 'chicken_thighs',
-  'chicken leg': 'chicken_drumstick',
-  'chicken drumstick': 'chicken_drumstick',
-  'chicken wing': 'chicken_wings',
-  'chicken kaleji': 'chicken_liver',
-  'kaleji': 'chicken_liver',
-  'chicken liver': 'chicken_liver',
+  'chicken': 'chicken_breast_raw',
+  'chicken breast': 'chicken_breast_raw',
+  'whole chicken': 'chicken_whole_raw',
+  'chicken thigh': 'chicken_thighs_raw',
+  'chicken leg': 'chicken_drumstick_raw',
+  'chicken drumstick': 'chicken_drumstick_raw',
+  'chicken wing': 'chicken_wings_raw',
+  'chicken kaleji': 'chicken_liver_raw',
+  'kaleji': 'chicken_liver_raw',
+  'chicken liver': 'chicken_liver_raw',
   // fish and seafood
   'fish': 'rohu_raw',
   'machhli': 'rohu_raw',
@@ -1024,18 +1024,48 @@ export default function TrackCalories(){
                   }
                 }
 
-                // 4) fallback: includes search preferring cooked/raw based on request
+                // 4) fallback: startsWith search preferring RAW items by default, or cooked if requested
                 if(!found && base){
                   if(cookedRequested){
-                    found = ALL_FOODS.find(f => (f.name||'').toLowerCase().includes(base) && (f.name||'').toLowerCase().includes('cooked'))
+                    // Look for items that start with the base term and include 'cooked'
+                    found = ALL_FOODS.find(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      return (lname.startsWith(base) || lname.split(/\s+/).some(w => w.startsWith(base))) && lname.includes('cooked')
+                    })
                   }
                   if(!found){
-                    // prefer raw or any non-cooked match; also match Hindi/translit
-                    found = ALL_FOODS.find(f => ((f.name||'').toLowerCase().includes(base) || (f.name_hi||'').toLowerCase().includes(base) || (f.name_hi_translit||'').toLowerCase().includes(base)) && !(f.name||'').toLowerCase().includes('cooked'))
+                    // First try to find RAW items (highest priority for proteins/fish)
+                    found = ALL_FOODS.find(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      const isRaw = f.id.endsWith('_raw') || lname.includes('(raw)') || lname.includes('raw)')
+                      const nameMatch = lname.startsWith(base) || lname.split(/\s+/).some(w => w.startsWith(base))
+                      const hiMatch = lhi.startsWith(base) || lhi.split(/\s+/).some(w => w.startsWith(base))
+                      const trMatch = ltr.startsWith(base) || ltr.split(/\s+/).some(w => w.startsWith(base))
+                      return (nameMatch || hiMatch || trMatch) && isRaw && !lname.includes('cooked')
+                    })
                   }
-                  // 5) dictionary-style subsequence fallback (letters in order)
                   if(!found){
-                    found = ALL_FOODS.find(f => isSubsequence(base, f.name || '') || isSubsequence(base, f.name_hi || '') || isSubsequence(base, f.name_hi_translit || ''))
+                    // Then try non-raw items (excluding cooked variants)
+                    found = ALL_FOODS.find(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      const nameMatch = lname.startsWith(base) || lname.split(/\s+/).some(w => w.startsWith(base))
+                      const hiMatch = lhi.startsWith(base) || lhi.split(/\s+/).some(w => w.startsWith(base))
+                      const trMatch = ltr.startsWith(base) || ltr.split(/\s+/).some(w => w.startsWith(base))
+                      return (nameMatch || hiMatch || trMatch) && !lname.includes('cooked')
+                    })
+                  }
+                  // 5) only fall back to contains/subsequence if nothing found with startsWith
+                  if(!found){
+                    found = ALL_FOODS.find(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      return (lname.includes(base) || lhi.includes(base) || ltr.includes(base)) && !lname.includes('cooked')
+                    })
                   }
                 }
 
@@ -1070,31 +1100,47 @@ export default function TrackCalories(){
                   const baseTerm = (base || '').toLowerCase()
                   if(baseTerm){
                     const matches = []
-                    // prioritise alias matches
+                    
+                    // Helper to check if item is raw
+                    const isRaw = (f) => {
+                      const lname = (f.name||'').toLowerCase()
+                      return f.id.endsWith('_raw') || lname.includes('(raw)') || lname.includes('raw)')
+                    }
+                    
+                    // 1. Exact startsWith matches - RAW items first
+                    const startsWithMatches = ALL_FOODS.filter(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      return lname.startsWith(baseTerm) || lhi.startsWith(baseTerm) || ltr.startsWith(baseTerm)
+                    })
+                    // Sort: raw items first
+                    const rawStarts = startsWithMatches.filter(f => isRaw(f))
+                    const cookedStarts = startsWithMatches.filter(f => !isRaw(f))
+                    rawStarts.forEach(m => matches.push(m))
+                    cookedStarts.forEach(m => matches.push(m))
+
+                    // 2. Word boundary matches - RAW items first (e.g., "rice" matches "basmati rice")
+                    const wordStartMatches = ALL_FOODS.filter(f => {
+                      const lname = (f.name||'').toLowerCase()
+                      const lhi = (f.name_hi||'').toLowerCase()
+                      const ltr = (f.name_hi_translit||'').toLowerCase()
+                      const words = lname.split(/\s+/)
+                      const wordsHi = lhi.split(/\s+/)
+                      const wordsTr = ltr.split(/\s+/)
+                      return words.some(w => w.startsWith(baseTerm)) || wordsHi.some(w => w.startsWith(baseTerm)) || wordsTr.some(w => w.startsWith(baseTerm))
+                    })
+                    const rawWords = wordStartMatches.filter(f => isRaw(f) && !matches.find(x => x.id === f.id))
+                    const cookedWords = wordStartMatches.filter(f => !isRaw(f) && !matches.find(x => x.id === f.id))
+                    rawWords.forEach(m => matches.push(m))
+                    cookedWords.forEach(m => matches.push(m))
+
+                    // 3. Alias matches
                     const aliasId = findAliasIdFor(baseTerm)
                     if(aliasId){
                       const ali = ALL_FOODS.find(f => f.id === aliasId || f.id === aliasId.replace(/_raw$/,''))
-                      if(ali) matches.push(ali)
+                      if(ali && !matches.find(x => x.id === ali.id)) matches.push(ali)
                     }
-
-                    // general contains matches (name, hindi, translit)
-                    const general = ALL_FOODS.filter(f => {
-                      const lname = (f.name||'').toLowerCase()
-                      const lhi = (f.name_hi||'').toLowerCase()
-                      const ltr = (f.name_hi_translit||'').toLowerCase()
-                      return lname.includes(baseTerm) || lhi.includes(baseTerm) || ltr.includes(baseTerm)
-                    })
-
-                    general.forEach(g => { if(!matches.find(m => m.id === g.id)) matches.push(g) })
-
-                    // dictionary-style: allow letters typed in order to match (e.g. 'pratha' -> 'paratha')
-                    const subseq = ALL_FOODS.filter(f => {
-                      const lname = (f.name||'').toLowerCase()
-                      const lhi = (f.name_hi||'').toLowerCase()
-                      const ltr = (f.name_hi_translit||'').toLowerCase()
-                      return isSubsequence(baseTerm, lname) || isSubsequence(baseTerm, lhi) || isSubsequence(baseTerm, ltr)
-                    })
-                    subseq.forEach(s => { if(!matches.find(m => m.id === s.id)) matches.push(s) })
 
                     const limited = matches.slice(0,12)
                     setSuggestions(limited)
