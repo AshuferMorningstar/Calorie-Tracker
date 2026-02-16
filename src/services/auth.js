@@ -5,6 +5,8 @@ import {
   GoogleAuthProvider, 
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  setPersistence,
+  browserLocalPersistence,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword
 } from 'firebase/auth'
@@ -23,6 +25,11 @@ const isMobileUserAgent = () => {
 }
 
 const shouldUseRedirect = () => isStandaloneMode() || isMobileUserAgent()
+
+// Persist auth state locally so users stay signed in across reloads.
+setPersistence(auth, browserLocalPersistence).catch((error) => {
+  console.warn('[Auth] Failed to set persistence:', error.message)
+})
 
 export const signInWithGoogle = async () => {
   try {

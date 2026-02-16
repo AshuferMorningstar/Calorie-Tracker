@@ -604,6 +604,11 @@ export default function App(){
           ⚡ Syncing your data...
         </div>
       )}
+      {isOnline && syncStatus === 'offline' && (
+        <div className="offline-banner" role="status" aria-live="polite">
+          ⚠️ Cloud sync failed • Check Firestore rules
+        </div>
+      )}
 
       {/* backdrop to dim page while panel open; clicking closes the panel */}
       <div className={`panel-backdrop ${menuOpen ? 'open' : ''}`} onClick={closeMenu} aria-hidden="true" />
@@ -627,6 +632,9 @@ export default function App(){
             <div style={{fontSize:12,color:'var(--muted)'}}>Cloud sync</div>
             <div style={{marginTop:4,fontWeight:600}}>{syncStatus === 'syncing' ? 'Syncing...' : (isOnline ? 'Online' : 'Offline')}</div>
             <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>Last synced: {formattedLastSync}</div>
+            {isOnline && syncStatus === 'offline' && (
+              <div style={{fontSize:12,color:'#c25',marginTop:6}}>Sync error: check Firestore rules or network.</div>
+            )}
           </div>
           
 

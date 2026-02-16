@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { onAuthChange } from '../services/auth'
 import { loadUserDataFromFirestore, saveUserDataToFirestore } from '../services/firestore'
 
@@ -20,6 +20,7 @@ export const SyncProvider = ({ children }) => {
     try{ return localStorage.getItem('calorieWise.lastSyncAt') || null }catch(e){ return null }
   })
   const [authLoading, setAuthLoading] = useState(true)
+  const pendingSyncRef = useRef(false)
 
   // Listen for online/offline status
   useEffect(() => {
@@ -43,7 +44,11 @@ export const SyncProvider = ({ children }) => {
 
   // Sync function with debouncing
   const triggerSync = async () => {
-    if (!currentUser || !isOnline) return
+    if (!currentUser || !isOnline) {
+      pendingSyncRef.current = true
+      return
+    }
+    pendingSyncRef.current = false
     
     try {
       setSyncStatus('syncing')
@@ -79,10 +84,13 @@ export const SyncProvider = ({ children }) => {
           console.warn('[Sync] Failed to load cloud data:', e.message)
           setSyncStatus('offline')
         }
+        if (pendingSyncRef.current && isOnline) {
+          triggerSync()
+        }
       }
     })
     return () => unsubscribe()
-  }, [])
+  }, [isOnline])
 
   return (
     <SyncContext.Provider value={{ currentUser, isOnline, syncStatus, lastSyncAt, triggerSync, authLoading }}>
