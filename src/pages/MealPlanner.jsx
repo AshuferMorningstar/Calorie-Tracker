@@ -1,10 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 
 const MAX_RECIPES = 30
 
 export default function MealPlanner() {
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const todayISO = () => {
     const d = new Date()
     const y = d.getFullYear()
@@ -90,6 +92,7 @@ export default function MealPlanner() {
       try {
         localStorage.setItem('calorieWise.recipes', JSON.stringify(recipes))
         setSavedRecipes(recipes)
+        triggerSync()
       } catch (e) {
         console.error('Failed to save recipes:', e)
       }
@@ -121,6 +124,7 @@ export default function MealPlanner() {
       try {
         localStorage.setItem(key, JSON.stringify(updated))
         setEntriesForDate(updated)
+        triggerSync()
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
       } catch (e) {
         console.error('Failed to add recipe to date:', e)
@@ -159,6 +163,7 @@ export default function MealPlanner() {
         localStorage.setItem(key, JSON.stringify(updated))
         setEntriesForDate(updated)
         setSelectedRecipeIds(new Set())
+        triggerSync()
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
       } catch (e) {
         console.error('Failed to add recipes to date:', e)

@@ -14,13 +14,15 @@ import Calendar from './pages/Calendar'
 import MealPlanner from './pages/MealPlanner'
 import AddRecipe from './pages/AddRecipe'
 import ConditionalHome from './ConditionalHome'
+import { SyncProvider } from './context/SyncContext'
 import '../styles.css'
 
 const root = createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
-    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
-      <Routes>
+    <SyncProvider>
+      <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+        <Routes>
         <Route path="/" element={<ConditionalHome/>} />
         <Route path="/splash" element={<SplashPage/>} />
         <Route path="/onboard/auth" element={<OnboardAuth/>} />
@@ -35,5 +37,6 @@ root.render(
         <Route path="/add-recipe" element={<AddRecipe/>} />
       </Routes>
     </BrowserRouter>
+    </SyncProvider>
   </React.StrictMode>
 )

@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 
 export default function CaloriesBurned(){
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const today = new Date().toISOString().slice(0,10)
   const [iso, setIso] = useState(today)
   const [value, setValue] = useState('')
@@ -22,6 +24,7 @@ export default function CaloriesBurned(){
       }else{
         localStorage.setItem(`calorieWise.burned.${iso}`, String(Math.round(n)))
       }
+      triggerSync()
       try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
       navigate(-1)
     }catch(e){ navigate(-1) }

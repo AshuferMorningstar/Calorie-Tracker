@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 import vegetables from '../data/vegetables_india.json'
 import fruits from '../data/fruits.json'
 import foodsIndia from '../data/foods_india.json'
@@ -220,6 +221,7 @@ const MAX_RECIPES = 30
 
 export default function AddRecipe() {
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const location = useLocation()
   const editingRecipe = location.state?.recipe || null
 
@@ -521,6 +523,7 @@ export default function AddRecipe() {
 
     try {
       localStorage.setItem('calorieWise.recipes', JSON.stringify(updatedRecipes))
+      triggerSync()
       navigate('/meal-planner')
     } catch (e) {
       console.error('Failed to save recipe:', e)

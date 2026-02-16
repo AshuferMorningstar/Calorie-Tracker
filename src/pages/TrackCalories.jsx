@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 import vegetables from '../data/vegetables_india.json'
 import fruits from '../data/fruits.json'
 import foodsIndia from '../data/foods_india.json'
@@ -619,6 +620,7 @@ const todayISO = ()=>{
 
 export default function TrackCalories(){
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const ALL_FOODS = useMemo(()=>{
     try{
       const extras = []
@@ -779,7 +781,11 @@ export default function TrackCalories(){
   },[date])
 
   const persist = (nextItems, forDate = date)=>{
-    try{ localStorage.setItem(dateKey(forDate), JSON.stringify(nextItems)) }catch(e){}
+    try{ 
+      localStorage.setItem(dateKey(forDate), JSON.stringify(nextItems))
+      // Trigger cloud sync after saving to localStorage
+      triggerSync()
+    }catch(e){}
   }
 
   const addItem = (e)=>{
