@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { signInWithGoogle, signUpWithEmail, signInWithEmail, getGoogleRedirectResult } from '../services/auth'
+import { sendPasswordResetEmail } from 'firebase/auth'
+import { auth } from '../services/firebase'
 
 export default function OnboardAuth(){
   const navigate = useNavigate()
@@ -10,6 +12,21 @@ export default function OnboardAuth(){
   const [confirmPassword, setConfirmPassword] = useState('')
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
+  const [resetSent, setResetSent] = useState(false)
+  const handleForgotPassword = async () => {
+    setError(null)
+    setResetSent(false)
+    if (!email.trim()) {
+      setError('Enter your email above to reset password.')
+      return
+    }
+    try {
+      await sendPasswordResetEmail(auth, email)
+      setResetSent(true)
+    } catch (e) {
+      setError(e.message || 'Failed to send reset email.')
+    }
+  }
 
   useEffect(() => {
     let cancelled = false
@@ -167,11 +184,18 @@ export default function OnboardAuth(){
             </div>
           )}
 
+
           {error && (
             <div className="auth-error">
               {error}
             </div>
           )}
+          {resetSent && (
+            <div className="auth-success" style={{color:'green',marginTop:8}}>
+              Password reset email sent! Check your inbox.
+            </div>
+          )}
+
 
           <button
             type="submit"
@@ -180,6 +204,18 @@ export default function OnboardAuth(){
           >
             {loading ? (mode === 'signup' ? 'Signing up...' : 'Signing in...') : (mode === 'signup' ? 'Sign Up' : 'Log In')}
           </button>
+
+          {mode === 'login' && (
+            <button
+              type="button"
+              className="auth-btn-secondary"
+              style={{marginTop:8,background:'none',color:'#007bff',border:'none',textDecoration:'underline',cursor:'pointer'}}
+              onClick={handleForgotPassword}
+              disabled={loading}
+            >
+              Forgot Password?
+            </button>
+          )}
         </form>
 
         {/* Divider */}
