@@ -6,6 +6,7 @@ const SyncContext = createContext({
   currentUser: null,
   isOnline: true,
   syncStatus: 'synced',
+  lastSyncAt: null,
   triggerSync: () => {}
 })
 
@@ -15,6 +16,9 @@ export const SyncProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null)
   const [isOnline, setIsOnline] = useState(() => navigator.onLine)
   const [syncStatus, setSyncStatus] = useState('synced')
+  const [lastSyncAt, setLastSyncAt] = useState(() => {
+    try{ return localStorage.getItem('calorieWise.lastSyncAt') || null }catch(e){ return null }
+  })
   const [authLoading, setAuthLoading] = useState(true)
 
   // Listen for online/offline status
@@ -45,6 +49,11 @@ export const SyncProvider = ({ children }) => {
       setSyncStatus('syncing')
       await saveUserDataToFirestore(currentUser.uid)
       setSyncStatus('synced')
+      try{
+        const nowIso = new Date().toISOString()
+        localStorage.setItem('calorieWise.lastSyncAt', nowIso)
+        setLastSyncAt(nowIso)
+      }catch(e){}
     } catch (e) {
       console.warn('[Sync] Failed:', e.message)
       setSyncStatus('offline')
@@ -61,6 +70,11 @@ export const SyncProvider = ({ children }) => {
           console.log('[Sync] User signed in, loading data...')
           await loadUserDataFromFirestore(user.uid)
           setSyncStatus('synced')
+          try{
+            const nowIso = new Date().toISOString()
+            localStorage.setItem('calorieWise.lastSyncAt', nowIso)
+            setLastSyncAt(nowIso)
+          }catch(e){}
         } catch (e) {
           console.warn('[Sync] Failed to load cloud data:', e.message)
           setSyncStatus('offline')
@@ -71,7 +85,7 @@ export const SyncProvider = ({ children }) => {
   }, [])
 
   return (
-    <SyncContext.Provider value={{ currentUser, isOnline, syncStatus, triggerSync, authLoading }}>
+    <SyncContext.Provider value={{ currentUser, isOnline, syncStatus, lastSyncAt, triggerSync, authLoading }}>
       {children}
     </SyncContext.Provider>
   )

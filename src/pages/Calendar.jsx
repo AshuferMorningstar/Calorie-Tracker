@@ -205,6 +205,42 @@ export default function Calendar(){
     }catch(e){ return null }
   },[plan, storageTick, weekOffset])
 
+  // persist weekly and monthly deficit snapshots for cloud sync
+  useEffect(()=>{
+    try{
+      if(totalWeekLost && totalWeekLost.weekStart){
+        const w = totalWeekLost.weekStart
+        const iso = `${w.getFullYear()}-${String(w.getMonth()+1).padStart(2,'0')}-${String(w.getDate()).padStart(2,'0')}`
+        const weekKey = `calorieWise.deficit.week.${iso}`
+        const nextWeek = JSON.stringify({
+          total: Math.round(totalWeekLost.total),
+          loggedDays: totalWeekLost.loggedDays,
+          weekStart: iso,
+          updatedAt: new Date().toISOString()
+        })
+        if(localStorage.getItem(weekKey) !== nextWeek){
+          localStorage.setItem(weekKey, nextWeek)
+          triggerSync()
+        }
+      }
+
+      if(totalMonthLost){
+        const monthIso = `${view.year}-${String(view.month+1).padStart(2,'0')}`
+        const monthKey = `calorieWise.deficit.month.${monthIso}`
+        const nextMonth = JSON.stringify({
+          total: Math.round(totalMonthLost.total),
+          loggedDays: totalMonthLost.loggedDays,
+          month: monthIso,
+          updatedAt: new Date().toISOString()
+        })
+        if(localStorage.getItem(monthKey) !== nextMonth){
+          localStorage.setItem(monthKey, nextMonth)
+          triggerSync()
+        }
+      }
+    }catch(e){}
+  },[totalWeekLost, totalMonthLost, view.year, view.month, triggerSync])
+
   const goPrev = ()=>{
     let y = view.year
     let m = view.month - 1

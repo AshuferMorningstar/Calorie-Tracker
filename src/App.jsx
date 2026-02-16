@@ -1,10 +1,12 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { onAuthChange, signInWithGoogle, signOut } from './services/auth'
+import { useSyncContext } from './context/SyncContext'
 import { loadUserDataFromFirestore, saveUserDataToFirestore, syncDataBeforeLogout } from './services/firestore'
 
 export default function App(){
   const navigate = useNavigate()
+  const { triggerSync, lastSyncAt } = useSyncContext()
 
   const previewSplash = ()=> navigate('/splash')
   const resetAndShow = ()=>{
@@ -253,6 +255,8 @@ export default function App(){
         localStorage.setItem(key, '1')
         setWorkoutToday(true)
       }
+      triggerSync()
+      try{ window.dispatchEvent(new Event('calorieWise.attendanceChanged')) }catch(e){}
     }catch(e){}
   }
 
@@ -270,6 +274,7 @@ export default function App(){
         const nowMarked = localStorage.getItem(key) === '1'
         setWorkoutToday(nowMarked)
       }
+      triggerSync()
       try{ window.dispatchEvent(new Event('calorieWise.attendanceChanged')) }catch(e){}
     }catch(e){}
   }
@@ -398,6 +403,22 @@ export default function App(){
     if(!calories) return null
     return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
   },[calories, workoutToday])
+
+  const formattedLastSync = useMemo(()=>{
+    if(!lastSyncAt) return 'Never'
+    try{
+      const last = new Date(lastSyncAt)
+      const diffMs = Date.now() - last.getTime()
+      const diffSec = Math.max(0, Math.floor(diffMs / 1000))
+      const diffMin = Math.floor(diffSec / 60)
+      const diffHr = Math.floor(diffMin / 60)
+      const diffDay = Math.floor(diffHr / 24)
+      if(diffSec < 60) return 'Just now'
+      if(diffMin < 60) return `${diffMin}m ago`
+      if(diffHr < 24) return `${diffHr}h ago`
+      return `${diffDay}d ago`
+    }catch(e){ return 'Never' }
+  },[lastSyncAt])
 
   return (
     <div>
@@ -602,6 +623,11 @@ export default function App(){
           <button ref={closeBtnRef} className="icon-btn" aria-label="Close menu" onClick={closeMenu}>✕</button>
         </div>
         <div className="panel-body">
+          <div className="card" style={{padding:12}}>
+            <div style={{fontSize:12,color:'var(--muted)'}}>Cloud sync</div>
+            <div style={{marginTop:4,fontWeight:600}}>{syncStatus === 'syncing' ? 'Syncing...' : (isOnline ? 'Online' : 'Offline')}</div>
+            <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>Last synced: {formattedLastSync}</div>
+          </div>
           
 
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
