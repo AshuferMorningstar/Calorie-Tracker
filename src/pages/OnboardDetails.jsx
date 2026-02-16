@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 
 export default function OnboardDetails(){
   const location = useLocation()
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const initialGoal = (location && location.state && location.state.goal) || localStorage.getItem('calorieWise.goal') || 'loss'
 
   const [goal] = useState(initialGoal)
@@ -146,6 +148,7 @@ export default function OnboardDetails(){
       localStorage.setItem('calorieWise.activity', customCalories ? 'custom' : (activity || ''))
       if(customCalories) localStorage.setItem('calorieWise.customCalories', String(customCalories))
       if(customCalories) localStorage.setItem('calorieWise.workoutDays', String(workoutDays || '0'))
+      triggerSync()
     }catch(e){}
 
     // proceed to weight goal step, forward the chosen goal

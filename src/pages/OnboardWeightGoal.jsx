@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 
 export default function OnboardWeightGoal(){
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const [heightCm, setHeightCm] = useState(null)
   const [age, setAge] = useState(null)
   const [gender, setGender] = useState('')
@@ -92,6 +94,7 @@ export default function OnboardWeightGoal(){
         localStorage.setItem('calorieWise.targetWeightKg', String(g))
         localStorage.setItem('calorieWise.targetBand', 'maintain')
         localStorage.setItem('calorieWise.timelineMonths', String(0))
+        triggerSync()
       }catch(e){}
       navigate('/', { state: { fromSplash: true } })
       return
@@ -120,6 +123,7 @@ export default function OnboardWeightGoal(){
       localStorage.setItem('calorieWise.targetWeightKg', String(g))
       localStorage.setItem('calorieWise.targetBand', selectedBand)
       localStorage.setItem('calorieWise.timelineMonths', String(m))
+      triggerSync()
     }catch(e){}
     navigate('/', { state: { fromSplash: true } })
   }

@@ -1,8 +1,10 @@
 import React, { useState, useMemo, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useSyncContext } from '../context/SyncContext'
 
 export default function Calendar(){
   const navigate = useNavigate()
+  const { triggerSync } = useSyncContext()
   const today = new Date()
   const currentYear = today.getFullYear()
   const currentMonth = today.getMonth()
@@ -13,7 +15,12 @@ export default function Calendar(){
   const [weekOffset, setWeekOffset] = useState(0) // 0 = current week, -1 = previous, etc.
 
   // ensure we have an install/reference date so week counting starts at user install
-  try{ if(!localStorage.getItem('calorieWise.installDate')){ localStorage.setItem('calorieWise.installDate', new Date().toISOString().slice(0,10)) } }catch(e){}
+  try{
+    if(!localStorage.getItem('calorieWise.installDate')){
+      localStorage.setItem('calorieWise.installDate', new Date().toISOString().slice(0,10))
+      triggerSync()
+    }
+  }catch(e){}
   const installIso = localStorage.getItem('calorieWise.installDate') || new Date().toISOString().slice(0,10)
   const installDate = new Date(installIso)
   const nowForWeek = new Date()
