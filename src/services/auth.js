@@ -13,13 +13,18 @@ import {
   linkWithCredential
 } from 'firebase/auth'
 // Helper: Link Google to email/password account if same email
+
 export const linkGoogleToEmailAccount = async (email, password) => {
   try {
+    // Sign in with email/password
     const userCred = await signInWithEmailAndPassword(auth, email, password)
+    // Start Google sign-in and get credential
     const googleResult = await signInWithPopup(auth, googleProvider)
+    const googleCredential = googleResult.credential
+    if (!googleCredential) throw new Error('No Google credential found. Try again.');
     if (userCred.user.email === googleResult.user.email) {
       // Link Google to this email/password account
-      await linkWithCredential(userCred.user, GoogleAuthProvider.credentialFromResult(googleResult))
+      await linkWithCredential(userCred.user, googleCredential)
       return userCred.user
     }
     return null
@@ -33,12 +38,14 @@ export const linkGoogleToEmailAccount = async (email, password) => {
 }
 
 // Helper: Link email/password to Google account if same email
+
 export const linkEmailToGoogleAccount = async (email, password) => {
   try {
+    // Start Google sign-in and get credential
     const googleResult = await signInWithPopup(auth, googleProvider)
-    const credential = EmailAuthProvider.credential(email, password)
+    const emailCredential = EmailAuthProvider.credential(email, password)
     if (googleResult.user.email === email) {
-      await linkWithCredential(googleResult.user, credential)
+      await linkWithCredential(googleResult.user, emailCredential)
       return googleResult.user
     }
     return null
