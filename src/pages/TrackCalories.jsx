@@ -8,56 +8,6 @@ import './TrackCalories.autocomplete.css'
 
 // small built-in food database (kcal per 100 g where applicable)
 const FOODS = [
-  // Chicken and poultry
-  { id: 'chicken_breast', name: 'Chicken breast', kcal: 165, protein: 31.0, name_hi: 'चिकन ब्रेस्ट', name_hi_translit: 'chicken breast' },
-  { id: 'chicken_whole', name: 'Chicken (whole)', kcal: 239, protein: 27.3, name_hi: 'पूरा चिकन', name_hi_translit: 'poora chicken' },
-  { id: 'chicken_thighs', name: 'Chicken thighs', kcal: 209, protein: 26.0, name_hi: 'चिकन जांघ', name_hi_translit: 'chicken thigh' },
-  { id: 'chicken_drumstick', name: 'Chicken drumstick / leg', kcal: 172, protein: 28.3, name_hi: 'चिकन टांग', name_hi_translit: 'chicken taang' },
-  { id: 'chicken_wings', name: 'Chicken wings', kcal: 203, protein: 30.5, name_hi: 'चिकन विंग्स', name_hi_translit: 'chicken wings' },
-  { id: 'chicken_liver', name: 'Chicken liver', kcal: 119, protein: 16.9, name_hi: 'चिकन कलेजी', name_hi_translit: 'chicken kaleji' },
-  { id: 'chicken_gizzard', name: 'Chicken gizzard', kcal: 94, protein: 17.7, name_hi: 'चिकन गिज़ार्ड', name_hi_translit: 'chicken gizzard' },
-  { id: 'chicken_heart', name: 'Chicken heart', kcal: 153, protein: 15.6, name_hi: 'चिकन दिल', name_hi_translit: 'chicken dil' },
-  { id: 'chicken_meat', name: 'Chicken meat (general)', kcal: 195, protein: 27.0, name_hi: 'चिकन मीट', name_hi_translit: 'chicken meat' },
-  
-  // Fish and Seafood (raw unless specified)
-  { id: 'salmon_raw', name: 'Salmon (raw)', kcal: 142, protein: 19.8, name_hi: 'सैल्मन मछली', name_hi_translit: 'salmon machhli' },
-  { id: 'tuna_raw', name: 'Tuna (raw)', kcal: 144, protein: 23.3, name_hi: 'टूना मछली', name_hi_translit: 'tuna machhli' },
-  { id: 'rohu_raw', name: 'Rohu fish (raw)', kcal: 97, protein: 16.6, name_hi: 'रोहू मछली', name_hi_translit: 'rohu machhli' },
-  { id: 'katla_raw', name: 'Katla fish (raw)', kcal: 96, protein: 15.9, name_hi: 'कटला मछली', name_hi_translit: 'katla machhli' },
-  { id: 'pomfret_raw', name: 'Pomfret fish (raw)', kcal: 96, protein: 18.9, name_hi: 'पोमफ्रेट / पापलेट', name_hi_translit: 'pomfret / paplet' },
-  { id: 'hilsa_raw', name: 'Hilsa / Ilish fish (raw)', kcal: 310, protein: 21.8, name_hi: 'इलिश / हिलसा', name_hi_translit: 'ilish / hilsa' },
-  { id: 'mackerel_raw', name: 'Mackerel fish (raw)', kcal: 205, protein: 18.6, name_hi: 'मैकरेल / बांगड़ा', name_hi_translit: 'mackerel / bangda' },
-  { id: 'sardine_raw', name: 'Sardine fish (raw)', kcal: 208, protein: 24.6, name_hi: 'सार्डिन / मठी', name_hi_translit: 'sardine / mathi' },
-  { id: 'tilapia_raw', name: 'Tilapia fish (raw)', kcal: 96, protein: 20.1, name_hi: 'तिलापिया मछली', name_hi_translit: 'tilapia machhli' },
-  { id: 'kingfish_raw', name: 'Kingfish / Surmai (raw)', kcal: 105, protein: 21.5, name_hi: 'सुरमई / किंगफिश', name_hi_translit: 'surmai / kingfish' },
-  { id: 'cod_raw', name: 'Cod fish (raw)', kcal: 82, protein: 17.8, name_hi: 'कॉड मछली', name_hi_translit: 'cod machhli' },
-  { id: 'basa_raw', name: 'Basa / Pangasius fish (raw)', kcal: 90, protein: 15.0, name_hi: 'बासा मछली', name_hi_translit: 'basa machhli' },
-  { id: 'rawas_raw', name: 'Rawas / Indian salmon (raw)', kcal: 135, protein: 19.2, name_hi: 'रावस', name_hi_translit: 'rawas' },
-  { id: 'barramundi_raw', name: 'Barramundi / Bhetki fish (raw)', kcal: 113, protein: 19.8, name_hi: 'भेटकी मछली', name_hi_translit: 'bhetki machhli' },
-  { id: 'catfish_raw', name: 'Catfish / Mangur (raw)', kcal: 105, protein: 16.4, name_hi: 'मांगुर / कैटफिश', name_hi_translit: 'mangur / catfish' },
-  { id: 'snapper_raw', name: 'Red snapper / Rane (raw)', kcal: 100, protein: 20.5, name_hi: 'रानी मछली', name_hi_translit: 'rani machhli' },
-  { id: 'trout_raw', name: 'Trout fish (raw)', kcal: 119, protein: 20.5, name_hi: 'ट्राउट मछली', name_hi_translit: 'trout machhli' },
-  { id: 'bombay_duck_raw', name: 'Bombay duck / Bombil (raw)', kcal: 95, protein: 19.0, name_hi: 'बोम्बिल', name_hi_translit: 'bombil' },
-  { id: 'anchovies_raw', name: 'Anchovies (raw)', kcal: 131, protein: 20.4, name_hi: 'एंकोवी', name_hi_translit: 'anchovy' },
-  { id: 'seer_fish_raw', name: 'Seer fish / Neymeen (raw)', kcal: 122, protein: 19.3, name_hi: 'सीर फिश', name_hi_translit: 'seer fish' },
-  
-  // Shellfish and Crustaceans
-  { id: 'prawns_raw', name: 'Prawns / Jhinga (raw)', kcal: 85, protein: 20.3, name_hi: 'झींगा', name_hi_translit: 'jhinga' },
-  { id: 'shrimp_raw', name: 'Shrimp (raw)', kcal: 85, protein: 20.3, name_hi: 'झींगा', name_hi_translit: 'jhinga' },
-  { id: 'crab_raw', name: 'Crab (raw)', kcal: 97, protein: 20.1, name_hi: 'केकड़ा', name_hi_translit: 'kekda' },
-  { id: 'lobster_raw', name: 'Lobster (raw)', kcal: 89, protein: 19.0, name_hi: 'लॉबस्टर', name_hi_translit: 'lobster' },
-  { id: 'squid_raw', name: 'Squid / Calamari (raw)', kcal: 92, protein: 15.6, name_hi: 'स्क्विड / ओक्टोपस', name_hi_translit: 'squid' },
-  { id: 'octopus_raw', name: 'Octopus (raw)', kcal: 82, protein: 14.9, name_hi: 'ऑक्टोपस', name_hi_translit: 'octopus' },
-  { id: 'clams_raw', name: 'Clams / Tisrya (raw)', kcal: 86, protein: 14.7, name_hi: 'तिसरा / घोंगा', name_hi_translit: 'tisrya' },
-  { id: 'mussels_raw', name: 'Mussels (raw)', kcal: 86, protein: 11.9, name_hi: 'मसल्स / शंख', name_hi_translit: 'mussels' },
-  { id: 'oyster_raw', name: 'Oysters (raw)', kcal: 68, protein: 7.0, name_hi: 'सीप', name_hi_translit: 'seep' },
-  { id: 'scallops_raw', name: 'Scallops (raw)', kcal: 88, protein: 12.1, name_hi: 'स्कैलप', name_hi_translit: 'scallop' },
-  
-  // Dairy products
-  { id: 'dahi', name: 'Dahi / Curd / Yogurt (plain)', kcal: 60, protein: 3.5, name_hi: 'दही', name_hi_translit: 'dahi' },
-  { id: 'dahi_full_fat', name: 'Dahi / Yogurt (full fat)', kcal: 97, protein: 3.3, name_hi: 'फुल फैट दही', name_hi_translit: 'full fat dahi' },
-  { id: 'dahi_low_fat', name: 'Dahi / Yogurt (low fat)', kcal: 63, protein: 5.3, name_hi: 'लो फैट दही', name_hi_translit: 'low fat dahi' },
-
   // Rice varieties
   { id: 'rice', name: 'White rice (cooked)', kcal: 130, protein: 2.7 },
   { id: 'rice_raw', name: 'White rice (raw)', kcal: 365, protein: 7.1 },
@@ -65,12 +15,6 @@ const FOODS = [
   { id: 'basmati_rice_raw', name: 'Basmati rice (raw)', kcal: 365, protein: 7.1 },
   { id: 'brown_rice', name: 'Brown rice (cooked)', kcal: 123, protein: 2.6 },
   { id: 'brown_rice_raw', name: 'Brown rice (raw)', kcal: 370, protein: 7.5 },
-  
-  // Flattened rice / Poha / Chura
-  { id: 'chura', name: 'Chura / Poha / Flattened rice (dry)', kcal: 350, protein: 7.0, name_hi: 'चूड़ा / पोहा', name_hi_translit: 'chura / poha' },
-  { id: 'basmati_chura', name: 'Basmati Chura / Basmati Poha (dry)', kcal: 360, protein: 7.5, name_hi: 'बासमती चूड़ा', name_hi_translit: 'basmati chura' },
-  { id: 'thick_chura', name: 'Thick Chura / Mota Poha (dry)', kcal: 355, protein: 7.2, name_hi: 'मोटा पोहा', name_hi_translit: 'mota poha' },
-  { id: 'thin_chura', name: 'Thin Chura / Patla Poha (dry)', kcal: 345, protein: 6.8, name_hi: 'पतला पोहा', name_hi_translit: 'patla poha' },
   
   { id: 'chapati', name: 'Roti / Chapati (whole wheat)', kcal: 250, protein: 9.0 },
   { id: 'chapati_unit', name: 'Roti / Chapati (whole wheat) - piece', unit: 'count', kcalPerUnit: 250, proteinPerUnit: 9.0 },
