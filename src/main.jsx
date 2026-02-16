@@ -36,6 +36,7 @@ root.render(
         <Route path="/calendar" element={<Calendar/>} />
         <Route path="/meal-planner" element={<MealPlanner/>} />
         <Route path="/add-recipe" element={<AddRecipe/>} />
+        <Route path="*" element={<App />} />
       </Routes>
     </BrowserRouter>
     </SyncProvider>
