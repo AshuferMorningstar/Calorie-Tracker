@@ -6401,5 +6401,131 @@
     "protein": 6.8,
     "name_hi": "पतला पोहा",
     "name_hi_translit": "patla poha"
+  },
+  {
+    "id": "khichdi_plain",
+    "name": "Khichdi (plain rice + dal)",
+    "unit": "bowl",
+    "kcalPerUnit": 280,
+    "proteinPerUnit": 11,
+    "name_hi": "खिचड़ी",
+    "name_hi_translit": "khichdi"
+  },
+  {
+    "id": "khichdi_vegetable",
+    "name": "Khichdi with Vegetables",
+    "unit": "bowl",
+    "kcalPerUnit": 300,
+    "proteinPerUnit": 12,
+    "name_hi": "सब्जियों के साथ खिचड़ी",
+    "name_hi_translit": "sabziyon ke saath khichdi"
+  },
+  {
+    "id": "pulao_chicken",
+    "name": "Chicken Pulao (plate)",
+    "unit": "plate",
+    "kcalPerUnit": 480,
+    "proteinPerUnit": 25,
+    "name_hi": "चिकन पुलाव",
+    "name_hi_translit": "chicken pulao"
+  },
+  {
+    "id": "pulao_vegetable",
+    "name": "Vegetable Pulao (plate)",
+    "unit": "plate",
+    "kcalPerUnit": 380,
+    "proteinPerUnit": 10,
+    "name_hi": "सब्जी पुलाव",
+    "name_hi_translit": "sabji pulao"
+  },
+  {
+    "id": "biryani_vegetable",
+    "name": "Vegetable Biryani (plate)",
+    "unit": "plate",
+    "kcalPerUnit": 580,
+    "proteinPerUnit": 16,
+    "name_hi": "सब्जी बिरयानी",
+    "name_hi_translit": "sabji biryani"
+  },
+  {
+    "id": "biryani_mutton",
+    "name": "Mutton Biryani (plate)",
+    "unit": "plate",
+    "kcalPerUnit": 700,
+    "proteinPerUnit": 32,
+    "name_hi": "मटन बिरयानी",
+    "name_hi_translit": "mutton biryani"
+  },
+  {
+    "id": "biryani_kolkata",
+    "name": "Kolkata Biryani (500gm rice, chicken, potato)",
+    "unit": "plate",
+    "kcalPerUnit": 950,
+    "proteinPerUnit": 28,
+    "name_hi": "कोलकाता बिरयानी",
+    "name_hi_translit": "kolkata biryani"
+  },
+  {
+    "id": "biryani_chicken_special",
+    "name": "Special Chicken Biryani (2 chicken pieces)",
+    "unit": "plate",
+    "kcalPerUnit": 1200,
+    "proteinPerUnit": 52,
+    "name_hi": "विशेष चिकन बिरयानी",
+    "name_hi_translit": "special chicken biryani"
+  },
+  {
+    "id": "fried_rice_simple",
+    "name": "Fried Rice (simple)",
+    "unit": "plate",
+    "kcalPerUnit": 420,
+    "proteinPerUnit": 14,
+    "name_hi": "तली हुई चावल",
+    "name_hi_translit": "tali hui chawal"
+  },
+  {
+    "id": "fried_rice_egg",
+    "name": "Egg Fried Rice (plate)",
+    "unit": "plate",
+    "kcalPerUnit": 480,
+    "proteinPerUnit": 18,
+    "name_hi": "अंडा तली हुई चावल",
+    "name_hi_translit": "anda tali hui chawal"
+  },
+  {
+    "id": "butter_chicken",
+    "name": "Butter Chicken (bowl)",
+    "unit": "bowl",
+    "kcalPerUnit": 420,
+    "proteinPerUnit": 28,
+    "name_hi": "बटर चिकन",
+    "name_hi_translit": "butter chicken"
+  },
+  {
+    "id": "tandoori_chicken",
+    "name": "Tandoori Chicken (2 pieces)",
+    "unit": "piece",
+    "kcalPerUnit": 165,
+    "proteinPerUnit": 28,
+    "name_hi": "तंदूरी चिकन",
+    "name_hi_translit": "tandoori chicken"
+  },
+  {
+    "id": "chole_bhature",
+    "name": "Chole Bhature (full plate)",
+    "unit": "plate",
+    "kcalPerUnit": 650,
+    "proteinPerUnit": 22,
+    "name_hi": "छोले भटूरे",
+    "name_hi_translit": "chole bhature"
+  },
+  {
+    "id": "rajma_rice",
+    "name": "Rajma with Rice (bowl)",
+    "unit": "bowl",
+    "kcalPerUnit": 380,
+    "proteinPerUnit": 14,
+    "name_hi": "राजमा चावल",
+    "name_hi_translit": "rajma chawal"
   }
 ]
