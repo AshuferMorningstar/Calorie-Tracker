@@ -202,10 +202,8 @@ export default function App(){
     try{
       localStorage.setItem('calorieWise.displayName', displayName.trim())
       setEditNameOpen(false)
-      // Sync to cloud if user is signed in
-      if(currentUser && isOnline){
-        saveUserDataToFirestore(currentUser.uid).catch(e => console.warn('Sync failed:', e))
-      }
+      // Always trigger cloud sync for profile changes
+      if (typeof triggerSync === 'function') triggerSync()
     }catch(e){
       console.error('Failed to save display name:', e)
     }
