@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signInWithGoogle, signUpWithEmail, signInWithEmail, getGoogleRedirectResult } from '../services/auth'
+import { signInWithGoogle, signUpWithEmail, signInWithEmail, getGoogleRedirectResult, onAuthChange } from '../services/auth'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../services/firebase'
 
@@ -50,6 +50,16 @@ export default function OnboardAuth(){
     return () => {
       cancelled = true
     }
+  }, [navigate])
+
+  useEffect(() => {
+    const unsubscribe = onAuthChange((user) => {
+      if (user) {
+        console.log('[OnboardAuth] Auth state ready:', user.email)
+        navigate('/onboard', { state: { fromAuth: true } })
+      }
+    })
+    return () => unsubscribe()
   }, [navigate])
 
   const validateEmail = (email) => {
