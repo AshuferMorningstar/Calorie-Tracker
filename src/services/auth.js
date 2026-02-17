@@ -66,12 +66,7 @@ const isStandaloneMode = () => {
   return window.matchMedia?.('(display-mode: standalone)')?.matches || window.navigator?.standalone === true
 }
 
-const isMobileUserAgent = () => {
-  if (typeof navigator === 'undefined') return false
-  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
-}
-
-const shouldUseRedirect = () => isStandaloneMode() || isMobileUserAgent()
+const shouldUseRedirect = () => isStandaloneMode()
 
 // Persist auth state locally so users stay signed in across reloads.
 setPersistence(auth, browserLocalPersistence).catch((error) => {

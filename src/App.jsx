@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { onAuthChange, signInWithGoogle, signOut } from './services/auth'
+import { onAuthChange, signInWithGoogle, signOut, getGoogleRedirectResult } from './services/auth'
 import { useSyncContext } from './context/SyncContext'
 import { loadUserDataFromFirestore, saveUserDataToFirestore, syncDataBeforeLogout } from './services/firestore'
 
@@ -101,6 +101,25 @@ export default function App(){
       }
     })
     return () => unsubscribe()
+  },[])
+
+  // Ensure redirect-based Google sign-in completes in PWA/mobile.
+  useEffect(()=>{
+    let cancelled = false
+    const resolveRedirect = async () => {
+      try{
+        const user = await getGoogleRedirectResult()
+        if(!cancelled && user){
+          console.log('[App] Google redirect resolved:', user.email)
+        }
+      }catch(e){
+        if(!cancelled){
+          console.warn('[App] Google redirect result failed:', e.message)
+        }
+      }
+    }
+    resolveRedirect()
+    return ()=>{ cancelled = true }
   },[])
 
   // no inline profile editing in menu; profile is edited on the dedicated /profile page
