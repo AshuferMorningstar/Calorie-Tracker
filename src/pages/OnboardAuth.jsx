@@ -36,6 +36,11 @@ export default function OnboardAuth(){
         if (!cancelled && user) {
           console.log('[OnboardAuth] User signed in with Google (redirect):', user.email)
           navigate('/onboard', { state: { fromAuth: true } })
+          return
+        }
+        if (!cancelled && auth.currentUser) {
+          console.log('[OnboardAuth] User already signed in:', auth.currentUser.email)
+          navigate('/onboard', { state: { fromAuth: true } })
         }
       } catch (e) {
         if (!cancelled) {
@@ -75,6 +80,8 @@ export default function OnboardAuth(){
       if (result?.user) {
         console.log('[OnboardAuth] User signed in with Google:', result.user.email)
         navigate('/onboard', { state: { fromAuth: true } })
+      } else if (result?.redirect) {
+        try{ sessionStorage.setItem('calorieWise.pendingGoogleRedirect','1') }catch(e){}
       }
     }catch(e){
       console.error('[OnboardAuth] Google sign-in failed:', e.message)
@@ -131,12 +138,15 @@ export default function OnboardAuth(){
       navigate('/onboard', { state: { fromAuth: true } })
     }catch(e){
       console.error('[OnboardAuth] Auth failed:', e.message)
-      if (e.message.includes('email-already-in-use')) {
+      const code = e?.code || ''
+      if (code === 'auth/email-already-in-use') {
         setError('Email already registered. Try logging in.')
-      } else if (e.message.includes('user-not-found')) {
+      } else if (code === 'auth/user-not-found') {
         setError('Email not found. Please sign up.')
-      } else if (e.message.includes('wrong-password')) {
+      } else if (code === 'auth/wrong-password') {
         setError('Incorrect password')
+      } else if (code === 'auth/invalid-credential' || code === 'auth/invalid-login-credentials') {
+        setError('Invalid email or password. If you used Google to sign up, use Google sign-in or reset your password.')
       } else {
         setError(e.message || `Failed to ${mode === 'signup' ? 'sign up' : 'sign in'}. Please try again.`)
       }
