@@ -800,6 +800,8 @@ export default function TrackCalories(){
       localStorage.setItem(dateKey(forDate), JSON.stringify(nextItems))
       // Trigger cloud sync after saving to localStorage
       triggerSync()
+      // Notify other components (like App.jsx) that entries changed
+      window.dispatchEvent(new Event('calorieWise.entriesChanged'))
     }catch(e){}
   }
 

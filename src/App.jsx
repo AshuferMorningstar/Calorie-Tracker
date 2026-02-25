@@ -309,11 +309,13 @@ export default function App(){
     try{
       window.addEventListener('calorieWise.burnedChanged', onChanged)
       window.addEventListener('calorieWise.attendanceChanged', onChanged)
+      window.addEventListener('calorieWise.entriesChanged', onChanged)
     }catch(e){}
     return ()=>{
       try{
         window.removeEventListener('calorieWise.burnedChanged', onChanged)
         window.removeEventListener('calorieWise.attendanceChanged', onChanged)
+        window.removeEventListener('calorieWise.entriesChanged', onChanged)
       }catch(e){}
     }
   },[])
@@ -419,12 +421,59 @@ export default function App(){
       if(!Array.isArray(parsed)) return 0
       return parsed.reduce((s,i)=> s + (Number(i.calories) || 0), 0)
     }catch(e){ return 0 }
-  },[location.pathname])
+  },[location.pathname, storageTick])
 
   const maintenanceUsed = useMemo(()=>{
     if(!calories) return null
     return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
   },[calories, workoutToday])
+
+  const dietProgress = useMemo(() => {
+    try {
+      const { currentKg, targetKg, goal } = data || {}
+      if (!currentKg || !targetKg || goal === 'maintain') return null
+
+      const kgDelta = currentKg - targetKg
+      if (kgDelta === 0) return null
+
+      const isDeficitGoal = kgDelta > 0
+      const totalRequiredCalories = Math.round(Math.abs(kgDelta) * 7700)
+      if (totalRequiredCalories <= 0) return null
+
+      // Sum up monthly deficit totals from Calendar calculations
+      let achievedCalories = 0
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (!key || !key.startsWith('calorieWise.deficit.month.')) continue
+          
+          const raw = localStorage.getItem(key)
+          if (!raw) continue
+          
+          try {
+            const parsed = JSON.parse(raw)
+            const monthTotal = Number(parsed?.total || 0)
+            achievedCalories += monthTotal
+          } catch (e) {
+            // Skip invalid JSON entries
+            continue
+          }
+        }
+      } catch (e) {
+        achievedCalories = 0
+      }
+
+      const achievedRounded = Math.max(0, Math.round(achievedCalories))
+
+      return {
+        isDeficitGoal,
+        totalRequiredCalories,
+        achievedCalories: achievedRounded,
+      }
+    } catch (e) {
+      return null
+    }
+  }, [data, storageTick, location.pathname])
 
   const formattedLastSync = useMemo(()=>{
     if(!lastSyncAt) return 'Never'
@@ -495,6 +544,16 @@ export default function App(){
               <div style={{fontSize:16,marginTop:6}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
               <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
               <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
+              {dietProgress && (
+                <>
+                  <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>
+                    Total {dietProgress.isDeficitGoal ? 'deficit' : 'surplus'} required: {dietProgress.totalRequiredCalories} kcal
+                  </div>
+                  <div style={{fontSize:11,color:'var(--muted)',marginTop:4}}>
+                    Achieved: {dietProgress.achievedCalories} / {dietProgress.totalRequiredCalories} kcal
+                  </div>
+                </>
+              )}
             </div>
             <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/burned')}>
               <div style={{fontSize:20}}>🏃</div>
