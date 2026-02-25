@@ -1275,9 +1275,9 @@ export default function TrackCalories(){
             )}
 
             <div style={{display:'flex',gap:8,marginTop:8}}>
-              <button className="card" type="submit" style={{background:'var(--accent1)',color:'#fff',border:'none',padding:'8px 12px'}}>Add</button>
-              <button className="icon-btn" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false) }}>Clear</button>
-              <button className="card" type="button" onClick={markAsFasting} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Fast</button>
+              <button className="card" type="submit" style={{background:'rgba(59, 130, 246, 0.15)',color:'#2563eb',border:'1px solid rgba(59, 130, 246, 0.3)',padding:'8px 12px',fontWeight:600}}>Add</button>
+              <button className="card" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false) }} style={{background:'rgba(108, 117, 125, 0.1)',color:'#6c757d',border:'1px solid rgba(108, 117, 125, 0.2)',padding:'8px 12px',fontWeight:600}}>Clear</button>
+              <button className="card" type="button" onClick={markAsFasting} style={{background:'rgba(236, 72, 153, 0.15)',color:'#db2777',border:'1px solid rgba(236, 72, 153, 0.3)',padding:'8px 12px',fontWeight:600}}>Fast</button>
             </div>
           </form>
         </div>
@@ -1340,14 +1340,14 @@ export default function TrackCalories(){
 
             <div style={{display:'flex',justifyContent:'flex-end',gap:8,marginTop:12}}>
               {!editMode ? (
-                <button className="icon-btn" onClick={()=>{ setEditMode(true); setSelectedIds(new Set()) }}>Edit</button>
+                <button className="card" onClick={()=>{ setEditMode(true); setSelectedIds(new Set()) }} style={{background:'rgba(59, 130, 246, 0.15)',color:'#2563eb',border:'1px solid rgba(59, 130, 246, 0.3)',padding:'8px 12px',fontWeight:600}}>Edit</button>
               ) : (
                 <>
-                  <button className="icon-btn" onClick={deleteSelected} disabled={!selectedIds || selectedIds.size===0}>Delete</button>
-                  <button className="icon-btn" onClick={()=>{ setEditMode(false); setSelectedIds(new Set()) }}>Cancel</button>
+                  <button className="card" onClick={deleteSelected} disabled={!selectedIds || selectedIds.size===0} style={{background:!selectedIds || selectedIds.size===0 ? 'rgba(156, 163, 175, 0.1)' : 'rgba(239, 68, 68, 0.15)',color:!selectedIds || selectedIds.size===0 ? '#9ca3af' : '#dc2626',border:!selectedIds || selectedIds.size===0 ? '1px solid rgba(156, 163, 175, 0.2)' : '1px solid rgba(239, 68, 68, 0.3)',padding:'8px 12px',fontWeight:600}}>Delete</button>
+                  <button className="card" onClick={()=>{ setEditMode(false); setSelectedIds(new Set()) }} style={{background:'rgba(108, 117, 125, 0.1)',color:'#6c757d',border:'1px solid rgba(108, 117, 125, 0.2)',padding:'8px 12px',fontWeight:600}}>Cancel</button>
                 </>
               )}
-              <button className="icon-btn" onClick={clearAll}>Clear</button>
+              <button className="card" onClick={clearAll} style={{background:'rgba(108, 117, 125, 0.1)',color:'#6c757d',border:'1px solid rgba(108, 117, 125, 0.2)',padding:'8px 12px',fontWeight:600}}>Clear</button>
             </div>
 
             {showClearConfirm && (
@@ -1359,8 +1359,8 @@ export default function TrackCalories(){
                     <div style={{fontSize:13,color:'var(--muted)'}}>This will remove all logged items for {date}.</div>
                   </div>
                   <div style={{display:'flex',gap:8}}>
-                    <button className="icon-btn" onClick={cancelClear}>Cancel</button>
-                    <button className="card" onClick={confirmClearAll} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Confirm</button>
+                    <button className="card" onClick={cancelClear} style={{background:'rgba(108, 117, 125, 0.1)',color:'#6c757d',border:'1px solid rgba(108, 117, 125, 0.2)',padding:'8px 12px',fontWeight:600}}>Cancel</button>
+                    <button className="card" onClick={confirmClearAll} style={{background:'rgba(236, 72, 153, 0.15)',color:'#db2777',border:'1px solid rgba(236, 72, 153, 0.3)',padding:'8px 12px',fontWeight:600}}>Confirm</button>
                   </div>
                 </div>
               </div>
@@ -1375,8 +1375,8 @@ export default function TrackCalories(){
                     <div style={{fontSize:13,color:'var(--muted)'}}>This will clear all logged items for {date}. Your deficit for this day will equal your full maintenance calories.</div>
                   </div>
                   <div style={{display:'flex',gap:8}}>
-                    <button className="icon-btn" onClick={cancelFasting}>Cancel</button>
-                    <button className="card" onClick={confirmFasting} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Confirm</button>
+                    <button className="card" onClick={cancelFasting} style={{background:'rgba(108, 117, 125, 0.1)',color:'#6c757d',border:'1px solid rgba(108, 117, 125, 0.2)',padding:'8px 12px',fontWeight:600}}>Cancel</button>
+                    <button className="card" onClick={confirmFasting} style={{background:'rgba(236, 72, 153, 0.15)',color:'#db2777',border:'1px solid rgba(236, 72, 153, 0.3)',padding:'8px 12px',fontWeight:600}}>Confirm</button>
                   </div>
                 </div>
               </div>
