@@ -731,11 +731,16 @@ export default function TrackCalories(){
   const [editMode, setEditMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [showFastConfirm, setShowFastConfirm] = useState(false)
+  const [isFasting, setIsFasting] = useState(false)
 
   useEffect(()=>{
     // load items for selected date
     try{
       const raw = localStorage.getItem(dateKey(date))
+      // Check if this day is marked as fasting
+      const fastingFlag = localStorage.getItem(`calorieWise.fasting.${date}`)
+      setIsFasting(fastingFlag === '1')
       if(raw){
         const parsed = JSON.parse(raw)
         // normalize older items: compute protein if missing
@@ -809,6 +814,11 @@ export default function TrackCalories(){
     e.preventDefault()
     const trimmed = (name || '').trim()
     if(!trimmed) return
+    // Clear fasting flag when adding items
+    if(isFasting){
+      localStorage.removeItem(`calorieWise.fasting.${date}`)
+      setIsFasting(false)
+    }
 
     const amt = parseFloat(amount)
     const kcal100 = parseFloat(kcalPer100g)
@@ -894,6 +904,24 @@ export default function TrackCalories(){
     const next = items.filter(i=>i.id !== id)
     setItems(next)
     persist(next)
+  }
+
+  const markAsFasting = ()=>{
+    setShowFastConfirm(true)
+  }
+
+  const confirmFasting = ()=>{
+    const emptyItems = []
+    setItems(emptyItems)
+    persist(emptyItems)
+    // Mark this day as fasting
+    localStorage.setItem(`calorieWise.fasting.${date}`, '1')
+    setIsFasting(true)
+    setShowFastConfirm(false)
+  }
+
+  const cancelFasting = ()=>{
+    setShowFastConfirm(false)
   }
 
   const toggleSelect = (id)=>{
@@ -1249,6 +1277,7 @@ export default function TrackCalories(){
             <div style={{display:'flex',gap:8,marginTop:8}}>
               <button className="card" type="submit" style={{background:'var(--accent1)',color:'#fff',border:'none',padding:'8px 12px'}}>Add</button>
               <button className="icon-btn" type="button" onClick={()=>{ setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false) }}>Clear</button>
+              <button className="card" type="button" onClick={markAsFasting} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Fast</button>
             </div>
           </form>
         </div>
@@ -1261,7 +1290,11 @@ export default function TrackCalories(){
             </div>
 
             {items.length === 0 ? (
-              <div style={{color:'var(--muted)'}}>No items logged for this date.</div>
+              isFasting ? (
+                <div style={{fontSize:15,fontWeight:600,color:'var(--accent2)'}}>🌙 Fasting</div>
+              ) : (
+                <div style={{color:'var(--muted)'}}>No items logged for this date.</div>
+              )
             ) : (
               <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
                 {items.map(it=> {
@@ -1328,6 +1361,22 @@ export default function TrackCalories(){
                   <div style={{display:'flex',gap:8}}>
                     <button className="icon-btn" onClick={cancelClear}>Cancel</button>
                     <button className="card" onClick={confirmClearAll} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Confirm</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {showFastConfirm && (
+              <div style={{position:'fixed',inset:0,display:'flex',alignItems:'center',justifyContent:'center',zIndex:1200}}>
+                <div style={{position:'absolute',inset:0,background:'rgba(0,0,0,0.32)'}} onClick={cancelFasting}></div>
+                <div className="card" style={{zIndex:1201,maxWidth:520,width:'92%',padding:18,display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}>
+                  <div>
+                    <div style={{fontWeight:700}}>Mark as fasting day?</div>
+                    <div style={{fontSize:13,color:'var(--muted)'}}>This will clear all logged items for {date}. Your deficit for this day will equal your full maintenance calories.</div>
+                  </div>
+                  <div style={{display:'flex',gap:8}}>
+                    <button className="icon-btn" onClick={cancelFasting}>Cancel</button>
+                    <button className="card" onClick={confirmFasting} style={{background:'var(--accent2)',color:'#fff',border:'none',padding:'8px 12px'}}>Confirm</button>
                   </div>
                 </div>
               </div>
