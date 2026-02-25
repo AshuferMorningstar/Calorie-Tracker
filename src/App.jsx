@@ -196,6 +196,10 @@ export default function App(){
         await syncDataBeforeLogout(currentUser.uid)
       }
       await signOut()
+      try{
+        sessionStorage.removeItem('calorieWise.splashThisSession')
+        sessionStorage.removeItem('calorieWise.pendingGoogleRedirect')
+      }catch(e){}
       setSyncStatus('synced')
       closeMenu()
       navigate('/onboard-auth') // Redirect to login page

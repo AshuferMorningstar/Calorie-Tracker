@@ -43,6 +43,22 @@ export default function OnboardAuth(){
     return Boolean(user?.providerData?.some((provider) => provider?.providerId === 'google.com'))
   }
 
+  const hasCompletedOnboarding = () => {
+    try {
+      return Boolean(localStorage.getItem('calorieWise.seenEver'))
+    } catch (e) {
+      return false
+    }
+  }
+
+  const navigateAfterAuth = () => {
+    if (hasCompletedOnboarding()) {
+      navigate('/', { state: { fromAuth: true, fromSplash: true }, replace: true })
+      return
+    }
+    navigate('/onboard', { state: { fromAuth: true }, replace: true })
+  }
+
   const handleUserAfterAuth = (user) => {
     if (!user) return
     if (hasGoogleProvider(user) && !hasPasswordProvider(user)) {
@@ -54,7 +70,7 @@ export default function OnboardAuth(){
       setError(null)
       return
     }
-    navigate('/onboard', { state: { fromAuth: true } })
+    navigateAfterAuth()
   }
 
   useEffect(() => {
@@ -204,7 +220,7 @@ export default function OnboardAuth(){
         }
         saveRememberedAuth(normalizedEmail, rememberMe)
       }
-      navigate('/onboard', { state: { fromAuth: true } })
+      navigateAfterAuth()
     }catch(e){
       console.error('[OnboardAuth] Auth failed:', e.message)
       const code = e?.code || ''
@@ -387,7 +403,7 @@ export default function OnboardAuth(){
             <button
               type="button"
               className="auth-btn-secondary"
-              onClick={() => navigate('/onboard', { state: { fromAuth: true } })}
+              onClick={navigateAfterAuth}
               disabled={loading}
             >
               Skip for now
