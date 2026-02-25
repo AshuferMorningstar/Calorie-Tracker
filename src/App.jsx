@@ -658,7 +658,6 @@ export default function App(){
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
             <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
             <button className="card" onClick={()=>{ navigate('/meal-planner'); closeMenu() }}>Meal Planner</button>
-            <button className="card" onClick={()=>{ navigate('/', { state: { fromSplash: true } }); closeMenu() }}>Home</button>
             {currentUser ? (
               <button className="card" onClick={handleSignOut}>Sign out</button>
             ) : (
