@@ -48,8 +48,8 @@ export default function Profile() {
   const goEdit = () => navigate('/onboard/details', { state: { from: '/profile' } })
 
   return (
-    <main style={{padding:24,maxWidth:900,margin:'0 auto'}}>
-      <div className="profile-top" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 0'}}>
+    <main style={{padding:'12px 16px 24px',width:'100%',maxWidth:900,margin:'0 auto',overflowX:'hidden'}}>
+      <div className="profile-top" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 0'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <button className="icon-btn" onClick={()=>{ try{ if(window.history && window.history.length > 1){ navigate(-1); return } }catch(e){} navigate('/', { state: { fromSplash: true } }) }} style={{fontSize:20,lineHeight:1}}>←</button>
           <h2 style={{margin:0}}>Your profile</h2>
@@ -57,7 +57,7 @@ export default function Profile() {
       </div>
       <div style={{color:'var(--muted)',marginTop:12}}>Review and edit your personal info and plan.</div>
 
-      <section style={{marginTop:20,display:'grid',gap:12}}>
+      <section style={{marginTop:20,display:'grid',gap:12,minWidth:0,overflowWrap:'anywhere'}}>
         <div className="card">
           <div style={{flex:1}}>
             <strong>Email</strong>

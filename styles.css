@@ -18,7 +18,17 @@
 }
 
 *{box-sizing:border-box}
-html,body{height:100%;margin:0;font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;background:linear-gradient(180deg,var(--bg-start),var(--bg-end));color:var(--text);-webkit-font-smoothing:antialiased}
+html,body,#root{min-height:100%}
+html,body{
+  height:100%;
+  margin:0;
+  font-family:Inter,Segoe UI,Helvetica,Arial,sans-serif;
+  background:linear-gradient(180deg,var(--bg-start),var(--bg-end));
+  background-attachment:fixed;
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+}
+#root{background:transparent}
 .splash{height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,rgba(255,255,255,0.3),transparent)}
 .logo-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;animation:fadeUp 900ms cubic-bezier(.2,.9,.3,1) both;padding:0;margin:0;background:transparent;border-radius:0;box-shadow:none}
 /* Improve perceived load: start logo hidden and fade in once loaded */
