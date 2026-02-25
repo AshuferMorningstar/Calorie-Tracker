@@ -713,6 +713,21 @@ export default function TrackCalories(){
   const [unit, setUnit] = useState('g') // 'g' or 'count'
   const [kcalPerUnit, setKcalPerUnit] = useState('')
   const [proteinPerUnit, setProteinPerUnit] = useState('')
+  const normalizedFoodName = (name || '').trim().toLowerCase()
+  const matchedKnownFood = useMemo(() => {
+    if (!normalizedFoodName) return null
+    return ALL_FOODS.find((food) => {
+      const englishName = (food.name || food.name_en || '').trim().toLowerCase()
+      const hindiName = (food.name_hi || '').trim().toLowerCase()
+      const translitName = (food.name_hi_translit || '').trim().toLowerCase()
+      return (
+        normalizedFoodName === englishName ||
+        normalizedFoodName === hindiName ||
+        normalizedFoodName === translitName
+      )
+    }) || null
+  }, [ALL_FOODS, normalizedFoodName])
+  const isCustomFood = Boolean(normalizedFoodName) && !matchedKnownFood
   const [editMode, setEditMode] = useState(false)
   const [selectedIds, setSelectedIds] = useState(new Set())
   const [showClearConfirm, setShowClearConfirm] = useState(false)
@@ -1092,11 +1107,13 @@ export default function TrackCalories(){
                     setManualKcalNeeded(false)
                   }
                 } else {
-                  setUnit('g')
-                  setKcalPer100g('')
-                  setKcalPerUnit('')
-                  setProteinPer100g('')
-                  setProteinPerUnit('')
+                  if(unit === 'count'){
+                    setKcalPerUnit('')
+                    setProteinPerUnit('')
+                  }else{
+                    setKcalPer100g('')
+                    setProteinPer100g('')
+                  }
                   // only show the manual-kcal-needed hint if the user has typed something
                   setManualKcalNeeded(Boolean(base))
                 }
@@ -1172,6 +1189,28 @@ export default function TrackCalories(){
               </div>
 
             </div>
+
+            {isCustomFood && (
+              <div className="form-row">
+                <label>Unit (for custom ingredient)</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 6 }}>
+                  <button
+                    type="button"
+                    className={`unit-btn ${unit === 'g' ? 'active' : ''}`}
+                    onClick={() => setUnit('g')}
+                  >
+                    Gram
+                  </button>
+                  <button
+                    type="button"
+                    className={`unit-btn ${unit === 'count' ? 'active' : ''}`}
+                    onClick={() => setUnit('count')}
+                  >
+                    Count
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div style={{display:'flex',gap:8,alignItems:'flex-end'}}>
               <div style={{flex:1}} className="form-row">

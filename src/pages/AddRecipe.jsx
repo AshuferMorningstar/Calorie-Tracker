@@ -303,6 +303,23 @@ export default function AddRecipe() {
     return i === n.length
   }
 
+  const normalizedIngredientName = (name || '').trim().toLowerCase()
+  const matchedKnownIngredient = useMemo(() => {
+    if (!normalizedIngredientName) return null
+    return ALL_FOODS.find((food) => {
+      const englishName = (food.name || food.name_en || '').trim().toLowerCase()
+      const hindiName = (food.name_hi || '').trim().toLowerCase()
+      const translitName = (food.name_hi_translit || '').trim().toLowerCase()
+      return (
+        normalizedIngredientName === englishName ||
+        normalizedIngredientName === hindiName ||
+        normalizedIngredientName === translitName
+      )
+    }) || null
+  }, [ALL_FOODS, normalizedIngredientName])
+
+  const isCustomIngredient = Boolean(normalizedIngredientName) && !matchedKnownIngredient
+
   const applyFound = (found) => {
     setName(found.name || found.name_en || '')
     if (found.unit === 'count' || found.kcalPerUnit) {
@@ -613,6 +630,28 @@ export default function AddRecipe() {
                 </div>
               </div>
             </div>
+
+            {isCustomIngredient && (
+              <div className="form-row">
+                <label>Unit (for custom ingredient)</label>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginTop: 6 }}>
+                  <button
+                    type="button"
+                    className={`unit-btn ${unit === 'g' ? 'active' : ''}`}
+                    onClick={() => setUnit('g')}
+                  >
+                    Gram
+                  </button>
+                  <button
+                    type="button"
+                    className={`unit-btn ${unit === 'count' ? 'active' : ''}`}
+                    onClick={() => setUnit('count')}
+                  >
+                    Count
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
               <div style={{ flex: 1 }} className="form-row">
