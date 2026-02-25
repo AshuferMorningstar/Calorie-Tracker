@@ -7,56 +7,12 @@ import {
   onAuthStateChanged,
   setPersistence,
   browserLocalPersistence,
+  browserSessionPersistence,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   EmailAuthProvider,
   linkWithCredential
 } from 'firebase/auth'
-// Helper: Link Google to email/password account if same email
-
-export const linkGoogleToEmailAccount = async (email, password) => {
-  try {
-    // Sign in with email/password
-    const userCred = await signInWithEmailAndPassword(auth, email, password)
-    // Start Google sign-in and get credential
-    const googleResult = await signInWithPopup(auth, googleProvider)
-    const googleCredential = googleResult.credential
-    if (!googleCredential) throw new Error('No Google credential found. Try again.');
-    if (userCred.user.email === googleResult.user.email) {
-      // Link Google to this email/password account
-      await linkWithCredential(userCred.user, googleCredential)
-      return userCred.user
-    }
-    return null
-  } catch (error) {
-    if (error.code === 'auth/credential-already-in-use') {
-      // Already linked
-      return auth.currentUser
-    }
-    throw error
-  }
-}
-
-// Helper: Link email/password to Google account if same email
-
-export const linkEmailToGoogleAccount = async (email, password) => {
-  try {
-    // Start Google sign-in and get credential
-    const googleResult = await signInWithPopup(auth, googleProvider)
-    const emailCredential = EmailAuthProvider.credential(email, password)
-    if (googleResult.user.email === email) {
-      await linkWithCredential(googleResult.user, emailCredential)
-      return googleResult.user
-    }
-    return null
-  } catch (error) {
-    if (error.code === 'auth/credential-already-in-use') {
-      // Already linked
-      return auth.currentUser
-    }
-    throw error
-  }
-}
 import { auth } from './firebase'
 
 const googleProvider = new GoogleAuthProvider()
@@ -73,8 +29,14 @@ setPersistence(auth, browserLocalPersistence).catch((error) => {
   console.warn('[Auth] Failed to set persistence:', error.message)
 })
 
-export const signInWithGoogle = async () => {
+export const setAuthPersistence = async (rememberMe = true) => {
+  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence
+  await setPersistence(auth, persistence)
+}
+
+export const signInWithGoogle = async (rememberMe = true) => {
   try {
+    await setAuthPersistence(rememberMe)
     if (shouldUseRedirect()) {
       await signInWithRedirect(auth, googleProvider)
       return { user: null, redirect: true }
@@ -97,8 +59,9 @@ export const getGoogleRedirectResult = async () => {
   }
 }
 
-export const signUpWithEmail = async (email, password) => {
+export const signUpWithEmail = async (email, password, rememberMe = true) => {
   try {
+    await setAuthPersistence(rememberMe)
     const result = await createUserWithEmailAndPassword(auth, email, password)
     return result.user
   } catch (error) {
@@ -107,12 +70,36 @@ export const signUpWithEmail = async (email, password) => {
   }
 }
 
-export const signInWithEmail = async (email, password) => {
+export const signInWithEmail = async (email, password, rememberMe = true) => {
   try {
+    await setAuthPersistence(rememberMe)
     const result = await signInWithEmailAndPassword(auth, email, password)
     return result.user
   } catch (error) {
     console.error('[Auth] Sign-in failed:', error.message)
+    throw error
+  }
+}
+
+export const linkPasswordToGoogleAccount = async (password, email) => {
+  try {
+    const user = auth.currentUser
+    if (!user) {
+      throw new Error('Please sign in with Google first.')
+    }
+
+    const resolvedEmail = (email || user.email || '').trim().toLowerCase()
+    if (!resolvedEmail) {
+      throw new Error('No email found for this Google account.')
+    }
+
+    const emailCredential = EmailAuthProvider.credential(resolvedEmail, password)
+    await linkWithCredential(user, emailCredential)
+    return user
+  } catch (error) {
+    if (error.code === 'auth/provider-already-linked') {
+      return auth.currentUser
+    }
     throw error
   }
 }
