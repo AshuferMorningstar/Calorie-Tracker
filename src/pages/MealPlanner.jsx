@@ -310,6 +310,9 @@ export default function MealPlanner() {
                           Delete
                         </button>
                         <input
+                          id={`mealplanner-recipe-select-${recipe.id}`}
+                          name={`mealplannerRecipeSelect-${recipe.id}`}
+                          aria-label={`Select recipe ${recipe.recipeName}`}
                           type="checkbox"
                           checked={isSelected}
                           onChange={(e) => {

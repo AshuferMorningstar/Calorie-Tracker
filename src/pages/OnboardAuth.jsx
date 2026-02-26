@@ -260,6 +260,7 @@ export default function OnboardAuth(){
         <form onSubmit={handleEmailAuth} className="auth-form" autoComplete="on">
           <div className="form-group">
             <input
+              id="auth-email"
               type="email"
               placeholder="Email address"
               value={email}
@@ -274,6 +275,7 @@ export default function OnboardAuth(){
           <div className="form-group">
             <div className="auth-input-row">
               <input
+                id="auth-password"
                 type={showPassword ? 'text' : 'password'}
                 placeholder={pendingGooglePasswordSetup ? 'Create password' : 'Password'}
                 value={password}
@@ -312,6 +314,7 @@ export default function OnboardAuth(){
             <div className="form-group">
               <div className="auth-input-row">
                 <input
+                  id="auth-confirm-password"
                   type={showConfirmPassword ? 'text' : 'password'}
                   placeholder="Confirm password"
                   value={confirmPassword}
@@ -349,6 +352,8 @@ export default function OnboardAuth(){
 
           <label className="auth-checkbox-row">
             <input
+              id="auth-remember-me"
+              name="rememberMe"
               type="checkbox"
               checked={rememberMe}
               onChange={(e) => setRememberMe(e.target.checked)}
