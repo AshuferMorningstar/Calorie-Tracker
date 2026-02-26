@@ -593,8 +593,10 @@ export default function AddRecipe() {
         <div className="card">
           <form onSubmit={handleAddIngredient} className="track-form">
             <div className="form-row">
-              <label>Recipe Name</label>
+              <label htmlFor="ar-recipe-name">Recipe Name</label>
               <input
+                id="ar-recipe-name"
+                name="recipeName"
                 type="text"
                 value={recipeName}
                 onChange={(e) => setRecipeName(e.target.value)}
@@ -612,10 +614,12 @@ export default function AddRecipe() {
             </div>
 
             <div className="form-row">
-              <label>Ingredients</label>
+              <label htmlFor="ar-ingredient-name">Ingredients</label>
               <div className="tc-autocomplete" ref={containerRef}>
                 <input
                   ref={inputRef}
+                  id="ar-ingredient-name"
+                  name="ingredientName"
                   value={name}
                   onKeyDown={onNameKeyDown}
                   onChange={handleNameChange}
@@ -655,8 +659,10 @@ export default function AddRecipe() {
 
             <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
               <div style={{ flex: 1 }} className="form-row">
-                <label>{unit === 'count' ? 'Count' : 'Amount (g)'}</label>
+                <label htmlFor="ar-ingredient-amount">{unit === 'count' ? 'Count' : 'Amount (g)'}</label>
                 <input
+                  id="ar-ingredient-amount"
+                  name="ingredientAmount"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
                   placeholder={unit === 'count' ? '1' : '100'}
@@ -667,9 +673,11 @@ export default function AddRecipe() {
               </div>
 
               <div style={{ width: 120 }} className="form-row">
-                <label>{unit === 'count' ? 'kcal / unit' : 'kcal / 100g'}</label>
+                <label htmlFor="ar-ingredient-kcal">{unit === 'count' ? 'kcal / unit' : 'kcal / 100g'}</label>
                 {unit === 'count' ? (
                   <input
+                    id="ar-ingredient-kcal"
+                    name="ingredientKcalPerUnit"
                     value={kcalPerUnit}
                     onChange={(e) => { setKcalPerUnit(e.target.value); setManualKcalNeeded(false) }}
                     placeholder="auto"
@@ -678,6 +686,8 @@ export default function AddRecipe() {
                   />
                 ) : (
                   <input
+                    id="ar-ingredient-kcal"
+                    name="ingredientKcalPer100g"
                     value={kcalPer100g}
                     onChange={(e) => { setKcalPer100g(e.target.value); setManualKcalNeeded(false) }}
                     placeholder="auto"
@@ -688,9 +698,11 @@ export default function AddRecipe() {
               </div>
 
               <div style={{ width: 120 }} className="form-row">
-                <label>{unit === 'count' ? 'protein / unit' : 'protein / 100g'}</label>
+                <label htmlFor="ar-ingredient-protein">{unit === 'count' ? 'protein / unit' : 'protein / 100g'}</label>
                 {unit === 'count' ? (
                   <input
+                    id="ar-ingredient-protein"
+                    name="ingredientProteinPerUnit"
                     value={proteinPerUnit}
                     onChange={(e) => { setProteinPerUnit(e.target.value); setManualKcalNeeded(false) }}
                     placeholder="auto"
@@ -699,6 +711,8 @@ export default function AddRecipe() {
                   />
                 ) : (
                   <input
+                    id="ar-ingredient-protein"
+                    name="ingredientProteinPer100g"
                     value={proteinPer100g}
                     onChange={(e) => { setProteinPer100g(e.target.value); setManualKcalNeeded(false) }}
                     placeholder="auto"
@@ -785,6 +799,9 @@ export default function AddRecipe() {
                     {editMode ? (
                       <input
                         type="checkbox"
+                        id={`ar-ingredient-select-${ing.id}`}
+                        name={`ingredientSelect-${ing.id}`}
+                        aria-label={`Select ${ing.name}`}
                         checked={selectedIds.has(ing.id)}
                         onClick={(e) => e.stopPropagation()}
                         onChange={(e) => { e.stopPropagation(); toggleSelect(ing.id) }}
