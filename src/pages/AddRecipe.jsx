@@ -764,84 +764,85 @@ export default function AddRecipe() {
 
         {/* Logged Ingredients */}
         {ingredients.length > 0 && (
-          <div className="card">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div className="card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'stretch', gap: 8, width: '100%' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8, gap: 8, flexWrap: 'wrap' }}>
               <div style={{ fontWeight: 700 }}>Ingredients</div>
               <div style={{ fontSize: 14, fontWeight: 700, textAlign: 'right', minWidth: 140, marginLeft: 12 }}>
                 {totalCalories} kcal • {Math.round(totalProtein * 10) / 10} g
               </div>
             </div>
 
-            <ul style={{ listStyle: 'none', padding: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {ingredients.map((ing) => (
-                <li
-                  key={ing.id}
-                  className="card"
-                  style={{
-                    position: 'relative',
-                    padding: 6,
-                    overflow: 'visible',
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    maxWidth: '100%',
-                    flex: '0 0 100%',
-                    alignSelf: 'stretch',
-                    display: 'grid',
-                    gridTemplateColumns: '14px minmax(20px,1fr) 64px 140px',
-                    alignItems: 'center',
-                    gap: 4,
-                    paddingLeft: 6,
-                    cursor: editMode ? 'pointer' : 'default'
-                  }}
-                  onClick={() => { if (editMode) toggleSelect(ing.id) }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    {editMode ? (
-                      <input
-                        type="checkbox"
-                        id={`ar-ingredient-select-${ing.id}`}
-                        name={`ingredientSelect-${ing.id}`}
-                        aria-label={`Select ${ing.name}`}
-                        checked={selectedIds.has(ing.id)}
-                        onClick={(e) => e.stopPropagation()}
-                        onChange={(e) => { e.stopPropagation(); toggleSelect(ing.id) }}
-                      />
-                    ) : null}
-                  </div>
-                  <div title={ing.name} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>
-                    {ing.name}
-                  </div>
-                  <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 13, color: 'var(--muted)' }}>
-                    {ing.amount} {ing.unit === 'count' ? 'pcs' : 'g'}
-                  </div>
-                  <div style={{ textAlign: 'right', fontSize: 13, fontWeight: 700 }}>
-                    {ing.calories !== null ? `${ing.calories} kcal` : ''}
-                    {ing.protein !== null && ing.protein !== undefined ? ` • ${ing.protein} g` : ''}
-                  </div>
-                </li>
-              ))}
-            </ul>
-
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12 }}>
-              {!editMode ? (
-                <button className="icon-btn" onClick={() => { setEditMode(true); setSelectedIds(new Set()) }}>Edit</button>
-              ) : (
-                <>
-                  <button className="icon-btn" onClick={deleteSelected} disabled={!selectedIds || selectedIds.size === 0}>Delete</button>
-                  <button className="icon-btn" onClick={() => { setEditMode(false); setSelectedIds(new Set()) }}>Cancel</button>
-                </>
-              )}
-              <button className="icon-btn" onClick={() => setIngredients([])}>Clear</button>
+            <div style={{ maxHeight: 220, overflowY: 'auto', paddingRight: 2 }}>
+              <ul style={{ listStyle: 'none', padding: 0, margin: 0, width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+                {ingredients.map((ing) => (
+                  <li
+                    key={ing.id}
+                    className="card"
+                    style={{
+                      position: 'relative',
+                      zIndex: 0,
+                      padding: 6,
+                      overflow: 'hidden',
+                      width: '100%',
+                      boxSizing: 'border-box',
+                      maxWidth: '100%',
+                      flex: '0 0 100%',
+                      alignSelf: 'stretch',
+                      display: 'grid',
+                      gridTemplateColumns: '14px minmax(20px,1fr) 64px 100px',
+                      alignItems: 'center',
+                      gap: 4,
+                      paddingLeft: 6,
+                      cursor: editMode ? 'pointer' : 'default'
+                    }}
+                    onClick={() => { if (editMode) toggleSelect(ing.id) }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {editMode ? (
+                        <input
+                          type="checkbox"
+                          id={`ar-ingredient-select-${ing.id}`}
+                          name={`ingredientSelect-${ing.id}`}
+                          aria-label={`Select ${ing.name}`}
+                          checked={selectedIds.has(ing.id)}
+                          onClick={(e) => e.stopPropagation()}
+                          onChange={(e) => { e.stopPropagation(); toggleSelect(ing.id) }}
+                        />
+                      ) : null}
+                    </div>
+                    <div title={ing.name} style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>
+                      {ing.name}
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', fontSize: 13, color: 'var(--muted)' }}>
+                      {ing.amount} {ing.unit === 'count' ? 'pcs' : 'g'}
+                    </div>
+                    <div style={{ textAlign: 'right', fontSize: 13, fontWeight: 700 }}>
+                      {ing.calories !== null ? `${ing.calories} kcal` : ''}
+                      {ing.protein !== null && ing.protein !== undefined ? ` • ${ing.protein} g` : ''}
+                    </div>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <button
-              className="card"
-              type="button"
-              onClick={handleSaveRecipe}
-              style={{ background: 'var(--accent2)', color: '#fff', border: 'none', padding: '12px', width: '100%', marginTop: 12, fontWeight: 600 }}
-            >
-              {editingRecipe ? 'Update Recipe' : 'Save Recipe'}
-            </button>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8, marginTop: 12, flexWrap: 'wrap', width: '100%' }}>
+              {!editMode ? (
+                <button className="card" onClick={() => { setEditMode(true); setSelectedIds(new Set()) }} style={{ background: 'rgba(59, 130, 246, 0.15)', color: '#2563eb', border: '1px solid rgba(59, 130, 246, 0.3)', padding: '8px 12px', fontWeight: 600 }}>Edit</button>
+              ) : (
+                <>
+                  <button className="card" onClick={deleteSelected} disabled={!selectedIds || selectedIds.size === 0} style={{ background: !selectedIds || selectedIds.size === 0 ? 'rgba(156, 163, 175, 0.1)' : 'rgba(239, 68, 68, 0.15)', color: !selectedIds || selectedIds.size === 0 ? '#9ca3af' : '#dc2626', border: !selectedIds || selectedIds.size === 0 ? '1px solid rgba(156, 163, 175, 0.2)' : '1px solid rgba(239, 68, 68, 0.3)', padding: '8px 12px', fontWeight: 600 }}>Delete</button>
+                  <button className="card" onClick={() => { setEditMode(false); setSelectedIds(new Set()) }} style={{ background: 'rgba(108, 117, 125, 0.1)', color: '#6c757d', border: '1px solid rgba(108, 117, 125, 0.2)', padding: '8px 12px', fontWeight: 600 }}>Cancel</button>
+                </>
+              )}
+              <button className="card" onClick={() => setIngredients([])} style={{ background: 'rgba(108, 117, 125, 0.1)', color: '#6c757d', border: '1px solid rgba(108, 117, 125, 0.2)', padding: '8px 12px', fontWeight: 600 }}>Clear</button>
+              <button
+                type="button"
+                onClick={handleSaveRecipe}
+                style={{ background: 'rgba(236, 72, 153, 0.15)', color: '#db2777', border: '1px solid rgba(236, 72, 153, 0.3)', padding: '8px 12px', fontWeight: 600, borderRadius: 10 }}
+              >
+                {editingRecipe ? 'Update Recipe' : 'Save Recipe'}
+              </button>
+            </div>
           </div>
         )}
       </div>
