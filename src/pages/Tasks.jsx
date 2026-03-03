@@ -164,7 +164,7 @@ export default function Tasks() {
     <div style={{ padding: 16, maxWidth: 760, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
         <button className="icon-btn back-btn" onClick={handleBack} aria-label="Back">←</button>
-        <h2 style={{ margin: 0 }}>Daily Tasks</h2>
+        <h2 style={{ margin: 0 }}>Activity Planner</h2>
       </div>
 
       <div className="card" style={{ padding: 12, marginBottom: 12, display: 'block' }}>
@@ -181,7 +181,7 @@ export default function Tasks() {
             onKeyDown={(e) => {
               if (e.key === 'Enter') addTask()
             }}
-            placeholder="Add a task for today"
+            placeholder="Add an activity for today"
             style={{
               flex: 1,
               padding: '10px 12px',
@@ -202,23 +202,11 @@ export default function Tasks() {
               whiteSpace: 'nowrap'
             }}
           >
-            Add Task
+            Add Activity
           </button>
         </div>
-        <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-          <button
-            className="card"
-            onClick={handleToggleEditMode}
-            style={{
-              padding: '8px 12px',
-              cursor: 'pointer',
-              borderRadius: 8,
-              whiteSpace: 'nowrap'
-            }}
-          >
-            {editMode ? 'Done' : 'Edit'}
-          </button>
-          {editMode && (
+        {editMode && (
+          <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
             <button
               className="card"
               onClick={handleDeleteSelected}
@@ -233,57 +221,80 @@ export default function Tasks() {
             >
               Delete selected ({selectedTaskIds.length})
             </button>
-          )}
-        </div>
+          </div>
+        )}
       </div>
 
-      <div style={{ display: 'grid', gap: 8 }}>
-        {tasks.length === 0 ? (
-          <div className="card" style={{ color: 'var(--muted)', justifyContent: 'center' }}>
-            No tasks for today yet.
-          </div>
-        ) : (
-          tasks.map(task => (
-            <label
-              key={task.id}
+      <div className="card" style={{ display: 'block', padding: 12 }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+          <div style={{ fontWeight: 700 }}>Activity</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ fontSize: 12, color: 'var(--muted)' }}>{tasks.length}</div>
+            <button
               className="card"
+              onClick={handleToggleEditMode}
               style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 10,
+                padding: '6px 10px',
                 cursor: 'pointer',
-                background: task.completed ? 'var(--selected-bg)' : 'var(--card-bg)',
-                border: task.completed ? '1px solid var(--accent1)' : '1px solid var(--card-border)',
-                opacity: task.completed ? 0.95 : 1
+                borderRadius: 8,
+                whiteSpace: 'nowrap',
+                fontSize: 12,
+                fontWeight: 600
               }}
             >
-              {editMode ? (
-                <input
-                  type="checkbox"
-                  checked={selectedTaskIds.includes(task.id)}
-                  onChange={() => toggleSelectTask(task.id)}
-                  style={{ width: 18, height: 18 }}
-                />
-              ) : (
-                <input
-                  type="checkbox"
-                  checked={task.completed}
-                  onChange={() => toggleTask(task.id)}
-                  style={{ width: 18, height: 18 }}
-                />
-              )}
-              <span
+              {editMode ? 'Done' : 'Edit'}
+            </button>
+          </div>
+        </div>
+
+        <div style={{ display: 'grid', gap: 8 }}>
+          {tasks.length === 0 ? (
+            <div className="card" style={{ color: 'var(--muted)', justifyContent: 'center' }}>
+              No activities for today yet.
+            </div>
+          ) : (
+            tasks.map(task => (
+              <label
+                key={task.id}
+                className="card"
                 style={{
-                  textDecoration: task.completed ? 'line-through' : 'none',
-                  fontWeight: task.completed ? 600 : 500,
-                  color: 'var(--text)'
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 10,
+                  cursor: 'pointer',
+                  background: task.completed ? 'var(--selected-bg)' : 'var(--card-bg)',
+                  border: task.completed ? '1px solid var(--accent1)' : '1px solid var(--card-border)',
+                  opacity: task.completed ? 0.95 : 1
                 }}
               >
-                {task.text}
-              </span>
-            </label>
-          ))
-        )}
+                {editMode ? (
+                  <input
+                    type="checkbox"
+                    checked={selectedTaskIds.includes(task.id)}
+                    onChange={() => toggleSelectTask(task.id)}
+                    style={{ width: 18, height: 18 }}
+                  />
+                ) : (
+                  <input
+                    type="checkbox"
+                    checked={task.completed}
+                    onChange={() => toggleTask(task.id)}
+                    style={{ width: 18, height: 18 }}
+                  />
+                )}
+                <span
+                  style={{
+                    textDecoration: task.completed ? 'line-through' : 'none',
+                    fontWeight: task.completed ? 600 : 500,
+                    color: 'var(--text)'
+                  }}
+                >
+                  {task.text}
+                </span>
+              </label>
+            ))
+          )}
+        </div>
       </div>
     </div>
   )
