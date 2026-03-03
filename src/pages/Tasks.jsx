@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
 
@@ -173,6 +173,8 @@ export default function Tasks() {
         </div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
           <input
+            id="daily-task-input"
+            name="dailyTask"
             type="text"
             value={taskInput}
             onChange={(e) => setTaskInput(e.target.value)}
