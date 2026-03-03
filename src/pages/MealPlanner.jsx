@@ -213,7 +213,7 @@ export default function MealPlanner() {
               opacity: savedRecipes.length >= MAX_RECIPES ? 0.5 : 1
             }}
           >
-            + Add Recipe {savedRecipes.length > 0 && `(${savedRecipes.length}/${MAX_RECIPES})`}
+            + Create Recipe {savedRecipes.length > 0 && `(${savedRecipes.length}/${MAX_RECIPES})`}
           </button>
   
           {/* Saved Recipes Library - Only show if there are recipes */}
