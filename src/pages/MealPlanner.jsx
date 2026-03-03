@@ -98,39 +98,13 @@ export default function MealPlanner() {
       }
     }
   
-    const handleDeleteRecipe = (recipeId) => {
-      if (!confirm('Delete this recipe?')) return
-      const updated = savedRecipes.filter(r => r.id !== recipeId)
+    const handleDeleteSelectedRecipes = () => {
+      if (selectedRecipeIds.size === 0) return
+      if (!confirm(`Delete ${selectedRecipeIds.size} selected ${selectedRecipeIds.size === 1 ? 'recipe' : 'recipes'}?`)) return
+      const updated = savedRecipes.filter(r => !selectedRecipeIds.has(r.id))
       saveRecipes(updated)
+      setSelectedRecipeIds(new Set())
     }
-  
-    const handleAddRecipeToDate = (recipe) => {
-      const item = {
-        id: Date.now(),
-        source: 'mealplanner',
-        name: recipe.recipeName || recipe.name,
-        amount: recipe.ingredients ? null : recipe.amount,
-        kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
-        kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
-        proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
-        proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
-        caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
-        calories: recipe.totalCalories || recipe.calories,
-        protein: recipe.totalProtein || recipe.protein,
-        ingredients: recipe.ingredients || null,
-      }
-      const key = `calorieWise.entries.${selectedDate}`
-      const updated = [...entriesForDate, item]
-      try {
-        localStorage.setItem(key, JSON.stringify(updated))
-        setEntriesForDate(updated)
-        triggerSync()
-        window.dispatchEvent(new Event('calorieWise.entriesChanged'))
-      } catch (e) {
-        console.error('Failed to add recipe to date:', e)
-      }
-    }
-  
   
     const toggleRecipeSelect = (recipeId) => {
       setSelectedRecipeIds(prev => {
@@ -142,6 +116,7 @@ export default function MealPlanner() {
     }
   
     const handleAddSelectedRecipes = () => {
+      if (selectedRecipeIds.size === 0) return
       const key = `calorieWise.entries.${selectedDate}`
       const recipesToAdd = savedRecipes.filter(r => selectedRecipeIds.has(r.id))
       const newItems = recipesToAdd.map(recipe => ({
@@ -168,6 +143,14 @@ export default function MealPlanner() {
       } catch (e) {
         console.error('Failed to add recipes to date:', e)
       }
+    }
+
+    const handleEditSelectedRecipe = () => {
+      if (selectedRecipeIds.size !== 1) return
+      const selectedId = [...selectedRecipeIds][0]
+      const recipe = savedRecipes.find(r => r.id === selectedId)
+      if (!recipe) return
+      navigate('/add-recipe', { state: { recipe } })
     }
   
     const handleBack = () => {
@@ -236,11 +219,88 @@ export default function MealPlanner() {
           {/* Saved Recipes Library - Only show if there are recipes */}
           {savedRecipes.length > 0 && (
             <div>
-              <div className="saved-recipes-wrapper" style={{ width: '100%' }}>
+              <div className="card" style={{ marginTop: 12, display: 'block', padding: 10 }}>
+                <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', marginBottom: 8 }}>Action buttons</div>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button
+                    className="card"
+                    onClick={() => setSelectedRecipeIds(new Set())}
+                    disabled={selectedRecipeIds.size === 0}
+                    style={{
+                      flex: '1 1 140px',
+                      padding: '7px 10px',
+                      justifyContent: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: selectedRecipeIds.size === 0 ? 'not-allowed' : 'pointer',
+                      opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
+                    }}
+                  >
+                    Clear
+                  </button>
+                  <button
+                    className="card"
+                    onClick={handleAddSelectedRecipes}
+                    disabled={selectedRecipeIds.size === 0}
+                    style={{
+                      flex: '1 1 140px',
+                      padding: '7px 10px',
+                      justifyContent: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: selectedRecipeIds.size === 0 ? 'not-allowed' : 'pointer',
+                      opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
+                    }}
+                  >
+                    Save
+                  </button>
+                  <button
+                    className="card"
+                    onClick={handleEditSelectedRecipe}
+                    disabled={selectedRecipeIds.size !== 1}
+                    style={{
+                      flex: '1 1 140px',
+                      padding: '7px 10px',
+                      justifyContent: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: selectedRecipeIds.size !== 1 ? 'not-allowed' : 'pointer',
+                      opacity: selectedRecipeIds.size !== 1 ? 0.6 : 1
+                    }}
+                  >
+                    Edit
+                  </button>
+                  <button
+                    className="card"
+                    onClick={handleDeleteSelectedRecipes}
+                    disabled={selectedRecipeIds.size === 0}
+                    style={{
+                      flex: '1 1 140px',
+                      padding: '7px 10px',
+                      justifyContent: 'center',
+                      gap: 6,
+                      fontSize: 12,
+                      fontWeight: 600,
+                      cursor: selectedRecipeIds.size === 0 ? 'not-allowed' : 'pointer',
+                      opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
+                    }}
+                  >
+                    Delete
+                  </button>
+                </div>
+                <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.35, marginTop: 8 }}>
+                  Tap a recipe again to unselect it. Edit works only when exactly one recipe is checked.
+                </div>
+              </div>
+
+              <div className="saved-recipes-wrapper" style={{ width: '100%', marginTop: 12 }}>
                 {savedRecipes.map(recipe => {
                   const isSelected = selectedRecipeIds.has(recipe.id)
                   return (
-                    <div 
+                    <div
                       key={recipe.id}
                       className="card mealplanner-recipe-card"
                       onClick={() => toggleRecipeSelect(recipe.id)}
@@ -268,89 +328,27 @@ export default function MealPlanner() {
                           {(recipe.totalProtein ?? recipe.protein) !== null && ` • ${recipe.totalProtein ?? recipe.protein}g`}
                         </div>
                       </div>
-                      <div className="recipe-actions" style={{ marginLeft: 'auto', display: 'flex', gap: 6, alignItems: 'center' }}>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            navigate('/add-recipe', { state: { recipe } })
-                          }}
-                          style={{
-                            padding: '3px 6px',
-                            fontSize: 11,
-                            background: 'transparent',
-                            color: isSelected ? 'white' : 'var(--text)',
-                            border: `1px solid ${isSelected ? 'rgba(255,255,255,0.3)' : 'var(--border)'}`,
-                            borderRadius: 4,
-                            cursor: 'pointer',
-                            flexShrink: 0,
-                            display: 'flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          Edit
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            handleDeleteRecipe(recipe.id)
-                          }}
-                          style={{
-                            padding: '3px 6px',
-                            fontSize: 11,
-                            background: 'transparent',
-                            color: '#ef4444',
-                            border: '1px solid #ef4444',
-                            borderRadius: 4,
-                            cursor: 'pointer',
-                            flexShrink: 0,
-                            display: 'flex',
-                            alignItems: 'center'
-                          }}
-                        >
-                          Delete
-                        </button>
-                        <input
-                          id={`mealplanner-recipe-select-${recipe.id}`}
-                          name={`mealplannerRecipeSelect-${recipe.id}`}
-                          aria-label={`Select recipe ${recipe.recipeName}`}
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={(e) => {
-                            e.stopPropagation()
-                            toggleRecipeSelect(recipe.id)
-                          }}
-                          style={{
-                            width: 16,
-                            height: 16,
-                            cursor: 'pointer',
-                            flexShrink: 0
-                          }}
-                        />
-                      </div>
+                      <input
+                        id={`mealplanner-recipe-select-${recipe.id}`}
+                        name={`mealplannerRecipeSelect-${recipe.id}`}
+                        aria-label={`Select recipe ${recipe.recipeName || recipe.name}`}
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={(e) => {
+                          e.stopPropagation()
+                          toggleRecipeSelect(recipe.id)
+                        }}
+                        style={{
+                          width: 16,
+                          height: 16,
+                          cursor: 'pointer',
+                          flexShrink: 0
+                        }}
+                      />
                     </div>
                   )
                 })}
               </div>
-  
-              {selectedRecipeIds.size > 0 && (
-                <button
-                  onClick={handleAddSelectedRecipes}
-                  style={{
-                    width: '100%',
-                    padding: 12,
-                    marginTop: 12,
-                    fontSize: 14,
-                    fontWeight: 600,
-                    background: 'var(--accent1)',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: 6,
-                    cursor: 'pointer'
-                  }}
-                >
-                  Add {selectedRecipeIds.size} {selectedRecipeIds.size === 1 ? 'recipe' : 'recipes'}
-                </button>
-              )}
             </div>
           )}
       </div>
