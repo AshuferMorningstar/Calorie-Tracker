@@ -20,6 +20,7 @@ export default function MealPlanner() {
   const [entriesForDate, setEntriesForDate] = useState([])
   const [selectedRecipeIds, setSelectedRecipeIds] = useState(new Set())
   const [recipeSearch, setRecipeSearch] = useState('')
+  const [pendingAction, setPendingAction] = useState(null)
   const prevTodayRef = useRef(todayISO())
 
   const filteredRecipes = savedRecipes.filter((recipe) => {
@@ -108,7 +109,6 @@ export default function MealPlanner() {
   
     const handleDeleteSelectedRecipes = () => {
       if (selectedRecipeIds.size === 0) return
-      if (!confirm(`Delete ${selectedRecipeIds.size} selected ${selectedRecipeIds.size === 1 ? 'recipe' : 'recipes'}?`)) return
       const updated = savedRecipes.filter(r => !selectedRecipeIds.has(r.id))
       saveRecipes(updated)
       setSelectedRecipeIds(new Set())
@@ -160,6 +160,48 @@ export default function MealPlanner() {
       if (!recipe) return
       navigate('/add-recipe', { state: { recipe } })
     }
+
+    const requestAction = (action) => {
+      if (action === 'save' && selectedRecipeIds.size === 0) return
+      if (action === 'delete' && selectedRecipeIds.size === 0) return
+      if (action === 'edit' && selectedRecipeIds.size !== 1) return
+      setPendingAction(action)
+    }
+
+    const cancelPendingAction = () => {
+      setPendingAction(null)
+    }
+
+    const confirmPendingAction = () => {
+      if (!pendingAction) return
+      if (pendingAction === 'save') handleAddSelectedRecipes()
+      if (pendingAction === 'edit') handleEditSelectedRecipe()
+      if (pendingAction === 'delete') handleDeleteSelectedRecipes()
+      setPendingAction(null)
+    }
+
+    const pendingActionText = (() => {
+      const count = selectedRecipeIds.size
+      if (pendingAction === 'save') {
+        return {
+          title: `Save ${count} ${count === 1 ? 'recipe' : 'recipes'}?`,
+          note: `This will add to Track Calories for ${selectedDate}.`
+        }
+      }
+      if (pendingAction === 'edit') {
+        return {
+          title: 'Edit selected recipe?',
+          note: 'This will open the recipe editor.'
+        }
+      }
+      if (pendingAction === 'delete') {
+        return {
+          title: `Delete ${count} ${count === 1 ? 'recipe' : 'recipes'}?`,
+          note: 'This will remove the selected recipes from your saved list.'
+        }
+      }
+      return null
+    })()
   
     const handleBack = () => {
       try {
@@ -254,7 +296,7 @@ export default function MealPlanner() {
                   </button>
                   <button
                     className="card"
-                    onClick={handleAddSelectedRecipes}
+                    onClick={() => requestAction('save')}
                     disabled={selectedRecipeIds.size === 0}
                     style={{
                       flex: '0 0 auto',
@@ -271,7 +313,7 @@ export default function MealPlanner() {
                   </button>
                   <button
                     className="card"
-                    onClick={handleEditSelectedRecipe}
+                    onClick={() => requestAction('edit')}
                     disabled={selectedRecipeIds.size !== 1}
                     style={{
                       flex: '0 0 auto',
@@ -288,7 +330,7 @@ export default function MealPlanner() {
                   </button>
                   <button
                     className="card"
-                    onClick={handleDeleteSelectedRecipes}
+                    onClick={() => requestAction('delete')}
                     disabled={selectedRecipeIds.size === 0}
                     style={{
                       flex: '0 0 auto',
@@ -397,6 +439,22 @@ export default function MealPlanner() {
                       })}
                     </div>
                   )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {pendingAction && pendingActionText && (
+            <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200 }}>
+              <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.32)' }} onClick={cancelPendingAction}></div>
+              <div className="card" style={{ zIndex: 1201, maxWidth: 520, width: '92%', padding: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+                <div>
+                  <div style={{ fontWeight: 700 }}>{pendingActionText.title}</div>
+                  <div style={{ fontSize: 13, color: 'var(--muted)' }}>{pendingActionText.note}</div>
+                </div>
+                <div style={{ display: 'flex', gap: 8 }}>
+                  <button className="card" onClick={cancelPendingAction} style={{ padding: '8px 12px', fontWeight: 600 }}>Cancel</button>
+                  <button className="card" onClick={confirmPendingAction} style={{ padding: '8px 12px', fontWeight: 600 }}>Confirm</button>
                 </div>
               </div>
             </div>
