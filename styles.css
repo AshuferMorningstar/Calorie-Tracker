@@ -717,6 +717,26 @@ html,body{
 @media (max-width:720px){.track-grid{grid-template-columns:1fr}}
 .track-grid .card ul{margin:0;padding:0;width:100%}
 .track-grid .card ul li.card{width:100%}
+.logged-items-scroll{
+  max-height: clamp(220px, 42vh, 420px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.logged-items-scroll::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+
+@media (max-width:720px){
+  .logged-items-scroll{
+    max-height: clamp(200px, 38vh, 360px);
+  }
+}
+
 .track-form .form-row{display:flex;flex-direction:column;gap:6px;margin-bottom:6px}
 .track-form input{padding:8px;border-radius:8px;border:1px solid var(--card-border);background:var(--card-bg);color:var(--text)}
 .track-grid .card{padding:12px}

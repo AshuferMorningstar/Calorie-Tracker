@@ -1289,15 +1289,16 @@ export default function TrackCalories(){
               <div style={{fontSize:14,fontWeight:700,textAlign:'right',minWidth:140,marginLeft:12}}>{totalCalories} kcal • {totalProtein.toFixed(1)} g</div>
             </div>
 
-            {items.length === 0 ? (
-              isFasting ? (
-                <div style={{fontSize:15,fontWeight:600,color:'var(--accent2)'}}>🌙 Fasting</div>
+            <div className="logged-items-scroll">
+              {items.length === 0 ? (
+                isFasting ? (
+                  <div style={{fontSize:15,fontWeight:600,color:'var(--accent2)'}}>🌙 Fasting</div>
+                ) : (
+                  <div style={{color:'var(--muted)'}}>No items logged for this date.</div>
+                )
               ) : (
-                <div style={{color:'var(--muted)'}}>No items logged for this date.</div>
-              )
-            ) : (
-              <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
-                {items.map(it=> {
+                <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
+                  {items.map(it=> {
                   // compute display protein if missing
                   let displayProtein = null
                   if(it.protein !== null && it.protein !== undefined){ displayProtein = it.protein }
@@ -1335,8 +1336,9 @@ export default function TrackCalories(){
                     </div>
                   </li>
                 )})}
-              </ul>
-            )}
+                </ul>
+              )}
+            </div>
 
             <div style={{display:'flex',justifyContent:'flex-end',gap:8,marginTop:12}}>
               {!editMode ? (
