@@ -17,25 +17,30 @@ export default function Tasks() {
   const [taskInput, setTaskInput] = useState('')
   const [tasks, setTasks] = useState([])
   const [todayKey, setTodayKey] = useState(() => `calorieWise.tasks.${todayISO()}`)
+  const [streak, setStreak] = useState(() => {
+    try {
+      return Number(localStorage.getItem('calorieWise.taskStreak') || 0)
+    } catch (e) { return 0 }
+  })
+  const [lastStreakDate, setLastStreakDate] = useState(() => {
+    try {
+      return localStorage.getItem('calorieWise.lastTaskStreakDate') || ''
+    } catch (e) { return '' }
+  })
   const [editMode, setEditMode] = useState(false)
   const [selectedTaskIds, setSelectedTaskIds] = useState([])
 
-  const formattedDate = useMemo(() => {
-    try {
-      const iso = todayKey.split('calorieWise.tasks.')[1]
-      const d = new Date(iso)
-      return d.toLocaleDateString(undefined, { weekday: 'long', month: 'short', day: 'numeric' })
-    } catch (e) {
-      return 'Today'
-    }
-  }, [todayKey])
+
 
   useEffect(() => {
     try {
       const nextKey = `calorieWise.tasks.${todayISO()}`
       setTodayKey(nextKey)
       const stored = localStorage.getItem(nextKey)
-      setTasks(stored ? JSON.parse(stored) : [])
+      let loaded = stored ? JSON.parse(stored) : []
+      // Reset completion for all tasks at start of new day
+      loaded = loaded.map(task => ({ ...task, completed: false }))
+      setTasks(loaded)
     } catch (e) {
       setTasks([])
     }
@@ -45,10 +50,34 @@ export default function Tasks() {
     try {
       localStorage.setItem(todayKey, JSON.stringify(tasks))
       triggerSync()
+      // Streak logic: if all tasks completed, streak increases; if not, streak resets next time all are completed
+      const allCompleted = tasks.length > 0 && tasks.every(t => t.completed)
+      const todayIso = todayISO()
+      if (allCompleted) {
+        if (lastStreakDate === todayIso) {
+          // already counted for today
+        } else {
+          // If previous day was yesterday, continue streak; else reset to 1
+          const prevDate = lastStreakDate
+          let nextStreak = 1
+          if (prevDate) {
+            const prev = new Date(prevDate)
+            const today = new Date(todayIso)
+            const diff = (today - prev) / (1000 * 60 * 60 * 24)
+            nextStreak = diff === 1 ? streak + 1 : 1
+          }
+          setStreak(nextStreak)
+          setLastStreakDate(todayIso)
+          localStorage.setItem('calorieWise.taskStreak', String(nextStreak))
+          localStorage.setItem('calorieWise.lastTaskStreakDate', todayIso)
+        }
+      } else {
+        // If not all completed, don't update streak, but if user completes all later, streak will update then
+      }
     } catch (e) {
       console.error('Failed to save daily tasks:', e)
     }
-  }, [tasks, todayKey, triggerSync])
+  }, [tasks, todayKey, triggerSync, streak, lastStreakDate])
 
   useEffect(() => {
     let timer = null
@@ -61,7 +90,10 @@ export default function Tasks() {
           const nextKey = `calorieWise.tasks.${todayISO()}`
           setTodayKey(nextKey)
           const stored = localStorage.getItem(nextKey)
-          setTasks(stored ? JSON.parse(stored) : [])
+          let loaded = stored ? JSON.parse(stored) : []
+          // Reset completion for all tasks at start of new day
+          loaded = loaded.map(task => ({ ...task, completed: false }))
+          setTasks(loaded)
         } catch (e) {
           setTasks([])
         }
@@ -136,7 +168,9 @@ export default function Tasks() {
       </div>
 
       <div className="card" style={{ padding: 12, marginBottom: 12, display: 'block' }}>
-        <div style={{ fontSize: 13, color: 'var(--muted)', marginBottom: 8 }}>{formattedDate}</div>
+        <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent1)', marginBottom: 8 }}>
+          Streak: <span style={{ fontWeight: 700 }}>{streak}</span> {streak > 0 ? '🔥' : ''}
+        </div>
         <div style={{ display: 'flex', gap: 8, marginBottom: 8 }}>
           <input
             type="text"
