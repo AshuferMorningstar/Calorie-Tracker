@@ -227,7 +227,7 @@ export default function MealPlanner() {
                     onClick={() => setSelectedRecipeIds(new Set())}
                     disabled={selectedRecipeIds.size === 0}
                     style={{
-                      flex: '1 1 140px',
+                      flex: '0 0 auto',
                       padding: '7px 10px',
                       justifyContent: 'center',
                       gap: 6,
@@ -244,7 +244,7 @@ export default function MealPlanner() {
                     onClick={handleAddSelectedRecipes}
                     disabled={selectedRecipeIds.size === 0}
                     style={{
-                      flex: '1 1 140px',
+                      flex: '0 0 auto',
                       padding: '7px 10px',
                       justifyContent: 'center',
                       gap: 6,
@@ -261,7 +261,7 @@ export default function MealPlanner() {
                     onClick={handleEditSelectedRecipe}
                     disabled={selectedRecipeIds.size !== 1}
                     style={{
-                      flex: '1 1 140px',
+                      flex: '0 0 auto',
                       padding: '7px 10px',
                       justifyContent: 'center',
                       gap: 6,
@@ -278,7 +278,7 @@ export default function MealPlanner() {
                     onClick={handleDeleteSelectedRecipes}
                     disabled={selectedRecipeIds.size === 0}
                     style={{
-                      flex: '1 1 140px',
+                      flex: '0 0 auto',
                       padding: '7px 10px',
                       justifyContent: 'center',
                       gap: 6,
@@ -334,6 +334,9 @@ export default function MealPlanner() {
                         aria-label={`Select recipe ${recipe.recipeName || recipe.name}`}
                         type="checkbox"
                         checked={isSelected}
+                        onClick={(e) => {
+                          e.stopPropagation()
+                        }}
                         onChange={(e) => {
                           e.stopPropagation()
                           toggleRecipeSelect(recipe.id)
