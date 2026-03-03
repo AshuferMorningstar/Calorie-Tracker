@@ -192,6 +192,9 @@ export default function MealPlanner() {
                 color: 'var(--text)'
               }}
             />
+            <div style={{ fontSize: 12, color: 'var(--muted)', marginTop: 8 }}>
+              Choose any past or present date to add your created recipe to Track Calories for that day.
+            </div>
           </div>
   
           {/* Add Recipe Button */}
