@@ -167,7 +167,7 @@ export default function Tasks() {
         <h2 style={{ margin: 0 }}>Activity Planner</h2>
       </div>
 
-      <div className="card" style={{ padding: 12, marginBottom: 12, display: 'block' }}>
+      <div className="card edge-blue-light" style={{ padding: 12, marginBottom: 12, display: 'block' }}>
         <div style={{ fontSize: 15, fontWeight: 600, color: 'var(--accent1)', marginBottom: 8 }}>
           Streak: <span style={{ fontWeight: 700 }}>{streak}</span> {streak > 0 ? '🔥' : ''}
         </div>
@@ -225,7 +225,7 @@ export default function Tasks() {
         )}
       </div>
 
-      <div className="card" style={{ display: 'block', padding: 12 }}>
+      <div className="card edge-blue-light" style={{ display: 'block', padding: 12 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
           <div style={{ fontWeight: 700 }}>Activity</div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>

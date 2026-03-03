@@ -222,7 +222,7 @@ export default function MealPlanner() {
   
         <div style={{ paddingBottom: 80 }}>
           {/* Date Selector */}
-          <div className="card" style={{ marginBottom: 16, padding: 12 }}>
+          <div className="card edge-blue-light" style={{ marginBottom: 16, padding: 12 }}>
             <label htmlFor="mealplanner-date" style={{ display: 'block', fontSize: 14, marginBottom: 8, fontWeight: 500 }}>
               Select Date
             </label>
@@ -274,7 +274,7 @@ export default function MealPlanner() {
           {/* Saved Recipes Library - Only show if there are recipes */}
           {savedRecipes.length > 0 && (
             <div>
-              <div className="card" style={{ marginTop: 12, display: 'block', padding: 10 }}>
+              <div className="card edge-blue-light" style={{ marginTop: 12, display: 'block', padding: 10 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', marginBottom: 8 }}>Action buttons</div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   <button
@@ -351,7 +351,7 @@ export default function MealPlanner() {
                 </div>
               </div>
 
-              <div className="card" style={{ marginTop: 12, display: 'block', padding: 12 }}>
+              <div className="card edge-blue-light" style={{ marginTop: 12, display: 'block', padding: 12 }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                   <div style={{ fontWeight: 700 }}>Recipes</div>
                   <div style={{ fontSize: 12, color: 'var(--muted)' }}>{filteredRecipes.length}/{savedRecipes.length}</div>
