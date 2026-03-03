@@ -296,7 +296,7 @@ export default function MealPlanner() {
                 </div>
               </div>
 
-              <div className="saved-recipes-wrapper" style={{ width: '100%', marginTop: 12 }}>
+              <div className="saved-recipes-wrapper" style={{ width: '100%', marginTop: 12, display: 'grid', gap: 8 }}>
                 {savedRecipes.map(recipe => {
                   const isSelected = selectedRecipeIds.has(recipe.id)
                   return (
@@ -305,25 +305,25 @@ export default function MealPlanner() {
                       className="card mealplanner-recipe-card"
                       onClick={() => toggleRecipeSelect(recipe.id)}
                       style={{
-                        padding: '6px 8px',
-                        display: 'flex',
-                        gap: 6,
+                        padding: '10px 12px',
+                        display: 'grid',
+                        gridTemplateColumns: '1fr auto',
+                        columnGap: 10,
                         alignItems: 'center',
-                        flexWrap: 'nowrap',
                         cursor: 'pointer',
-                        background: isSelected ? 'var(--accent1)' : 'var(--card-bg)',
-                        opacity: isSelected ? 0.9 : 1,
-                        border: isSelected ? '2px solid var(--accent1)' : '1px solid var(--border)',
+                        background: isSelected ? 'var(--selected-bg)' : 'var(--card-bg)',
+                        opacity: isSelected ? 0.95 : 1,
+                        border: isSelected ? '1px solid var(--accent1)' : '1px solid var(--card-border)',
                         transition: 'all 0.12s',
                         minWidth: 0,
-                        flex: '0 1 auto'
+                        width: '100%'
                       }}
                     >
-                      <div className="recipe-text" style={{ display: 'inline-flex', alignItems: 'center', gap: 8, whiteSpace: 'nowrap', minWidth: 0, flex: '1 1 auto', overflow: 'hidden' }}>
-                        <div className="recipe-name" style={{ fontSize: 13, fontWeight: 500, color: isSelected ? 'white' : 'var(--text)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0, maxWidth: '120px', flex: '0 1 auto' }}>
+                      <div className="recipe-text" style={{ display: 'block', minWidth: 0, overflow: 'hidden' }}>
+                        <div className="recipe-name" style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
                           {recipe.recipeName || recipe.name}
                         </div>
-                        <div className="recipe-meta" style={{ fontSize: 11, opacity: 0.7, color: isSelected ? 'rgba(255,255,255,0.7)' : 'inherit', whiteSpace: 'nowrap', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', flex: '0 0 auto', maxWidth: '140px' }}>
+                        <div className="recipe-meta" style={{ fontSize: 11, opacity: 0.75, color: 'var(--muted)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>
                           • {recipe.totalCalories || recipe.calories} kcal
                           {(recipe.totalProtein ?? recipe.protein) !== null && ` • ${recipe.totalProtein ?? recipe.protein}g`}
                         </div>
@@ -342,10 +342,12 @@ export default function MealPlanner() {
                           toggleRecipeSelect(recipe.id)
                         }}
                         style={{
-                          width: 16,
-                          height: 16,
+                          width: 18,
+                          height: 18,
                           cursor: 'pointer',
-                          flexShrink: 0
+                          alignSelf: 'center',
+                          margin: 0,
+                          display: 'block'
                         }}
                       />
                     </div>

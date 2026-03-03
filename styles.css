@@ -113,15 +113,16 @@ html,body{
   /* On narrow screens make each recipe card take full width so its contents stay on one line */
   .mealplanner-recipe-card{flex:1 1 100% !important;max-width:100% !important;padding:10px 12px}
   .mealplanner-recipe-card > div{min-width:0}
+  .mealplanner-recipe-card .recipe-text .recipe-meta{display:none}
 }
 
 /* Further shrink internals on very small phones so long names fit on single line */
 @media (max-width:420px){
   .mealplanner-recipe-card{padding:8px 10px;gap:6px}
-  .mealplanner-recipe-card .recipe-name{max-width:90px;font-size:12px}
-  .mealplanner-recipe-card .recipe-meta{max-width:70px;font-size:11px;opacity:0.8}
+  .mealplanner-recipe-card .recipe-name{max-width:none;font-size:12px}
+  .mealplanner-recipe-card .recipe-meta{max-width:none;font-size:11px;opacity:0.8}
   .mealplanner-recipe-card button{padding:2px 6px;font-size:10px}
-  .mealplanner-recipe-card input[type="checkbox"]{width:14px;height:14px}
+  .mealplanner-recipe-card input[type="checkbox"]{width:18px;height:18px}
 }
 
 /* Ensure actions container sits at the right and buttons don't wrap */
@@ -136,9 +137,9 @@ html,body{
 
 @media (max-width:420px){
   .mealplanner-recipe-card .recipe-text{gap:6px}
-  .mealplanner-recipe-card .recipe-text .recipe-name{max-width:70px;font-size:12px}
+  .mealplanner-recipe-card .recipe-text .recipe-name{max-width:none;font-size:12px}
   /* hide calorie/protein meta on very small screens to ensure single-line layout */
-  .mealplanner-recipe-card .recipe-text .recipe-meta{display:none}
+  .mealplanner-recipe-card .recipe-text .recipe-meta{display:block}
 }
 
 /* Force vertical centering so text and buttons share the same horizontal baseline */
