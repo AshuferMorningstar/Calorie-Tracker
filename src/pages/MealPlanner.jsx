@@ -448,13 +448,13 @@ export default function MealPlanner() {
             <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200 }}>
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.32)' }} onClick={cancelPendingAction}></div>
               <div className="card" style={{ zIndex: 1201, maxWidth: 520, width: '92%', padding: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                <div>
+                <div style={{ minWidth: 0, flex: '1 1 auto' }}>
                   <div style={{ fontWeight: 700 }}>{pendingActionText.title}</div>
                   <div style={{ fontSize: 13, color: 'var(--muted)' }}>{pendingActionText.note}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 8 }}>
-                  <button className="card" onClick={cancelPendingAction} style={{ padding: '8px 12px', fontWeight: 600 }}>Cancel</button>
-                  <button className="card" onClick={confirmPendingAction} style={{ padding: '8px 12px', fontWeight: 600 }}>Confirm</button>
+                <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'nowrap' }}>
+                  <button className="card" onClick={cancelPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Cancel</button>
+                  <button className="card" onClick={confirmPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Confirm</button>
                 </div>
               </div>
             </div>
