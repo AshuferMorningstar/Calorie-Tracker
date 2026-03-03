@@ -731,8 +731,26 @@ html,body{
   height: 0;
 }
 
+.mealplanner-recipes-scroll{
+  max-height: clamp(220px, 42vh, 420px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 4px;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.mealplanner-recipes-scroll::-webkit-scrollbar{
+  width: 0;
+  height: 0;
+}
+
 @media (max-width:720px){
   .logged-items-scroll{
+    max-height: clamp(200px, 38vh, 360px);
+  }
+
+  .mealplanner-recipes-scroll{
     max-height: clamp(200px, 38vh, 360px);
   }
 }

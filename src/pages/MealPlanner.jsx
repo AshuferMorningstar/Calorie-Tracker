@@ -19,7 +19,15 @@ export default function MealPlanner() {
   const [savedRecipes, setSavedRecipes] = useState([])
   const [entriesForDate, setEntriesForDate] = useState([])
   const [selectedRecipeIds, setSelectedRecipeIds] = useState(new Set())
+  const [recipeSearch, setRecipeSearch] = useState('')
   const prevTodayRef = useRef(todayISO())
+
+  const filteredRecipes = savedRecipes.filter((recipe) => {
+    const query = recipeSearch.trim().toLowerCase()
+    if (!query) return true
+    const name = (recipe.recipeName || recipe.name || '').toLowerCase()
+    return name.includes(query)
+  })
   
   // Load saved recipes
   useEffect(() => {
@@ -301,63 +309,95 @@ export default function MealPlanner() {
                 </div>
               </div>
 
-              <div className="saved-recipes-wrapper" style={{ width: '100%', marginTop: 12, display: 'grid', gap: 8 }}>
-                {savedRecipes.map(recipe => {
-                  const isSelected = selectedRecipeIds.has(recipe.id)
-                  return (
-                    <div
-                      key={recipe.id}
-                      className="card mealplanner-recipe-card"
-                      onClick={() => toggleRecipeSelect(recipe.id)}
-                      style={{
-                        padding: '10px 12px',
-                        display: 'grid',
-                        gridTemplateColumns: '1fr auto',
-                        columnGap: 10,
-                        alignItems: 'center',
-                        cursor: 'pointer',
-                        background: isSelected ? 'var(--selected-bg)' : 'var(--card-bg)',
-                        opacity: isSelected ? 0.95 : 1,
-                        border: isSelected ? '1px solid var(--accent1)' : '1px solid var(--card-border)',
-                        transition: 'all 0.12s',
-                        minWidth: 0,
-                        width: '100%'
-                      }}
-                    >
-                      <div className="recipe-text" style={{ display: 'block', minWidth: 0, overflow: 'hidden' }}>
-                        <div className="recipe-name" style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
-                          {recipe.recipeName || recipe.name}
-                        </div>
-                        <div className="recipe-meta" style={{ fontSize: 11, opacity: 0.75, color: 'var(--muted)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>
-                          • {recipe.totalCalories || recipe.calories} kcal
-                          {(recipe.totalProtein ?? recipe.protein) !== null && ` • ${recipe.totalProtein ?? recipe.protein}g`}
-                        </div>
-                      </div>
-                      <input
-                        id={`mealplanner-recipe-select-${recipe.id}`}
-                        name={`mealplannerRecipeSelect-${recipe.id}`}
-                        aria-label={`Select recipe ${recipe.recipeName || recipe.name}`}
-                        type="checkbox"
-                        checked={isSelected}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                        }}
-                        onChange={(e) => {
-                          e.stopPropagation()
-                          toggleRecipeSelect(recipe.id)
-                        }}
-                        style={{
-                          width: 18,
-                          height: 18,
-                          cursor: 'pointer',
-                          alignSelf: 'center',
-                          margin: 0,
-                          display: 'block'
-                        }}
-                      />
+              <div className="card" style={{ marginTop: 12, display: 'block', padding: 12 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginBottom: 8 }}>
+                  <div style={{ fontWeight: 700 }}>Recipes</div>
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>{filteredRecipes.length}/{savedRecipes.length}</div>
+                </div>
+                <input
+                  id="mealplanner-recipe-search"
+                  name="mealplannerRecipeSearch"
+                  type="text"
+                  value={recipeSearch}
+                  onChange={(e) => setRecipeSearch(e.target.value)}
+                  placeholder="Search recipe"
+                  style={{
+                    width: '100%',
+                    padding: 10,
+                    fontSize: 14,
+                    border: '1px solid var(--card-border)',
+                    borderRadius: 8,
+                    background: 'var(--card-bg)',
+                    color: 'var(--text)'
+                  }}
+                />
+
+                <div className="mealplanner-recipes-scroll" style={{ marginTop: 10 }}>
+                  {filteredRecipes.length === 0 ? (
+                    <div className="card" style={{ color: 'var(--muted)', justifyContent: 'center' }}>
+                      No recipes found.
                     </div>
-                  )
-                })}
+                  ) : (
+                    <div className="saved-recipes-wrapper" style={{ width: '100%', display: 'grid', gap: 8 }}>
+                      {filteredRecipes.map(recipe => {
+                        const isSelected = selectedRecipeIds.has(recipe.id)
+                        return (
+                          <div
+                            key={recipe.id}
+                            className="card mealplanner-recipe-card"
+                            onClick={() => toggleRecipeSelect(recipe.id)}
+                            style={{
+                              padding: '10px 12px',
+                              display: 'grid',
+                              gridTemplateColumns: '1fr auto',
+                              columnGap: 10,
+                              alignItems: 'center',
+                              cursor: 'pointer',
+                              background: isSelected ? 'var(--selected-bg)' : 'var(--card-bg)',
+                              opacity: isSelected ? 0.95 : 1,
+                              border: isSelected ? '1px solid var(--accent1)' : '1px solid var(--card-border)',
+                              transition: 'all 0.12s',
+                              minWidth: 0,
+                              width: '100%'
+                            }}
+                          >
+                            <div className="recipe-text" style={{ display: 'block', minWidth: 0, overflow: 'hidden' }}>
+                              <div className="recipe-name" style={{ fontSize: 13, fontWeight: 500, color: 'var(--text)', overflow: 'hidden', textOverflow: 'ellipsis', minWidth: 0 }}>
+                                {recipe.recipeName || recipe.name}
+                              </div>
+                              <div className="recipe-meta" style={{ fontSize: 11, opacity: 0.75, color: 'var(--muted)', minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', marginTop: 2 }}>
+                                • {recipe.totalCalories || recipe.calories} kcal
+                                {(recipe.totalProtein ?? recipe.protein) !== null && ` • ${recipe.totalProtein ?? recipe.protein}g`}
+                              </div>
+                            </div>
+                            <input
+                              id={`mealplanner-recipe-select-${recipe.id}`}
+                              name={`mealplannerRecipeSelect-${recipe.id}`}
+                              aria-label={`Select recipe ${recipe.recipeName || recipe.name}`}
+                              type="checkbox"
+                              checked={isSelected}
+                              onClick={(e) => {
+                                e.stopPropagation()
+                              }}
+                              onChange={(e) => {
+                                e.stopPropagation()
+                                toggleRecipeSelect(recipe.id)
+                              }}
+                              style={{
+                                width: 18,
+                                height: 18,
+                                cursor: 'pointer',
+                                alignSelf: 'center',
+                                margin: 0,
+                                display: 'block'
+                              }}
+                            />
+                          </div>
+                        )
+                      })}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           )}
