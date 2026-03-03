@@ -204,7 +204,9 @@ export default function MealPlanner() {
             disabled={savedRecipes.length >= MAX_RECIPES}
             style={{
               width: '100%',
-              padding: 20,
+              height: 'auto',
+              minHeight: 72,
+              padding: '12px 16px',
               marginBottom: 16,
               display: 'flex',
               alignItems: 'center',
