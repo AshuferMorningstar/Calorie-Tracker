@@ -95,6 +95,25 @@ html,body{
 .icon-btn{background:transparent;border:none;padding:6px;border-radius:8px;cursor:pointer;color:var(--muted)}
 .icon-btn:hover{background:var(--hover-bg);color:var(--text)}
 
+/* global light-fall effect for all buttons */
+button{
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    0 0 0 1px rgba(0,0,0,0),
+    8px -6px 18px var(--card-glow);
+}
+
+button::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(44% 42% at 100% 0%, var(--glow-soft) 0%, rgba(0,0,0,0) 70%),
+    radial-gradient(30% 30% at 0% 100%, var(--glow-soft-2) 0%, rgba(0,0,0,0) 72%);
+}
+
 /* subtle blue light at page corners (global) */
 body::before{
   content:'';
@@ -682,9 +701,21 @@ body::before{
   z-index:1200;
   display:flex;
   flex-direction:column;
+  overflow:hidden;
 }
 .slide-panel.open{ transform:translateX(0); }
+.slide-panel::before{
+  content:'';
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(40% 30% at 100% 0%, var(--glow-strong) 0%, var(--glow-soft) 40%, rgba(0,0,0,0) 76%),
+    radial-gradient(30% 24% at 0% 100%, var(--glow-strong-2) 0%, var(--glow-soft-2) 36%, rgba(0,0,0,0) 72%);
+}
 .slide-panel .panel-header{
+  position:relative;
+  z-index:1;
   display:flex;
   align-items:center;
   justify-content:space-between;
@@ -692,6 +723,8 @@ body::before{
   border-bottom:1px solid var(--card-border);
 }
 .slide-panel .panel-body{
+  position:relative;
+  z-index:1;
   padding:12px 16px;
   overflow:auto;
   flex:1 1 auto;
