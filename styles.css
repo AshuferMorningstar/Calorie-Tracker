@@ -15,11 +15,11 @@
   --glass:    rgba(255,255,255,0.6);
   --text:     #243031; /* dark slate text */
   --selected-bg: #fff7f2;
-  --glow-strong: rgba(132,204,22,0.30);
-  --glow-soft: rgba(132,204,22,0.14);
-  --glow-strong-2: rgba(132,204,22,0.22);
-  --glow-soft-2: rgba(132,204,22,0.10);
-  --card-glow: rgba(132,204,22,0.20);
+  --glow-strong: rgba(132,204,22,0.18);
+  --glow-soft: rgba(132,204,22,0.07);
+  --glow-strong-2: rgba(132,204,22,0.12);
+  --glow-soft-2: rgba(132,204,22,0.05);
+  --card-glow: rgba(132,204,22,0.08);
 }
 
 *{box-sizing:border-box}
@@ -79,8 +79,8 @@ html,body{
   padding:14px;
   box-shadow:
     var(--card-shadow),
-    14px -10px 34px var(--card-glow),
-    -4px 4px 20px var(--glow-soft);
+    8px -6px 18px var(--card-glow),
+    -2px 2px 10px var(--glow-soft-2);
   display:flex;
   gap:12px;
   align-items:center;
@@ -101,7 +101,7 @@ button{
   overflow:hidden;
   box-shadow:
     0 0 0 1px rgba(0,0,0,0),
-    8px -6px 18px var(--card-glow);
+    2px -2px 6px var(--glow-soft-2);
 }
 
 button::before{
@@ -110,8 +110,8 @@ button::before{
   inset:0;
   pointer-events:none;
   background:
-    radial-gradient(44% 42% at 100% 0%, var(--glow-soft) 0%, rgba(0,0,0,0) 70%),
-    radial-gradient(30% 30% at 0% 100%, var(--glow-soft-2) 0%, rgba(0,0,0,0) 72%);
+    radial-gradient(34% 30% at 100% 0%, var(--glow-soft-2) 0%, rgba(0,0,0,0) 74%),
+    radial-gradient(22% 22% at 0% 100%, rgba(0,0,0,0.02) 0%, rgba(0,0,0,0) 76%);
 }
 
 /* subtle blue light at page corners (global) */
