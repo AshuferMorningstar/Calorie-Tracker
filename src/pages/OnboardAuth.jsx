@@ -61,7 +61,8 @@ export default function OnboardAuth(){
 
   const handleUserAfterAuth = (user) => {
     if (!user) return
-    if (hasGoogleProvider(user) && !hasPasswordProvider(user)) {
+    // Always allow password setup after Google sign-in
+    if (hasGoogleProvider(user)) {
       setPendingGooglePasswordSetup(true)
       setMode('login')
       setEmail(user.email || '')
