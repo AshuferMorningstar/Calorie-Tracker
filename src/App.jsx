@@ -721,12 +721,8 @@ export default function App(){
             {currentUser ? (
               <button className="card" onClick={handleSignOut}>Sign out</button>
             ) : (
-              <button className="card" style={{color:'var(--accent1)'}} onClick={async()=>{
-                await handleSignIn()
-                // After login, sync offline data to account
-                if(currentUser && isOnline){
-                  await triggerSync()
-                }
+              <button className="card" style={{color:'var(--accent1)'}} onClick={()=>{
+                navigate('/onboard-auth')
                 closeMenu()
               }}>Log in</button>
             )}
