@@ -532,7 +532,7 @@ export default function App(){
               <div style={{display:'flex',flexDirection:'column',gap:6,paddingRight:12}}>
                 <div style={{fontSize:22,fontWeight:700}}>{maintenanceUsed ? `${maintenanceUsed} kcal/day` : '—'}</div>
                 <div style={{fontSize:13,color:'var(--muted)'}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed today`}</div>
-                <div style={{fontSize:12,color:'var(--muted)'}}>{maintenanceUsed ? `Today's deficit: ${Math.round(maintenanceUsed - (consumedToday || 0))} kcal` : '—'}</div>
+                <div style={{fontSize:12,color:'var(--muted)'}}>{maintenanceUsed ? `Calories left: ${Math.max(0, Math.round(maintenanceUsed - (consumedToday || 0)))} kcal` : '—'}</div>
               </div>
             </div>
             <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise" width={108} height={108} decoding="async" fetchpriority="high" loading="eager" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
@@ -543,7 +543,8 @@ export default function App(){
               <strong>Diet calories</strong>
               <div style={{fontSize:16,marginTop:6}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
               <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
-              <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>{calories ? calories.note : 'Provide profile and goals to see plan.'}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? `Calories left: ${Math.max(0, Math.round((workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) - (consumedToday || 0)))} kcal` : '—'}</div>
+              {/* Remove weight loss summary from diet calories */}
               {dietProgress && (
                 <>
                   <div style={{fontSize:11,color:'var(--muted)',marginTop:6}}>
