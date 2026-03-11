@@ -428,17 +428,28 @@ export default function App(){
     return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
   },[calories, workoutToday])
 
-  const dietProgress = useMemo(() => {
+  const [dietProgress, setDietProgress] = useState(null)
+
+  useEffect(() => {
     try {
       const { currentKg, targetKg, goal } = data || {}
-      if (!currentKg || !targetKg || goal === 'maintain') return null
+      if (!currentKg || !targetKg || goal === 'maintain') {
+        setDietProgress(null)
+        return
+      }
 
       const kgDelta = currentKg - targetKg
-      if (kgDelta === 0) return null
+      if (kgDelta === 0) {
+        setDietProgress(null)
+        return
+      }
 
       const isDeficitGoal = kgDelta > 0
       const totalRequiredCalories = Math.round(Math.abs(kgDelta) * 7700)
-      if (totalRequiredCalories <= 0) return null
+      if (totalRequiredCalories <= 0) {
+        setDietProgress(null)
+        return
+      }
 
       // Sum up monthly deficit totals from Calendar calculations
       let achievedCalories = 0
@@ -446,16 +457,13 @@ export default function App(){
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i)
           if (!key || !key.startsWith('calorieWise.deficit.month.')) continue
-          
           const raw = localStorage.getItem(key)
           if (!raw) continue
-          
           try {
             const parsed = JSON.parse(raw)
             const monthTotal = Number(parsed?.total || 0)
             achievedCalories += monthTotal
           } catch (e) {
-            // Skip invalid JSON entries
             continue
           }
         }
@@ -464,16 +472,15 @@ export default function App(){
       }
 
       const achievedRounded = Math.max(0, Math.round(achievedCalories))
-
-      return {
+      setDietProgress({
         isDeficitGoal,
         totalRequiredCalories,
         achievedCalories: achievedRounded,
-      }
+      })
     } catch (e) {
-      return null
+      setDietProgress(null)
     }
-  }, [data, storageTick, location.pathname])
+  }, [data, storageTick, location.pathname, consumedToday])
 
   const formattedLastSync = useMemo(()=>{
     if(!lastSyncAt) return 'Never'
