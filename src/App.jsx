@@ -451,18 +451,80 @@ export default function App(){
         return
       }
 
-      // Sum up monthly deficit totals from Calendar calculations
+      const age = Number(localStorage.getItem('calorieWise.age') || '') || null
+      const height = Number(localStorage.getItem('calorieWise.height') || '') || null
+      const gender = localStorage.getItem('calorieWise.gender') || 'male'
+      const activity = localStorage.getItem('calorieWise.activity') || 'sedentary'
+      const customCalories = Number(localStorage.getItem('calorieWise.customCalories') || '') || 0
+      const workoutDays = Number(localStorage.getItem('calorieWise.workoutDays') || '') || 0
+
+      if (!age || !height) {
+        setDietProgress(null)
+        return
+      }
+
+      const bmr = Math.round(10 * currentKg + 6.25 * height - 5 * age + (gender === 'female' ? -161 : 5))
+      const activityFactors = { sedentary: 1.2, light: 1.375, moderate: 1.55, active: 1.725, very: 1.9 }
+      const sedentaryFactor = activityFactors.sedentary
+      const chosenActivityFactor = activity === 'custom' ? sedentaryFactor : (activityFactors[activity] || sedentaryFactor)
+      const maintenanceNoWorkout = Math.round(bmr * sedentaryFactor)
+
+      let hasAttendance = false
+      try {
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i)
+          if (key && key.startsWith('calorieWise.attendance.')) {
+            hasAttendance = true
+            break
+          }
+        }
+      } catch (e) {}
+
+      // Recompute progress directly from per-day entries so backfilled attendance/burned updates apply immediately.
       let achievedCalories = 0
       try {
         for (let i = 0; i < localStorage.length; i++) {
           const key = localStorage.key(i)
-          if (!key || !key.startsWith('calorieWise.deficit.month.')) continue
+          if (!key || !key.startsWith('calorieWise.entries.')) continue
+
+          const dateIso = key.slice('calorieWise.entries.'.length)
+          const dateParts = dateIso.split('-')
+          if (dateParts.length !== 3) continue
+
           const raw = localStorage.getItem(key)
           if (!raw) continue
+
           try {
             const parsed = JSON.parse(raw)
-            const monthTotal = Number(parsed?.total || 0)
-            achievedCalories += monthTotal
+            if (!Array.isArray(parsed)) continue
+
+            const consumed = parsed.reduce((sum, item) => sum + (Number(item.calories) || 0), 0)
+            const burnedVal = Number(localStorage.getItem(`calorieWise.burned.${dateIso}`) || 0)
+            const isWorkoutDay = hasAttendance
+              ? (localStorage.getItem(`calorieWise.attendance.${dateIso}`) === '1')
+              : false
+
+            let maintenanceForDay
+            if (burnedVal > 0) {
+              maintenanceForDay = Math.round(maintenanceNoWorkout + burnedVal)
+            } else if (activity === 'custom') {
+              let dailyExercise = 0
+              if (customCalories && workoutDays) {
+                if (hasAttendance) {
+                  dailyExercise = isWorkoutDay ? Number(customCalories) : 0
+                } else {
+                  dailyExercise = Math.round((customCalories * workoutDays) / 7)
+                }
+              }
+              maintenanceForDay = Math.round(maintenanceNoWorkout + dailyExercise)
+            } else if (hasAttendance && isWorkoutDay) {
+              maintenanceForDay = Math.round(bmr * chosenActivityFactor)
+            } else {
+              maintenanceForDay = maintenanceNoWorkout
+            }
+
+            const dayDelta = maintenanceForDay - consumed
+            achievedCalories += isDeficitGoal ? dayDelta : -dayDelta
           } catch (e) {
             continue
           }

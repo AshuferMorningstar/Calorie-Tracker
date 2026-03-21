@@ -366,8 +366,6 @@ const ALIASES = {
   'jowar roti': 'jowar_roti',
   'makki roti': 'makki_roti',
   'ragi roti': 'ragi_roti',
-  'chapati': 'chapati',
-  'roti': 'chapati',
   // oils
   'sunflower': 'sunflower_oil',
   'sunflower oil': 'sunflower_oil',
@@ -420,7 +418,6 @@ Object.assign(ALIASES, {
   'chana': 'chickpeas_raw',
   // common misspellings / plurals for paratha/parotta variants
   'parathas': 'paratha_plain',
-  'paratha': 'paratha_plain',
   'parotha': 'parotta',
   'parota': 'parotta',
   'parotta': 'parotta',
@@ -479,7 +476,6 @@ Object.assign(ALIASES, {
   'chowmein': 'chowmein_nepali',
   'vada pav': 'vada_pav',
   'pav bhaji': 'pav_bhaji',
-  'vada pav': 'vada_pav',
   'seekh kebab': 'kebabs',
   'tandoori chicken': 'tandoori_chicken',
   'butter chicken': 'butter_chicken',
@@ -494,7 +490,6 @@ Object.assign(ALIASES, {
   'paneer butter': 'paneer_butter_masala',
   'dal makhani': 'dal_makhani',
   'palak paneer': 'palak_paneer',
-  'mutter paneer': 'mutter_paneer',
   'mutter paneer': 'mutter_paneer',
   'aloo gobi': 'aloo_gobi_masala',
   'bhindi': 'bhindi_masala',
