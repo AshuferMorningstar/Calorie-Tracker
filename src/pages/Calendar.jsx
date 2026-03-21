@@ -115,13 +115,14 @@ export default function Calendar(){
           // compute per-day maintenance using attendance (or weekly average) — match Home logic
           const dateIso = isoFor(view.year, view.month, day)
           const attendanceKey = `calorieWise.attendance.${dateIso}`
-          const isWorkoutDay = plan.hasAttendance ? (localStorage.getItem(attendanceKey) === '1') : null
+          const isWorkoutDay = localStorage.getItem(attendanceKey) === '1'
           // prefer per-day burned entry if present
           const burnedKey = `calorieWise.burned.${dateIso}`
           const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
+          const burnedApplied = isWorkoutDay ? burnedVal : 0
           let dailyExercise = 0
-          if(burnedVal){
-            dailyExercise = burnedVal
+          if(burnedApplied){
+            dailyExercise = burnedApplied
           }else if(plan && plan.customCalories && plan.workoutDays){
             if(plan.hasAttendance){
               dailyExercise = isWorkoutDay ? Number(plan.customCalories) : 0
@@ -131,8 +132,8 @@ export default function Calendar(){
           }
           // for non-custom activities, use the activity factor on workout days (only if tracking attendance)
           let maintenanceForDay
-          if(burnedVal){
-            maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedVal)
+          if(burnedApplied){
+            maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedApplied)
           }else if(plan.activity === 'custom'){
             maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
           }else if(plan.hasAttendance && isWorkoutDay){
@@ -172,12 +173,13 @@ export default function Calendar(){
         const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
 
         const attendanceKey = `calorieWise.attendance.${iso}`
-        const isWorkoutDay = plan.hasAttendance ? (localStorage.getItem(attendanceKey) === '1') : null
+        const isWorkoutDay = localStorage.getItem(attendanceKey) === '1'
         const burnedKey = `calorieWise.burned.${iso}`
         const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
+        const burnedApplied = isWorkoutDay ? burnedVal : 0
         let dailyExercise = 0
-        if(burnedVal){
-          dailyExercise = burnedVal
+        if(burnedApplied){
+          dailyExercise = burnedApplied
         }else if(plan && plan.customCalories && plan.workoutDays){
           if(plan.hasAttendance){
             dailyExercise = isWorkoutDay ? Number(plan.customCalories) : 0
@@ -187,8 +189,8 @@ export default function Calendar(){
         }
         // for non-custom activities, use the activity factor on workout days (only if tracking attendance)
         let maintenanceForDay
-        if(burnedVal){
-          maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedVal)
+        if(burnedApplied){
+          maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedApplied)
         }else if(plan.activity === 'custom'){
           maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
         }else if(plan.hasAttendance && isWorkoutDay){
@@ -434,9 +436,10 @@ function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
     const dateIso = isoFor(view.year, view.month, selectedDay)
     const burnedKey = `calorieWise.burned.${dateIso}`
     const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
+    const burnedApplied = isAttended ? burnedVal : 0
     let dailyExercise = 0
-    if(burnedVal){
-      dailyExercise = burnedVal
+    if(burnedApplied){
+      dailyExercise = burnedApplied
     }else if(plan && plan.customCalories && plan.workoutDays){
       if(plan.hasAttendance){
         dailyExercise = isAttended ? Number(plan.customCalories) : 0
@@ -446,8 +449,8 @@ function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
     }
     // for non-custom activities, use the activity factor on workout days (only if tracking attendance)
     let maintenanceForDay
-    if(burnedVal){
-      maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedVal)
+    if(burnedApplied){
+      maintenanceForDay = Math.round(plan.maintenanceNoWorkout + burnedApplied)
     }else if(plan.activity === 'custom'){
       maintenanceForDay = Math.round(plan.maintenanceNoWorkout + dailyExercise)
     }else if(plan.hasAttendance && isAttended){

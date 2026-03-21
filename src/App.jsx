@@ -354,7 +354,7 @@ export default function App(){
           const isTodayWorkout = localStorage.getItem(todayKey) === '1'
           const burnedKey = `calorieWise.burned.${y}-${m}-${day}`
           const burnedToday = Number(localStorage.getItem(burnedKey) || 0)
-          if(burnedToday){
+          if(isTodayWorkout && burnedToday){
             dailyExercise = burnedToday
           }else{
             dailyExercise = isTodayWorkout ? Number(customCalories) : 0
@@ -368,9 +368,10 @@ export default function App(){
     const maintenanceNoWorkout = Math.round(bmr * sedentaryFactor)
     // If the user entered per-day burned calories for this day, prefer that and add it to sedentary baseline
     const todayIso = new Date().toISOString().slice(0,10)
+    const todayMarked = localStorage.getItem(`calorieWise.attendance.${todayIso}`) === '1'
     const burnedToday = Number(localStorage.getItem(`calorieWise.burned.${todayIso}`) || 0)
     let maintenanceWithExercise
-    if(burnedToday){
+    if(todayMarked && burnedToday){
       maintenanceWithExercise = Math.round(bmr * sedentaryFactor + burnedToday)
     }else{
       maintenanceWithExercise = activity === 'custom'
@@ -500,13 +501,12 @@ export default function App(){
 
             const consumed = parsed.reduce((sum, item) => sum + (Number(item.calories) || 0), 0)
             const burnedVal = Number(localStorage.getItem(`calorieWise.burned.${dateIso}`) || 0)
-            const isWorkoutDay = hasAttendance
-              ? (localStorage.getItem(`calorieWise.attendance.${dateIso}`) === '1')
-              : false
+            const isWorkoutDay = localStorage.getItem(`calorieWise.attendance.${dateIso}`) === '1'
+            const burnedApplied = isWorkoutDay ? burnedVal : 0
 
             let maintenanceForDay
-            if (burnedVal > 0) {
-              maintenanceForDay = Math.round(maintenanceNoWorkout + burnedVal)
+            if (burnedApplied > 0) {
+              maintenanceForDay = Math.round(maintenanceNoWorkout + burnedApplied)
             } else if (activity === 'custom') {
               let dailyExercise = 0
               if (customCalories && workoutDays) {
