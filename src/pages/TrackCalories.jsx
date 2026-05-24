@@ -914,6 +914,7 @@ export default function TrackCalories(){
     }
 
     const amt = parseFloat(amount)
+    const effectiveAmount = (!isNaN(amt) && amt > 0) ? amt : (unit === 'count' ? 1 : 100)
     const kcal100 = parseFloat(kcalPer100g)
     const protein100 = parseFloat(proteinPer100g)
 
@@ -924,31 +925,31 @@ export default function TrackCalories(){
     if(unit === 'count'){
       const perUnit = parseFloat(kcalPerUnit)
       const protUnit = parseFloat(proteinPerUnit)
-      if(!isNaN(amt) && amt > 0 && !isNaN(perUnit) && perUnit > 0){
-        calories = Math.round(amt * perUnit)
+      if(!isNaN(perUnit) && perUnit > 0){
+        calories = Math.round(effectiveAmount * perUnit)
       }
-      if(!isNaN(amt) && amt > 0 && !isNaN(protUnit) && protUnit >= 0){
-        protein = Math.round((amt * protUnit) * 10) / 10
+      if(!isNaN(protUnit) && protUnit >= 0){
+        protein = Math.round((effectiveAmount * protUnit) * 10) / 10
       }
     } else {
       if(!isNaN(kcal100) && kcal100 > 0){
         caloriesPerGram = Number((kcal100 / 100).toFixed(2))
       }
-      if(!isNaN(amt) && amt > 0 && caloriesPerGram !== null){
-        calories = Math.round(amt * caloriesPerGram)
+      if(caloriesPerGram !== null){
+        calories = Math.round(effectiveAmount * caloriesPerGram)
       }
       if(!isNaN(protein100) && protein100 >= 0){
         proteinPerGram = Number((protein100 / 100).toFixed(3))
       }
-      if(!isNaN(amt) && amt > 0 && proteinPerGram !== null){
-        protein = Math.round((amt * proteinPerGram) * 10) / 10
+      if(proteinPerGram !== null){
+        protein = Math.round((effectiveAmount * proteinPerGram) * 10) / 10
       }
     }
 
     const item = {
       id: Date.now(),
       name: trimmed,
-      amount: !isNaN(amt) && amt > 0 ? amt : null,
+      amount: effectiveAmount,
       kcalPer100g: !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null,
       kcalPerUnit: unit === 'count' && kcalPerUnit ? Number(kcalPerUnit) : null,
       proteinPer100g: !isNaN(protein100) && protein100 >= 0 ? protein100 : null,
