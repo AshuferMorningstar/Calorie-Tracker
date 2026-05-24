@@ -3,6 +3,7 @@ import {
   signInWithRedirect,
   getRedirectResult,
   GoogleAuthProvider, 
+  signInAnonymously,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   setPersistence,
@@ -77,6 +78,17 @@ export const signInWithEmail = async (email, password, rememberMe = true) => {
     return result.user
   } catch (error) {
     console.error('[Auth] Sign-in failed:', error.message)
+    throw error
+  }
+}
+
+export const signInAsGuest = async (rememberMe = true) => {
+  try {
+    await setAuthPersistence(rememberMe)
+    const result = await signInAnonymously(auth)
+    return result.user
+  } catch (error) {
+    console.error('[Auth] Guest sign-in failed:', error.message)
     throw error
   }
 }

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { signInWithGoogle, signUpWithEmail, signInWithEmail, getGoogleRedirectResult, onAuthChange, linkPasswordToGoogleAccount } from '../services/auth'
+import { signInWithGoogle, signUpWithEmail, signInWithEmail, signInAsGuest, getGoogleRedirectResult, onAuthChange, linkPasswordToGoogleAccount } from '../services/auth'
 import { sendPasswordResetEmail } from 'firebase/auth'
 import { auth } from '../services/firebase'
 
@@ -160,6 +160,22 @@ export default function OnboardAuth(){
       console.error('[OnboardAuth] Google sign-in failed:', e.message)
       setError(e.message || 'Failed to sign in with Google. Please try again.')
     }finally{
+      setLoading(false)
+    }
+  }
+
+  const handleGuestSignIn = async () => {
+    setLoading(true)
+    setError(null)
+    setResetSent(false)
+    try {
+      const user = await signInAsGuest(rememberMe)
+      console.log('[OnboardAuth] User signed in as guest:', user?.uid)
+      navigateAfterAuth()
+    } catch (e) {
+      console.error('[OnboardAuth] Guest sign-in failed:', e.message)
+      setError(e.message || 'Failed to continue as guest. Please try again.')
+    } finally {
       setLoading(false)
     }
   }
@@ -405,6 +421,17 @@ export default function OnboardAuth(){
             </button>
           )}
 
+          {mode === 'login' && !pendingGooglePasswordSetup && (
+            <button
+              type="button"
+              className="auth-btn-secondary"
+              onClick={handleGuestSignIn}
+              disabled={loading}
+            >
+              Continue as Guest
+            </button>
+          )}
+
           {pendingGooglePasswordSetup && (
             <button
               type="button"
@@ -423,8 +450,6 @@ export default function OnboardAuth(){
             <span>or</span>
           </div>
         )}
-
-        {/* Google Sign-In removed: Only email/password allowed */}
 
         {/* Toggle Mode */}
         {!pendingGooglePasswordSetup && (
