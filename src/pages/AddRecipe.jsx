@@ -162,6 +162,30 @@ const FOODS = [
   { id: 'schezwan_momo', name: 'Schezwan momo', unit: 'count', kcalPerUnit: 90, proteinPerUnit: 5.0, name_hi: 'शेज़वान मोमो', name_hi_translit: 'schezwan momo' },
   { id: 'veg_fried_momo', name: 'Veg fried momo', unit: 'count', kcalPerUnit: 85, proteinPerUnit: 2.5, name_hi: 'वेग फ्राइड मोमो', name_hi_translit: 'veg fried momo' },
 
+  // Lays potato chips - approximate per 100g
+  { id: 'lays_blue', name: 'Lays (Blue packet)', kcal: 536, protein: 7.0 },
+  { id: 'lays_green', name: 'Lays (Green packet)', kcal: 536, protein: 7.0 },
+  { id: 'lays_orange', name: 'Lays (Orange packet)', kcal: 536, protein: 7.0 },
+  { id: 'lays_dark_green', name: 'Lays (Dark green packet)', kcal: 536, protein: 7.0 },
+  { id: 'lays_yellow', name: 'Lays (Yellow packet)', kcal: 536, protein: 7.0 },
+  { id: 'lays_black', name: 'Lays (Black packet)', kcal: 536, protein: 7.0 },
+  { id: 'lays_other', name: 'Lays (Other flavor)', kcal: 536, protein: 7.0 },
+
+  // Kurkure snacks - approximate per 100g
+  { id: 'kurkure_blue', name: 'Kurkure (Blue packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_green', name: 'Kurkure (Green packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_orange', name: 'Kurkure (Orange packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_dark_green', name: 'Kurkure (Dark green packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_yellow', name: 'Kurkure (Yellow packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_black', name: 'Kurkure (Black packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_other', name: 'Kurkure (Other flavor)', kcal: 555, protein: 6.0 },
+
+  // Maggi instant noodles (approximate)
+  { id: 'maggi_masala', name: 'Maggi 2-Minute Noodles (Masala) - per 100g', kcal: 450, protein: 9.0 },
+  { id: 'maggi_70g_pack', name: 'Maggi 70g pack (Masala)', unit: 'count', kcalPerUnit: 315, proteinPerUnit: 6.3 },
+  { id: 'maggi_77g_pack', name: 'Maggi 77g pack (Masala)', unit: 'count', kcalPerUnit: 347, proteinPerUnit: 6.9 },
+  { id: 'maggi_other', name: 'Maggi (Other flavor) - per 100g', kcal: 450, protein: 9.0 },
+
   // Nepali dishes and breads
   { id: 'dal_bhat', name: 'Dal Bhat (rice + lentil soup)', unit: 'plate', kcalPerUnit: 520, proteinPerUnit: 18.0, name_hi: 'दाल भात', name_hi_translit: 'dal bhat' },
   { id: 'sel_roti', name: 'Sel Roti (Nepali fried bread)', unit: 'piece', kcalPerUnit: 180, proteinPerUnit: 3.0 },
