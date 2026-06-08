@@ -20,6 +20,7 @@ const FOODS = [
   { id: 'chapati_unit', name: 'Roti / Chapati (whole wheat) - piece', unit: 'count', kcalPerUnit: 250, proteinPerUnit: 9.0 },
   { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340, protein: 13.2 },
   { id: 'besan', name: 'Besan (gram flour)', kcal: 387, protein: 22.4 },
+  { id: 'sattu', name: 'Sattu (roasted gram flour)', kcal: 420, protein: 26.0 },
   { id: 'moong_dal', name: 'Moong dal (cooked)', kcal: 105, protein: 7.0 },
   { id: 'moong_dal_raw', name: 'Moong dal (raw/dry)', kcal: 347, protein: 24.0 },
   { id: 'toor_dal', name: 'Toor dal (cooked)', kcal: 120, protein: 7.0 },
@@ -55,6 +56,7 @@ const FOODS = [
   { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 62, proteinPer100g: 13.0, proteinPerUnit: 6.5 },
   { id: 'sugar', name: 'Sugar', kcal: 387, protein: 0 },
   { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383, protein: 0 },
+  { id: 'pickle_masala_1_4tsp', name: 'Pickle masala (1/4 tsp)', unit: 'count', kcalPerUnit: 5, proteinPerUnit: 0 },
 
   // Common Indian breads / unit items
   { id: 'naan_plain', name: 'Naan (plain)', unit: 'count', kcalPerUnit: 270, proteinPerUnit: 8.0 },
