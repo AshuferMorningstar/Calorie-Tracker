@@ -57,6 +57,7 @@ const FOODS = [
   { id: 'egg', name: 'Egg (whole)', kcal: 155, unit: 'count', kcalPerUnit: 62, proteinPer100g: 13.0, proteinPerUnit: 6.5 },
   { id: 'sugar', name: 'Sugar', kcal: 387, protein: 0 },
   { id: 'jaggery', name: 'Jaggery (gur)', kcal: 383, protein: 0 },
+  { id: 'pickle_masala_1_4tsp', name: 'Pickle masala (1/4 tsp)', unit: 'count', kcalPerUnit: 5, proteinPerUnit: 0 },
 
   // Common Indian breads / unit items
   { id: 'naan_plain', name: 'Naan (plain)', unit: 'count', kcalPerUnit: 270, proteinPerUnit: 8.0 },
@@ -542,6 +543,8 @@ Object.assign(ALIASES, {
   'mutton biryani': 'biryani_mutton',
   'korma': 'korma',
   'chana masala': 'chana_masala',
+  'masala': 'pickle_masala_1_4tsp',
+  'pickle masala': 'pickle_masala_1_4tsp',
   'papdi chaat': 'papdi_chaat',
   // aliases for curry bowls
   'paneer butter masala': 'paneer_butter_masala',
