@@ -21,6 +21,7 @@ const FOODS = [
   { id: 'chapati_unit', name: 'Roti / Chapati (whole wheat) - piece', unit: 'count', kcalPerUnit: 250, proteinPerUnit: 9.0 },
   { id: 'atta', name: 'Whole wheat flour (atta)', kcal: 340, protein: 13.2 },
   { id: 'besan', name: 'Besan (gram flour)', kcal: 387, protein: 22.4 },
+  { id: 'sattu', name: 'Sattu (roasted gram flour)', kcal: 420, protein: 26.0 },
   { id: 'moong_dal', name: 'Moong dal (cooked)', kcal: 105, protein: 7.0 },
   { id: 'moong_dal_raw', name: 'Moong dal (raw/dry)', kcal: 347, protein: 24.0 },
   { id: 'toor_dal', name: 'Toor dal (cooked)', kcal: 120, protein: 7.0 },
@@ -153,6 +154,14 @@ const FOODS = [
   { id: 'chicken_piece', name: 'Chicken (cooked) - 100g', kcal: 195, protein: 27.0, name_hi: 'चिकन', name_hi_translit: 'chicken' },
   // More momo variants and Nepali / Indian street-foods
   { id: 'kurkure_momo', name: 'Kurkure / Spicy coated momo', unit: 'count', kcalPerUnit: 90, proteinPerUnit: 3.0 },
+  // Kurkure snacks - approximate per 100g
+  { id: 'kurkure_blue', name: 'Kurkure (Blue packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_green', name: 'Kurkure (Green packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_orange', name: 'Kurkure (Orange packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_dark_green', name: 'Kurkure (Dark green packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_yellow', name: 'Kurkure (Yellow packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_black', name: 'Kurkure (Black packet)', kcal: 555, protein: 6.0 },
+  { id: 'kurkure_other', name: 'Kurkure (Other flavor)', kcal: 555, protein: 6.0 },
   { id: 'cheese_momo', name: 'Cheese momo', unit: 'count', kcalPerUnit: 75, proteinPerUnit: 3.0, name_hi: 'चीज़ मोमो', name_hi_translit: 'cheese momo' },
   { id: 'paneer_momo', name: 'Paneer momo', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 4.0, name_hi: 'पनीर मोमो', name_hi_translit: 'paneer momo' },
   { id: 'pork_momo', name: 'Momo (pork)', unit: 'count', kcalPerUnit: 70, proteinPerUnit: 5.0, name_hi: 'पोर्क मोमो', name_hi_translit: 'pork momo' },
@@ -510,7 +519,8 @@ Object.assign(ALIASES, {
   // momo and Nepali / Indian street food aliases
   'kurkure momo': 'kurkure_momo',
   'kurkure momos': 'kurkure_momo',
-  'kurkure': 'kurkure_momo',
+  'kurkure': 'kurkure_blue',
+  'kurkure packet': 'kurkure_blue',
   'cheese momo': 'cheese_momo',
   'paneer momo': 'paneer_momo',
   'pork momo': 'pork_momo',
@@ -699,6 +709,50 @@ function isSubsequence(query, target){
     j++
   }
   return i === q.length && q.length > 0
+}
+
+function getFoodSearchText(food){
+  return [
+    food?.name,
+    food?.name_en,
+    food?.name_hi,
+    food?.name_hi_translit,
+    food?.category,
+    food?.cuisine,
+    food?.mealType,
+    food?.type,
+  ]
+    .filter(Boolean)
+    .join(' ')
+    .toLowerCase()
+}
+
+function isSnackLikeFood(food){
+  const text = getFoodSearchText(food)
+  return [
+    'samosa',
+    'momo',
+    'vada',
+    'bonda',
+    'pakora',
+    'pokara',
+    'tikki',
+    'roll',
+    'chaat',
+    'pav',
+    'bhaji',
+    'kurkure',
+    'lays',
+    'chips',
+    'maggi',
+    'jalebi',
+    'rasgulla',
+    'gulab jamun',
+    'ladoo',
+    'barfi',
+    'namkeen',
+    'snack',
+  ].some((keyword) => text.includes(keyword))
 }
 
 const dateKey = (d)=> `calorieWise.entries.${d}`
@@ -1256,10 +1310,12 @@ export default function TrackCalories(){
                     
                     // 1. Exact startsWith matches - RAW items first
                     const startsWithMatches = ALL_FOODS.filter(f => {
-                      const lname = (f.name||'').toLowerCase()
-                      const lhi = (f.name_hi||'').toLowerCase()
-                      const ltr = (f.name_hi_translit||'').toLowerCase()
-                      return lname.startsWith(baseTerm) || lhi.startsWith(baseTerm) || ltr.startsWith(baseTerm)
+                      const searchableText = getFoodSearchText(f)
+                      return (
+                        searchableText.startsWith(baseTerm) ||
+                        searchableText.split(/\s+/).some(w => w.startsWith(baseTerm)) ||
+                        ((baseTerm === 'snack' || baseTerm === 'snacks') && isSnackLikeFood(f))
+                      )
                     })
                     // Sort: raw items first
                     const rawStarts = startsWithMatches.filter(f => isRaw(f))
@@ -1269,13 +1325,8 @@ export default function TrackCalories(){
 
                     // 2. Word boundary matches - RAW items first (e.g., "rice" matches "basmati rice")
                     const wordStartMatches = ALL_FOODS.filter(f => {
-                      const lname = (f.name||'').toLowerCase()
-                      const lhi = (f.name_hi||'').toLowerCase()
-                      const ltr = (f.name_hi_translit||'').toLowerCase()
-                      const words = lname.split(/\s+/)
-                      const wordsHi = lhi.split(/\s+/)
-                      const wordsTr = ltr.split(/\s+/)
-                      return words.some(w => w.startsWith(baseTerm)) || wordsHi.some(w => w.startsWith(baseTerm)) || wordsTr.some(w => w.startsWith(baseTerm))
+                      const searchableText = getFoodSearchText(f)
+                      return searchableText.split(/\s+/).some(w => w.startsWith(baseTerm)) || ((baseTerm === 'snack' || baseTerm === 'snacks') && isSnackLikeFood(f))
                     })
                     const rawWords = wordStartMatches.filter(f => isRaw(f) && !matches.find(x => x.id === f.id))
                     const cookedWords = wordStartMatches.filter(f => !isRaw(f) && !matches.find(x => x.id === f.id))

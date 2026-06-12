@@ -329,6 +329,50 @@ export default function AddRecipe() {
     return i === n.length
   }
 
+  const getFoodSearchText = (food) => {
+    return [
+      food?.name,
+      food?.name_en,
+      food?.name_hi,
+      food?.name_hi_translit,
+      food?.category,
+      food?.cuisine,
+      food?.mealType,
+      food?.type,
+    ]
+      .filter(Boolean)
+      .join(' ')
+      .toLowerCase()
+  }
+
+  const isSnackLikeFood = (food) => {
+    const text = getFoodSearchText(food)
+    return [
+      'samosa',
+      'momo',
+      'vada',
+      'bonda',
+      'pakora',
+      'pokara',
+      'tikki',
+      'roll',
+      'chaat',
+      'pav',
+      'bhaji',
+      'kurkure',
+      'lays',
+      'chips',
+      'maggi',
+      'jalebi',
+      'rasgulla',
+      'gulab jamun',
+      'ladoo',
+      'barfi',
+      'namkeen',
+      'snack',
+    ].some((keyword) => text.includes(keyword))
+  }
+
   const normalizedIngredientName = (name || '').trim().toLowerCase()
   const matchedKnownIngredient = useMemo(() => {
     if (!normalizedIngredientName) return null
@@ -432,10 +476,12 @@ export default function AddRecipe() {
 
     // Simple search through ALL_FOODS
     const matches = ALL_FOODS.filter(f => {
-      const lname = (f.name || f.name_en || '').toLowerCase()
-      const lhi = (f.name_hi || '').toLowerCase()
-      const ltr = (f.name_hi_translit || '').toLowerCase()
-      return lname.includes(raw) || lhi.includes(raw) || ltr.includes(raw) || isSubsequence(raw, lname)
+      const searchableText = getFoodSearchText(f)
+      return (
+        searchableText.includes(raw) ||
+        isSubsequence(raw, searchableText) ||
+        ((raw === 'snack' || raw === 'snacks') && isSnackLikeFood(f))
+      )
     }).slice(0, 12)
 
     setSuggestions(matches)
