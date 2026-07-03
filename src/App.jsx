@@ -8,6 +8,13 @@ export default function App(){
   const navigate = useNavigate()
   const { triggerSync, lastSyncAt } = useSyncContext()
 
+  const localISODate = (date = new Date()) => {
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+
   const previewSplash = ()=> navigate('/splash')
   const resetAndShow = ()=>{
     try{ localStorage.removeItem('calorieWise.seenEver') }catch(e){}
@@ -26,6 +33,38 @@ export default function App(){
   const [displayName, setDisplayName] = useState(() => {
     try{ return localStorage.getItem('calorieWise.displayName') || '' }catch(e){ return '' }
   })
+  const [dashboardDate, setDashboardDate] = useState(() => localISODate())
+  const [storageTick, setStorageTick] = useState(0) // bump to force re-read of attendance/burned keys
+  const [selectedAttendanceIso, setSelectedAttendanceIso] = useState(null)
+  const [showDashboardDatePicker, setShowDashboardDatePicker] = useState(false)
+
+  const dashboardDateLabel = useMemo(() => {
+    try {
+      const parts = dashboardDate.split('-')
+      if (parts.length !== 3) return dashboardDate
+      const parsed = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+      if (Number.isNaN(parsed.getTime())) return dashboardDate
+      return parsed.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' })
+    } catch (e) {
+      return dashboardDate
+    }
+  }, [dashboardDate])
+
+  const dashboardDateParts = useMemo(() => {
+    try {
+      const parts = dashboardDate.split('-')
+      if (parts.length !== 3) return null
+      const parsed = new Date(Number(parts[0]), Number(parts[1]) - 1, Number(parts[2]))
+      if (Number.isNaN(parsed.getTime())) return null
+      return {
+        weekday: parsed.toLocaleDateString(undefined, { weekday: 'short' }),
+        month: parsed.toLocaleDateString(undefined, { month: 'short' }),
+        day: String(parsed.getDate()).padStart(2, '0')
+      }
+    } catch (e) {
+      return null
+    }
+  }, [dashboardDate])
 
   useEffect(()=>{
     try{
@@ -233,6 +272,14 @@ export default function App(){
     }
   }
 
+  const openDashboardDatePicker = () => {
+    setShowDashboardDatePicker(true)
+  }
+
+  const closeDashboardDatePicker = () => {
+    setShowDashboardDatePicker(false)
+  }
+
   const toggleMenu = ()=> menuOpen ? closeMenu() : openMenu()
   const location = useLocation()
 
@@ -252,6 +299,37 @@ export default function App(){
       return { currentKg, targetKg, age, height, gender, activity, customCalories, workoutDays, timelineMonths, goal }
     }catch(e){ return {} }
   },[location.pathname]) 
+
+  const dashboardEntries = useMemo(() => {
+    try{
+      const raw = localStorage.getItem(`calorieWise.entries.${dashboardDate}`)
+      if(!raw) return []
+      const parsed = JSON.parse(raw)
+      return Array.isArray(parsed) ? parsed : []
+    }catch(e){
+      return []
+    }
+  }, [dashboardDate, storageTick])
+
+  const dashboardConsumed = useMemo(() => {
+    return dashboardEntries.reduce((sum, item) => sum + (Number(item.calories) || 0), 0)
+  }, [dashboardEntries])
+
+  const dashboardWorkoutMarked = useMemo(() => {
+    try{
+      return localStorage.getItem(`calorieWise.attendance.${dashboardDate}`) === '1'
+    }catch(e){
+      return false
+    }
+  }, [dashboardDate, storageTick])
+
+  const dashboardBurned = useMemo(() => {
+    try{
+      return Number(localStorage.getItem(`calorieWise.burned.${dashboardDate}`) || 0)
+    }catch(e){
+      return 0
+    }
+  }, [dashboardDate, storageTick])
 
   const [workoutToday, setWorkoutToday] = useState(()=>{
     try{
@@ -301,8 +379,14 @@ export default function App(){
     }catch(e){}
   }
 
-  const [storageTick, setStorageTick] = useState(0) // bump to force re-read of attendance/burned keys
-  const [selectedAttendanceIso, setSelectedAttendanceIso] = useState(null)
+  useEffect(() => {
+    try {
+      const today = localISODate()
+      if (dashboardDate > today) {
+        setDashboardDate(today)
+      }
+    } catch (e) {}
+  }, [dashboardDate])
 
   useEffect(()=>{
     const onChanged = ()=> setStorageTick(x=>x+1)
@@ -367,7 +451,7 @@ export default function App(){
 
     const maintenanceNoWorkout = Math.round(bmr * sedentaryFactor)
     // If the user entered per-day burned calories for this day, prefer that and add it to sedentary baseline
-    const todayIso = new Date().toISOString().slice(0,10)
+    const todayIso = dashboardDate
     const todayMarked = localStorage.getItem(`calorieWise.attendance.${todayIso}`) === '1'
     const burnedToday = Number(localStorage.getItem(`calorieWise.burned.${todayIso}`) || 0)
     let maintenanceWithExercise
@@ -399,7 +483,7 @@ export default function App(){
       const dietWithExercise = maintenanceWithExercise + dailyKcal
       return { maintenanceNoWorkout, maintenanceWithExercise, dietNoWorkout, dietWithExercise, note: `Gain ${Math.abs(diffKg)} kg in ${timelineMonths} month(s)` }
     }
-  },[data, workoutToday, storageTick])
+  },[data, workoutToday, storageTick, dashboardDate])
 
 
   const selectedMarked = selectedAttendanceIso ? (localStorage.getItem(`calorieWise.attendance.${selectedAttendanceIso}`) === '1') : null
@@ -415,19 +499,13 @@ export default function App(){
   }
 
   const consumedToday = useMemo(()=>{
-    try{
-      const raw = localStorage.getItem(`calorieWise.entries.${todayISO()}`)
-      if(!raw) return 0
-      const parsed = JSON.parse(raw)
-      if(!Array.isArray(parsed)) return 0
-      return parsed.reduce((s,i)=> s + (Number(i.calories) || 0), 0)
-    }catch(e){ return 0 }
-  },[location.pathname, storageTick])
+    return dashboardConsumed
+  },[dashboardConsumed])
 
   const maintenanceUsed = useMemo(()=>{
     if(!calories) return null
-    return workoutToday ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
-  },[calories, workoutToday])
+    return dashboardWorkoutMarked ? calories.maintenanceWithExercise : calories.maintenanceNoWorkout
+  },[calories, dashboardWorkoutMarked])
 
   const [dietProgress, setDietProgress] = useState(null)
 
@@ -542,7 +620,7 @@ export default function App(){
     } catch (e) {
       setDietProgress(null)
     }
-  }, [data, storageTick, location.pathname, consumedToday])
+  }, [data, storageTick, location.pathname, dashboardConsumed, dashboardDate])
 
   const formattedLastSync = useMemo(()=>{
     if(!lastSyncAt) return 'Never'
@@ -568,29 +646,77 @@ export default function App(){
           <h2>Calorie Wise</h2>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
-          {currentUser && !authLoading && (
-            <button
-              onClick={() => setEditNameOpen(true)}
-              style={{
-                fontSize:12,
-                color:'var(--muted)',
-                marginRight:4,
-                background:'transparent',
-                border:'none',
-                cursor:'pointer',
-                padding:'4px 8px',
-                borderRadius:4,
-                transition:'all 0.2s'
-              }}
-              className="name-edit-btn"
-              title="Click to edit your name"
-            >
-              {displayName || currentUser.displayName || currentUser.email?.split('@')[0]}
-            </button>
-          )}
+          <button
+            className="icon-btn"
+            onClick={openDashboardDatePicker}
+            title="Change dashboard date"
+            aria-label="Change dashboard date"
+            style={{
+              display:'inline-flex',
+              alignItems:'center',
+              justifyContent:'center',
+              width:44,
+              height:44,
+              borderRadius:12,
+              cursor:'pointer',
+              padding:0,
+              flex:'0 0 auto',
+              background:'transparent',
+              boxShadow:'none',
+              border:'none'
+            }}
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" style={{pointerEvents:'none',color:'var(--muted)'}}>
+              <rect x="3" y="4" width="18" height="17" rx="2" ry="2" />
+              <line x1="16" y1="2.5" x2="16" y2="6" />
+              <line x1="8" y1="2.5" x2="8" y2="6" />
+              <line x1="3" y1="9" x2="21" y2="9" />
+            </svg>
+          </button>
           <button ref={hamburgerRef} className="icon-btn hamburger-icon" title="Menu" aria-label="Open menu" onClick={toggleMenu}>☰</button>
         </div>
       </div>
+
+      {showDashboardDatePicker && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Change dashboard date"
+          onClick={closeDashboardDatePicker}
+          style={{
+            position:'fixed',
+            inset:0,
+            zIndex:2100,
+            background:'rgba(0,0,0,0.22)',
+            display:'flex',
+            alignItems:'flex-start',
+            justifyContent:'center',
+            paddingTop:84
+          }}
+        >
+          <div
+            className="card"
+            onClick={(e) => e.stopPropagation()}
+            style={{padding:16,width:'min(92vw, 320px)',display:'grid',gap:12}}
+          >
+            <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
+              <strong>Select date</strong>
+              <button className="icon-btn" aria-label="Close date picker" onClick={closeDashboardDatePicker}>✕</button>
+            </div>
+            <input
+              type="date"
+              value={dashboardDate}
+              onChange={(e) => setDashboardDate(e.target.value)}
+              max={localISODate()}
+              style={{width:'100%',padding:'10px 12px',borderRadius:10,border:'1px solid var(--card-border)',background:'var(--card-bg)',color:'var(--text)',fontSize:16}}
+            />
+            <div style={{display:'flex',justifyContent:'space-between',gap:8}}>
+              <button className="card" onClick={() => { setDashboardDate(localISODate()); closeDashboardDatePicker() }} style={{flex:1}}>Today</button>
+              <button className="card" onClick={closeDashboardDatePicker} style={{flex:1}}>Done</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <main ref={mainRef} style={{padding:16,maxWidth:720,margin:'0 auto',display:'grid',gap:16}}>
 
@@ -600,7 +726,7 @@ export default function App(){
             <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:16,marginTop:8}}>
               <div style={{display:'flex',flexDirection:'column',gap:6,paddingRight:12}}>
                 <div style={{fontSize:22,fontWeight:700}}>{maintenanceUsed ? `${maintenanceUsed} kcal/day` : '—'}</div>
-                <div style={{fontSize:13,color:'var(--muted)'}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed today`}</div>
+                  <div style={{fontSize:13,color:'var(--muted)'}}>{`${consumedToday || 0} / ${maintenanceUsed || '—'} kcal consumed on ${dashboardDateLabel}`}</div>
                 <div style={{fontSize:12,color:'var(--muted)'}}>{maintenanceUsed ? `Calories left: ${Math.max(0, Math.round(maintenanceUsed - (consumedToday || 0)))} kcal` : '—'}</div>
               </div>
             </div>
@@ -610,9 +736,9 @@ export default function App(){
           <div style={{display:'flex',gap:8,alignItems:'stretch'}}>
             <div className="card" style={{flex:1,minWidth:0,padding:12}}>
               <strong>Diet calories</strong>
-              <div style={{fontSize:16,marginTop:6}}>{calories ? `${workoutToday ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed today`}</div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? `Calories left: ${Math.max(0, Math.round((workoutToday ? calories.dietWithExercise : calories.dietNoWorkout) - (consumedToday || 0)))} kcal` : '—'}</div>
+              <div style={{fontSize:16,marginTop:6}}>{calories ? `${dashboardWorkoutMarked ? calories.dietWithExercise : calories.dietNoWorkout} kcal/day` : '—'}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{`${consumedToday || 0} / ${calories ? (dashboardWorkoutMarked ? calories.dietWithExercise : calories.dietNoWorkout) : '—'} kcal consumed on ${dashboardDateLabel}`}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:6}}>{calories ? `Calories left: ${Math.max(0, Math.round((dashboardWorkoutMarked ? calories.dietWithExercise : calories.dietNoWorkout) - (consumedToday || 0)))} kcal` : '—'}</div>
               {/* Remove weight loss summary from diet calories */}
               {dietProgress && (
                 <>
@@ -636,9 +762,9 @@ export default function App(){
           <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/track')}>Track calories</button>
           <button className="card square-card" style={{flex:'1 1 30%', minWidth:96}} onClick={()=>navigate('/calendar')}>
             <div style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-              <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{new Date().toLocaleString(undefined,{weekday:'short'})}</div>
-              <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{new Date().getDate()}</div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{new Date().toLocaleString(undefined,{month:'short'})}</div>
+              <div style={{fontSize:11,color:'var(--muted)',fontWeight:600,marginBottom:4}}>{dashboardDateParts?.weekday || ''}</div>
+              <div style={{fontSize:28,fontWeight:800,lineHeight:1}}>{dashboardDateParts?.day || ''}</div>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:4}}>{dashboardDateParts?.month || ''}</div>
             </div>
           </button>
           <button className="card square-card" style={{flex:'1 1 30%', minWidth:96, display:'flex',alignItems:'center',justifyContent:'center',fontSize:14}} title="Workout today" onClick={() => {
