@@ -52,6 +52,21 @@ export default function Calendar(){
   }, [selectedDateIso])
 
   useEffect(()=>{
+    const clearSelectedDate = () => {
+      try{ localStorage.removeItem(selectedDateStorageKey) }catch(e){}
+    }
+
+    window.addEventListener('pagehide', clearSelectedDate)
+    window.addEventListener('beforeunload', clearSelectedDate)
+
+    return () => {
+      window.removeEventListener('pagehide', clearSelectedDate)
+      window.removeEventListener('beforeunload', clearSelectedDate)
+      clearSelectedDate()
+    }
+  }, [])
+
+  useEffect(()=>{
     if(!selectedDateIso) return
     const parts = selectedDateIso.split('-')
     if(parts.length !== 3) return
