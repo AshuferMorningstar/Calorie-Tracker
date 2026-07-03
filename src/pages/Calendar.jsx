@@ -230,7 +230,7 @@ export default function Calendar(){
     }catch(e){ return null }
   },[plan, storageTick, weekOffset])
 
-  // persist weekly and monthly deficit snapshots for cloud sync
+  // persist weekly and monthly deficit snapshots locally; these are derived data
   useEffect(()=>{
     try{
       if(totalWeekLost && totalWeekLost.weekStart){
@@ -245,7 +245,6 @@ export default function Calendar(){
         })
         if(localStorage.getItem(weekKey) !== nextWeek){
           localStorage.setItem(weekKey, nextWeek)
-          triggerSync()
         }
       }
 
@@ -260,11 +259,10 @@ export default function Calendar(){
         })
         if(localStorage.getItem(monthKey) !== nextMonth){
           localStorage.setItem(monthKey, nextMonth)
-          triggerSync()
         }
       }
     }catch(e){}
-  },[totalWeekLost, totalMonthLost, view.year, view.month, triggerSync])
+  },[totalWeekLost, totalMonthLost, view.year, view.month])
 
   const goPrev = ()=>{
     let y = view.year

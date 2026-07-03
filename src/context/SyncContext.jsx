@@ -21,6 +21,8 @@ export const SyncProvider = ({ children }) => {
   })
   const [authLoading, setAuthLoading] = useState(true)
   const pendingSyncRef = useRef(false)
+  const syncTimerRef = useRef(null)
+  const lastSyncRunRef = useRef(0)
 
   // Listen for online/offline status
   useEffect(() => {
@@ -48,22 +50,48 @@ export const SyncProvider = ({ children }) => {
       pendingSyncRef.current = true
       return
     }
-    pendingSyncRef.current = false
-    
-    try {
-      setSyncStatus('syncing')
-      await saveUserDataToFirestore(currentUser.uid)
-      setSyncStatus('synced')
-      try{
-        const nowIso = new Date().toISOString()
-        localStorage.setItem('calorieWise.lastSyncAt', nowIso)
-        setLastSyncAt(nowIso)
-      }catch(e){}
-    } catch (e) {
-      console.warn('[Sync] Failed:', e.message)
-      setSyncStatus('offline')
+
+    pendingSyncRef.current = true
+    if (syncTimerRef.current) {
+      clearTimeout(syncTimerRef.current)
     }
+
+    syncTimerRef.current = setTimeout(async () => {
+      if (!pendingSyncRef.current || !currentUser || !isOnline) {
+        return
+      }
+
+      const now = Date.now()
+      if (now - lastSyncRunRef.current < 15000) {
+        return
+      }
+
+      pendingSyncRef.current = false
+      lastSyncRunRef.current = now
+
+      try {
+        setSyncStatus('syncing')
+        await saveUserDataToFirestore(currentUser.uid)
+        setSyncStatus('synced')
+        try{
+          const nowIso = new Date().toISOString()
+          localStorage.setItem('calorieWise.lastSyncAt', nowIso)
+          setLastSyncAt(nowIso)
+        }catch(e){}
+      } catch (e) {
+        console.warn('[Sync] Failed:', e.message)
+        setSyncStatus('offline')
+      }
+    }, 2000)
   }
+
+  useEffect(() => {
+    return () => {
+      if (syncTimerRef.current) {
+        clearTimeout(syncTimerRef.current)
+      }
+    }
+  }, [])
 
   // Listen for auth state changes
   useEffect(() => {

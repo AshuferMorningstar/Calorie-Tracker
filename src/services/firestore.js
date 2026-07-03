@@ -59,13 +59,6 @@ export const loadUserDataFromFirestore = async (userId) => {
       const data = docSnap.data()
       const sanitizedData = sanitizeSnapshot(data)
 
-      if (Object.prototype.hasOwnProperty.call(data, THEME_KEY)) {
-        await setDoc(docRef, {
-          ...sanitizedData,
-          lastSync: serverTimestamp()
-        })
-      }
-
       // Restore all data to localStorage (skip serverTimestamp)
       Object.keys(sanitizedData).forEach(key => {
         if (typeof sanitizedData[key] === 'string') {
