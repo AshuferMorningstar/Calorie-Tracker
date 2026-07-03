@@ -328,13 +328,13 @@ export default function Calendar(){
   }
 
   return (
-    <div style={{padding:16,maxWidth:720,margin:'0 auto',display:'flex',flexDirection:'column',gap:12,height:'100dvh',boxSizing:'border-box',overflow:'hidden'}}>
+    <div className="calendar-page" style={{padding:16,maxWidth:720,margin:'0 auto',display:'flex',flexDirection:'column',gap:12,height:'100dvh',boxSizing:'border-box',overflow:'hidden'}}>
       <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:0,flex:'0 0 auto'}}>
         <button className="icon-btn" onClick={handleBack} style={{fontSize:20,lineHeight:1}}>←</button>
         <h2 style={{margin:0}}>Calendar</h2>
       </div>
 
-      <div className="card" style={{padding:12,display:'flex',flexDirection:'column',flex:'1 1 auto',minHeight:0,overflow:'hidden'}}>
+      <div className="card calendar-main-card" style={{padding:12,display:'flex',flexDirection:'column',flex:'1 1 auto',minHeight:0,overflow:'hidden'}}>
         <div className="month-cal" style={{display:'flex',flexDirection:'column',gap:10,flex:'1 1 auto',width:'100%'}}>
           <div className="cal-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:0,width:'100%'}}>
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
@@ -412,7 +412,7 @@ export default function Calendar(){
             </div>
       </div>
       {/* selected-day details: separate card so total deficit card remains unchanged */}
-      <div className="card" style={{padding:12,marginTop:0,flex:'0 0 auto'}}>
+      <div className="card calendar-selected-detail" style={{padding:12,marginTop:0,flex:'0 0 auto'}}>
         <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
       </div>
     </div>

@@ -287,6 +287,22 @@ body::before{
 @media (max-width:480px){
   .dashboard-grid{grid-template-columns:1fr}
   .card{padding:12px}
+
+  /* Calendar page: fit inside the viewport on phones */
+  .calendar-page{padding:12px !important;gap:8px !important;height:100dvh !important;overflow:hidden !important}
+  .calendar-page > .card{padding:10px !important}
+  .calendar-main-card{min-height:0 !important;overflow:hidden !important}
+  .calendar-selected-detail{display:none !important}
+  .month-cal{gap:6px !important}
+  .month-cal .cal-header{margin-bottom:0 !important}
+  .month-cal .dow-row{margin-bottom:0 !important}
+  .month-cal .dates-grid{gap:4px !important}
+  .month-cal .date-cell{border-radius:8px;min-height:0 !important;aspect-ratio:1 / 1}
+  .month-cal .date-cell > div{gap:2px}
+  .month-cal .date-cell > div > div:first-child{font-size:clamp(10px, 3vw, 13px)}
+  .calendar-stats-grid{gap:8px !important}
+  .calendar-stats-grid .card{padding:8px !important}
+  .calendar-stats-grid .card > div{min-height:0 !important}
 }
 
 /* Offline/Sync Indicators */
