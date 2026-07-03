@@ -7,6 +7,7 @@ import {
   signOut as firebaseSignOut,
   onAuthStateChanged,
   setPersistence,
+  indexedDBLocalPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
   createUserWithEmailAndPassword,
@@ -25,13 +26,15 @@ const isStandaloneMode = () => {
 
 const shouldUseRedirect = () => isStandaloneMode()
 
-// Persist auth state locally so users stay signed in across reloads.
-setPersistence(auth, browserLocalPersistence).catch((error) => {
-  console.warn('[Auth] Failed to set persistence:', error.message)
+const durablePersistence = indexedDBLocalPersistence || browserLocalPersistence
+
+// Persist auth state durably so users stay signed in across reloads and history clears.
+setPersistence(auth, durablePersistence).catch((error) => {
+  console.warn('[Auth] Failed to set default persistence:', error.message)
 })
 
 export const setAuthPersistence = async (rememberMe = true) => {
-  const persistence = rememberMe ? browserLocalPersistence : browserSessionPersistence
+  const persistence = rememberMe ? durablePersistence : browserSessionPersistence
   await setPersistence(auth, persistence)
 }
 
