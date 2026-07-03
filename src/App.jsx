@@ -681,7 +681,11 @@ export default function App(){
             <input
               type="date"
               value={dashboardDate}
-              onChange={(e) => setDashboardDate(e.target.value)}
+              onChange={(e) => {
+                const next = e.target.value
+                const today = localISODate()
+                setDashboardDate(next && next <= today ? next : today)
+              }}
               max={localISODate()}
               style={{width:'100%',padding:'10px 12px',borderRadius:10,border:'1px solid var(--card-border)',background:'var(--card-bg)',color:'var(--text)',fontSize:16}}
             />

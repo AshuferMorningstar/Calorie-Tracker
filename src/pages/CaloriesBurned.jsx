@@ -53,7 +53,15 @@ export default function CaloriesBurned(){
           <form className="track-form" onSubmit={(e)=>{ e.preventDefault(); save() }}>
             <div className="form-row">
               <label>Date</label>
-              <input type="date" value={iso} onChange={e=>setIso(e.target.value)} />
+              <input
+                type="date"
+                value={iso}
+                max={today}
+                onChange={e=>{
+                  const next = e.target.value
+                  setIso(next && next <= today ? next : today)
+                }}
+              />
             </div>
 
             <div className="form-row">

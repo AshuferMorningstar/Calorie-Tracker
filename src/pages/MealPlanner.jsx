@@ -22,6 +22,7 @@ export default function MealPlanner() {
   const [recipeSearch, setRecipeSearch] = useState('')
   const [pendingAction, setPendingAction] = useState(null)
   const prevTodayRef = useRef(todayISO())
+  const todayValue = todayISO()
 
   const filteredRecipes = savedRecipes.filter((recipe) => {
     const query = recipeSearch.trim().toLowerCase()
@@ -231,7 +232,11 @@ export default function MealPlanner() {
               name="selectedDate"
               type="date"
               value={selectedDate}
-              onChange={(e) => setSelectedDate(e.target.value)}
+              onChange={(e) => {
+                const next = e.target.value
+                setSelectedDate(next && next <= todayValue ? next : todayValue)
+              }}
+              max={todayValue}
               style={{
                 width: '100%',
                 padding: 10,
