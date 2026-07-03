@@ -8,9 +8,12 @@ export default function Calendar(){
   const today = new Date()
   const currentYear = today.getFullYear()
   const currentMonth = today.getMonth()
+  const selectedDateStorageKey = 'calorieWise.calendar.selectedDate'
 
   const [view, setView] = useState({ year: currentYear, month: currentMonth })
-  const [selectedDay, setSelectedDay] = useState(null)
+  const [selectedDateIso, setSelectedDateIso] = useState(() => {
+    try{ return localStorage.getItem(selectedDateStorageKey) || null }catch(e){ return null }
+  })
   const [storageTick, setStorageTick] = useState(0) // bump to force re-read of localStorage-driven memos
   const [weekOffset, setWeekOffset] = useState(0) // 0 = current week, -1 = previous, etc.
 
@@ -38,7 +41,27 @@ export default function Calendar(){
 
   const isoFor = (y,m,d)=>`${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`
 
-  useEffect(()=>{ setSelectedDay(null) }, [view.year, view.month])
+  useEffect(()=>{
+    try{
+      if(selectedDateIso){
+        localStorage.setItem(selectedDateStorageKey, selectedDateIso)
+      }else{
+        localStorage.removeItem(selectedDateStorageKey)
+      }
+    }catch(e){}
+  }, [selectedDateIso])
+
+  useEffect(()=>{
+    if(!selectedDateIso) return
+    const parts = selectedDateIso.split('-')
+    if(parts.length !== 3) return
+    const year = Number(parts[0])
+    const month = Number(parts[1]) - 1
+    if(Number.isNaN(year) || Number.isNaN(month)) return
+    if(view.year !== year || view.month !== month){
+      setView({ year, month })
+    }
+  }, [selectedDateIso, view.year, view.month])
 
   // compute maintenance/diet from stored profile (used to estimate deficit)
   const plan = useMemo(()=>{
@@ -357,10 +380,14 @@ export default function Calendar(){
               const isToday = d === today.getDate() && view.month === currentMonth && view.year === currentYear
               const isFutureDay = view.year === currentYear && view.month === currentMonth && d && d > today.getDate()
               const hasEntry = d && markedDays.has(d)
-              const isSelected = d && selectedDay === d
+              const currentIso = d ? isoFor(view.year, view.month, d) : null
+              const isSelected = currentIso && selectedDateIso === currentIso
               return (
                 <div key={i}
-                  onClick={() => d && setSelectedDay(d)}
+                  onClick={() => {
+                    if(!d) return
+                    setSelectedDateIso(prev => prev === currentIso ? null : currentIso)
+                  }}
                   className={`date-cell ${isToday ? 'today' : ''} ${isFutureDay ? 'future' : ''} ${hasEntry ? 'has-entry' : ''} ${isSelected ? 'selected' : ''}`}
                   style={{minHeight:0,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:10,cursor:d ? 'pointer' : 'default', border: isSelected ? '2px solid var(--accent1)' : undefined,aspectRatio:'1 / 1',padding:0}}>
                   <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
@@ -373,6 +400,16 @@ export default function Calendar(){
           </div>
         </div>
       </div>
+
+      {selectedDateIso && (
+        <div className="card calendar-detail-banner" style={{padding:12,marginTop:0,flex:'0 0 auto',display:'flex',flexDirection:'column',gap:8}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
+            <strong>{new Date(selectedDateIso).toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric', year:'numeric'})}</strong>
+          </div>
+          <SelectedDayInfo selectedDateIso={selectedDateIso} plan={plan} compact />
+        </div>
+      )}
+
       <div className="calendar-stats-grid" style={{marginTop:0,flex:'0 0 auto'}}>
             <div className="card" style={{padding:10}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:0}}>
@@ -411,30 +448,25 @@ export default function Calendar(){
               </div>
             </div>
       </div>
-      {/* selected-day details: separate card so total deficit card remains unchanged */}
-      <div className="card calendar-selected-detail" style={{padding:12,marginTop:0,flex:'0 0 auto'}}>
-        <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
-      </div>
     </div>
   )
 }
-function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
+function SelectedDayInfo({ selectedDateIso, plan, compact = false }){
   try{
-    if(!selectedDay) return (
-      <div style={{marginTop:8,textAlign:'center',fontSize:13,color:'var(--muted)'}}>
+    if(!selectedDateIso) return (
+      <div style={{marginTop:compact ? 0 : 8,textAlign:'center',fontSize:13,color:'var(--muted)'}}>
         Select a date in the calendar to view details here.
       </div>
     )
 
-    const key = `calorieWise.entries.${isoFor(view.year, view.month, selectedDay)}`
-    const attendanceKey = `calorieWise.attendance.${isoFor(view.year, view.month, selectedDay)}`
+    const key = `calorieWise.entries.${selectedDateIso}`
+    const attendanceKey = `calorieWise.attendance.${selectedDateIso}`
     const raw = localStorage.getItem(key)
     const parsed = raw ? JSON.parse(raw) : null
     const consumed = Array.isArray(parsed) ? parsed.reduce((s,i)=> s + (Number(i.calories)||0), 0) : 0
     const isAttended = localStorage.getItem(attendanceKey) === '1'
     // compute maintenance for the selected day using per-day burned if present
-    const dateIso = isoFor(view.year, view.month, selectedDay)
-    const burnedKey = `calorieWise.burned.${dateIso}`
+    const burnedKey = `calorieWise.burned.${selectedDateIso}`
     const burnedVal = Number(localStorage.getItem(burnedKey) || 0)
     const burnedApplied = isAttended ? burnedVal : 0
     let dailyExercise = 0
@@ -462,16 +494,16 @@ function SelectedDayInfo({ selectedDay, view, plan, isoFor }){
     const deficit = plan ? Math.round(maintenanceForDay - consumed) : null
 
     return (
-      <div style={{marginTop:8,textAlign:'center',fontSize:13}}>
+      <div style={{textAlign:'left',fontSize:13,display:'grid',gap:6}}>
         {parsed ? (
-          <div>{deficit !== null ? `Deficit for ${isoFor(view.year, view.month, selectedDay)}: ${deficit} kcal` : `Consumed: ${Math.round(consumed)} kcal`}</div>
+          <div>{deficit !== null ? `Deficit: ${deficit} kcal` : `Consumed: ${Math.round(consumed)} kcal`}</div>
         ) : (
           <div style={{color:'var(--muted)'}}>No entries for selected date</div>
         )}
-        <div style={{fontSize:12,color:'var(--muted)',marginTop:8}}>{isAttended ? 'Attendance: marked' : 'Attendance: not marked'}</div>
+        <div style={{fontSize:12,color:'var(--muted)'}}>{isAttended ? 'Attendance: marked' : 'Attendance: not marked'}</div>
       </div>
     )
   }catch(e){
-    return <div style={{marginTop:8,textAlign:'center',color:'var(--muted)'}}>Could not read data</div>
+    return <div style={{textAlign:'left',color:'var(--muted)'}}>Could not read data</div>
   }
 }
