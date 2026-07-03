@@ -6,6 +6,18 @@ import {
 } from 'firebase/firestore'
 import { db } from './firebase'
 
+const THEME_KEY = 'calorieWise.theme'
+
+const sanitizeSnapshot = (source = {}) => {
+  const sanitized = {}
+  Object.keys(source).forEach((key) => {
+    if (key !== 'lastSync' && key !== THEME_KEY && typeof source[key] === 'string') {
+      sanitized[key] = source[key]
+    }
+  })
+  return sanitized
+}
+
 /**
  * Save all user data from localStorage to Firestore under a "userDataSnapshot" document.
  * Called after Google Sign-In to back up all local data.
@@ -16,7 +28,7 @@ export const saveUserDataToFirestore = async (userId) => {
     const userData = {}
     for (let i = 0; i < localStorage.length; i++) {
       const key = localStorage.key(i)
-      if (key && key.startsWith('calorieWise.')) {
+      if (key && key.startsWith('calorieWise.') && key !== THEME_KEY) {
         userData[key] = localStorage.getItem(key)
       }
     }
@@ -45,10 +57,19 @@ export const loadUserDataFromFirestore = async (userId) => {
 
     if (docSnap.exists()) {
       const data = docSnap.data()
+      const sanitizedData = sanitizeSnapshot(data)
+
+      if (Object.prototype.hasOwnProperty.call(data, THEME_KEY)) {
+        await setDoc(docRef, {
+          ...sanitizedData,
+          lastSync: serverTimestamp()
+        })
+      }
+
       // Restore all data to localStorage (skip serverTimestamp)
-      Object.keys(data).forEach(key => {
-        if (key !== 'lastSync' && typeof data[key] === 'string') {
-          localStorage.setItem(key, data[key])
+      Object.keys(sanitizedData).forEach(key => {
+        if (typeof sanitizedData[key] === 'string') {
+          localStorage.setItem(key, sanitizedData[key])
         }
       })
       console.log('[Firestore] User data loaded successfully')
