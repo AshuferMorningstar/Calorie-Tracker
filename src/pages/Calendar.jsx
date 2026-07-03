@@ -328,15 +328,15 @@ export default function Calendar(){
   }
 
   return (
-    <div style={{padding:16,maxWidth:720,margin:'0 auto'}}>
-      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:12}}>
+    <div style={{padding:16,maxWidth:720,margin:'0 auto',display:'flex',flexDirection:'column',gap:12,height:'100dvh',boxSizing:'border-box',overflow:'hidden'}}>
+      <div style={{display:'flex',alignItems:'center',gap:12,marginBottom:0,flex:'0 0 auto'}}>
         <button className="icon-btn" onClick={handleBack} style={{fontSize:20,lineHeight:1}}>←</button>
         <h2 style={{margin:0}}>Calendar</h2>
       </div>
 
-      <div className="card" style={{padding:12}}>
-        <div className="month-cal">
-          <div className="cal-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:8}}>
+      <div className="card" style={{padding:12,display:'flex',flexDirection:'column',flex:'1 1 auto',minHeight:0,overflow:'hidden'}}>
+        <div className="month-cal" style={{display:'flex',flexDirection:'column',gap:10,flex:'1 1 auto',width:'100%'}}>
+          <div className="cal-header" style={{display:'flex',justifyContent:'space-between',alignItems:'center',marginBottom:0,width:'100%'}}>
             <div style={{display:'flex',gap:8,alignItems:'center'}}>
               <button className="icon-btn" onClick={goPrev} aria-label="Previous month">◀</button>
               <button className="icon-btn" onClick={gotoToday} aria-label="Go to current month">Today</button>
@@ -346,13 +346,13 @@ export default function Calendar(){
             <div style={{width:86}} />
           </div>
 
-          <div className="dow-row" style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',marginBottom:6}}>
+          <div className="dow-row" style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',marginBottom:2,width:'100%'}}>
             {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map((d,i)=>(
               <div key={i} style={{fontSize:12,color:'var(--muted)',textAlign:'center'}}>{d}</div>
             ))}
           </div>
 
-          <div className="dates-grid" style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:6}}>
+          <div className="dates-grid" style={{display:'grid',gridTemplateColumns:'repeat(7,1fr)',gap:8,width:'100%',flex:'1 1 auto',alignContent:'stretch',minHeight:0}}>
             {daysGrid.cells.map((d,i)=>{
               const isToday = d === today.getDate() && view.month === currentMonth && view.year === currentYear
               const isFutureDay = view.year === currentYear && view.month === currentMonth && d && d > today.getDate()
@@ -362,9 +362,9 @@ export default function Calendar(){
                 <div key={i}
                   onClick={() => d && setSelectedDay(d)}
                   className={`date-cell ${isToday ? 'today' : ''} ${isFutureDay ? 'future' : ''} ${hasEntry ? 'has-entry' : ''} ${isSelected ? 'selected' : ''}`}
-                  style={{height:40,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:8,cursor:d ? 'pointer' : 'default', border: isSelected ? '2px solid var(--accent1)' : undefined}}>
+                  style={{minHeight:0,display:'flex',alignItems:'center',justifyContent:'center',borderRadius:10,cursor:d ? 'pointer' : 'default', border: isSelected ? '2px solid var(--accent1)' : undefined,aspectRatio:'1 / 1',padding:0}}>
                   <div style={{display:'flex',flexDirection:'column',alignItems:'center',gap:4}}>
-                    <div>{d || ''}</div>
+                    <div style={{fontSize:'clamp(11px, 2.2vw, 16px)',lineHeight:1}}>{d || ''}</div>
                     {hasEntry ? <div style={{width:6,height:6,borderRadius:99,background:'var(--accent1)'}} /> : null}
                   </div>
                 </div>
@@ -373,46 +373,46 @@ export default function Calendar(){
           </div>
         </div>
       </div>
-      <div className="calendar-stats-grid" style={{marginTop:12}}>
-            <div className="card" style={{padding:12}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
+      <div className="calendar-stats-grid" style={{marginTop:0,flex:'0 0 auto'}}>
+            <div className="card" style={{padding:10}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:0}}>
             <div style={{fontWeight:700}}>Workout days this month</div>
             <div>:</div>
             <div style={{fontSize:20,fontWeight:800}}>{attendanceCount}</div>
           </div>
-          <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+          <div style={{fontSize:12,color:'var(--muted)',marginTop:4,textAlign:'center'}}>
             {`Marked via attendance (${attendanceCount} ${attendanceCount === 1 ? 'day' : 'days'})`}
           </div>
         </div>
-            <div className="card" style={{padding:8}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,minHeight:36}}>
+            <div className="card" style={{padding:10}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,minHeight:0}}>
                 <button className="icon-btn" aria-label="Previous week" onClick={()=>setWeekOffset(o=>o-1)} style={{padding:'4px 8px'}}>◀</button>
                 <div style={{fontWeight:700,fontSize:14}}>{`Week ${Math.max(1, baseWeekIndex + weekOffset)}`}</div>
                 <button className="icon-btn" aria-label="Next week" onClick={()=> setWeekOffset(o=> Math.min(0, o+1))} disabled={weekOffset >= 0} style={{padding:'4px 8px'}}>▶</button>
               </div>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:6}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:6,marginTop:4}}>
                 <div style={{fontWeight:700,fontSize:13}}>Total deficit</div>
                 <div>:</div>
                 <div style={{fontSize:16,fontWeight:800}}>{totalWeekLost !== null ? `${Math.round(totalWeekLost.total)} kcal` : '—'}</div>
               </div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:6,textAlign:'center'}}>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:4,textAlign:'center'}}>
                 {totalWeekLost ? `${totalWeekLost.loggedDays} ${totalWeekLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
               </div>
             </div>
 
-            <div className="card" style={{padding:12}}>
-              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:48}}>
+            <div className="card" style={{padding:10}}>
+              <div style={{display:'flex',alignItems:'center',justifyContent:'center',gap:8,minHeight:0}}>
                 <div style={{fontWeight:700}}>Total deficit this month</div>
                 <div>:</div>
                 <div style={{fontSize:20,fontWeight:800}}>{totalMonthLost !== null ? `${Math.round(totalMonthLost.total)} kcal` : '—'}</div>
               </div>
-              <div style={{fontSize:12,color:'var(--muted)',marginTop:8,textAlign:'center'}}>
+              <div style={{fontSize:12,color:'var(--muted)',marginTop:4,textAlign:'center'}}>
                 {totalMonthLost ? `${totalMonthLost.loggedDays} ${totalMonthLost.loggedDays === 1 ? 'day' : 'days'}` : ''}
               </div>
             </div>
       </div>
       {/* selected-day details: separate card so total deficit card remains unchanged */}
-      <div className="card" style={{padding:12,marginTop:12}}>
+      <div className="card" style={{padding:12,marginTop:0,flex:'0 0 auto'}}>
         <SelectedDayInfo selectedDay={selectedDay} view={view} plan={plan} isoFor={isoFor} />
       </div>
     </div>

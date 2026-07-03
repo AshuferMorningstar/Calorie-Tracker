@@ -268,9 +268,14 @@ body::before{
 .mini-cal .date-cell.today{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:700}
 
 /* month calendar styles */
+.month-cal{display:flex;flex-direction:column;gap:10px;width:100%;flex:1 1 auto}
+.month-cal .cal-header{width:100%}
+.month-cal .dow-row{width:100%}
+.month-cal .dates-grid{width:100%;flex:1 1 auto;align-content:stretch}
 .month-cal .date-cell{background:transparent}
 .month-cal .date-cell.today{background:linear-gradient(90deg,var(--accent1),var(--accent2));color:white;font-weight:700}
-.month-cal .date-cell.future{color:rgba(36,48,49,0.28)}
+.month-cal .date-cell.future{color:rgba(36,48,49,0.58)}
+.theme-dark .month-cal .date-cell.future{color:rgba(238,242,255,0.55)}
 .cal-header .icon-btn[disabled]{opacity:0.4;pointer-events:none}
 
 
