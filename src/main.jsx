@@ -18,6 +18,26 @@ import ConditionalHome from './ConditionalHome'
 import { SyncProvider } from './context/SyncContext'
 import '../styles.css'
 
+const THEME_KEY = 'calorieWise.theme'
+
+const applyStoredTheme = () => {
+  try {
+    const storedTheme = localStorage.getItem(THEME_KEY)
+    const prefersDark = window.matchMedia?.('(prefers-color-scheme: dark)')?.matches || false
+    const shouldUseDark = storedTheme ? storedTheme === 'dark' : prefersDark
+    document.documentElement.classList.toggle('theme-dark', shouldUseDark)
+    document.documentElement.style.colorScheme = shouldUseDark ? 'dark' : 'light'
+  } catch (e) {}
+}
+
+applyStoredTheme()
+window.addEventListener('pageshow', applyStoredTheme)
+window.addEventListener('storage', (event) => {
+  if (event.key === THEME_KEY) {
+    applyStoredTheme()
+  }
+})
+
 const root = createRoot(document.getElementById('root'))
 root.render(
   <React.StrictMode>
