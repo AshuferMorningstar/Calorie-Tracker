@@ -24,7 +24,6 @@ export default function App(){
   const [darkMode, setDarkMode] = useState(() => {
     try{ return localStorage.getItem('calorieWise.theme') === 'dark' }catch(e){return false}
   })
-  const [installPrompt, setInstallPrompt] = useState(null)
   const [currentUser, setCurrentUser] = useState(null)
   const [authLoading, setAuthLoading] = useState(true)
   const [isOnline, setIsOnline] = useState(() => navigator.onLine)
@@ -73,16 +72,6 @@ export default function App(){
       localStorage.setItem('calorieWise.theme', darkMode ? 'dark' : 'light')
     }catch(e){}
   },[darkMode])
-
-  // Listen for PWA install prompt
-  useEffect(()=>{
-    const handleBeforeInstallPrompt = (e) => {
-      e.preventDefault()
-      setInstallPrompt(e)
-    }
-    window.addEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-    return () => window.removeEventListener('beforeinstallprompt', handleBeforeInstallPrompt)
-  },[])
 
   // Listen for online/offline status
   useEffect(()=>{
@@ -244,20 +233,6 @@ export default function App(){
       navigate('/onboard-auth') // Redirect to login page
     }catch(e){
       console.error('[App] Sign-out failed:', e.message)
-    }
-  }
-
-  const handleInstallClick = async () => {
-    if(!installPrompt) return
-    try{
-      installPrompt.prompt()
-      const { outcome } = await installPrompt.userChoice
-      if(outcome === 'accepted'){
-        setInstallPrompt(null)
-      }
-      closeMenu()
-    }catch(e){
-      console.error('Install error:', e)
     }
   }
 
@@ -933,9 +908,6 @@ export default function App(){
                 navigate('/onboard-auth')
                 closeMenu()
               }}>Log in</button>
-            )}
-            {installPrompt && (
-              <button className="card" onClick={handleInstallClick}>Install app</button>
             )}
             <button className="card" onClick={()=>{ try{ localStorage.clear() }catch(e){}; resetAndShow(); closeMenu() }}>Reset app</button>
           </nav>
