@@ -8,11 +8,12 @@ export default function Calendar(){
   const today = new Date()
   const currentYear = today.getFullYear()
   const currentMonth = today.getMonth()
+  const todayIso = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`
   const selectedDateStorageKey = 'calorieWise.calendar.selectedDate'
 
   const [view, setView] = useState({ year: currentYear, month: currentMonth })
   const [selectedDateIso, setSelectedDateIso] = useState(() => {
-    try{ return localStorage.getItem(selectedDateStorageKey) || null }catch(e){ return null }
+    try{ return localStorage.getItem(selectedDateStorageKey) || todayIso }catch(e){ return todayIso }
   })
   const [storageTick, setStorageTick] = useState(0) // bump to force re-read of localStorage-driven memos
   const [weekOffset, setWeekOffset] = useState(0) // 0 = current week, -1 = previous, etc.
@@ -414,14 +415,12 @@ export default function Calendar(){
         </div>
       </div>
 
-      {selectedDateIso && (
-        <div className="card calendar-detail-banner" style={{padding:12,marginTop:0,flex:'0 0 auto',display:'flex',flexDirection:'column',gap:8}}>
-          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
-            <strong>{new Date(selectedDateIso).toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric', year:'numeric'})}</strong>
-          </div>
-          <SelectedDayInfo selectedDateIso={selectedDateIso} plan={plan} compact />
+      <div className="card calendar-detail-banner" style={{padding:12,marginTop:0,flex:'0 0 auto',display:'flex',flexDirection:'column',gap:8}}>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',gap:12}}>
+          <strong>{new Date(selectedDateIso || todayIso).toLocaleDateString(undefined,{weekday:'short', month:'short', day:'numeric', year:'numeric'})}</strong>
         </div>
-      )}
+        <SelectedDayInfo selectedDateIso={selectedDateIso || todayIso} plan={plan} compact />
+      </div>
 
       <div className="calendar-stats-grid" style={{marginTop:0,flex:'0 0 auto'}}>
             <div className="card" style={{padding:10}}>
