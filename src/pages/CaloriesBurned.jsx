@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
 
@@ -8,11 +8,19 @@ export default function CaloriesBurned(){
   const today = new Date().toISOString().slice(0,10)
   const [iso, setIso] = useState(today)
   const [value, setValue] = useState('')
+  const draftByDateRef = useRef(new Map())
 
   useEffect(()=>{
     try{
+      const draft = draftByDateRef.current.get(iso)
+      if(typeof draft === 'string'){
+        setValue(draft)
+        return
+      }
       const raw = localStorage.getItem(`calorieWise.burned.${iso}`)
-      setValue(raw ? String(Number(raw) || 0) : '')
+      const nextValue = raw ? String(Number(raw) || 0) : ''
+      draftByDateRef.current.set(iso, nextValue)
+      setValue(nextValue)
     }catch(e){ setValue('') }
   },[iso])
 
@@ -21,8 +29,11 @@ export default function CaloriesBurned(){
       const n = Number(value) || 0
       if(n <= 0){
         localStorage.removeItem(`calorieWise.burned.${iso}`)
+        draftByDateRef.current.set(iso, '')
       }else{
-        localStorage.setItem(`calorieWise.burned.${iso}`, String(Math.round(n)))
+        const nextValue = String(Math.round(n))
+        localStorage.setItem(`calorieWise.burned.${iso}`, nextValue)
+        draftByDateRef.current.set(iso, nextValue)
       }
       triggerSync()
       try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
@@ -32,6 +43,7 @@ export default function CaloriesBurned(){
 
   const remove = ()=>{
     try{ localStorage.removeItem(`calorieWise.burned.${iso}`) }catch(e){}
+    try{ draftByDateRef.current.set(iso, '') }catch(e){}
     try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
     setValue('')
   }
