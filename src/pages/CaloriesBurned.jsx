@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
+import { saveUserDataToFirestore } from '../services/firestore'
 
 export default function CaloriesBurned(){
   const navigate = useNavigate()
-  const { triggerSync } = useSyncContext()
+  const { triggerSync, currentUser, isOnline } = useSyncContext()
   const today = new Date().toISOString().slice(0,10)
   const [iso, setIso] = useState(today)
   const [value, setValue] = useState('')
@@ -24,7 +25,7 @@ export default function CaloriesBurned(){
     }catch(e){ setValue('') }
   },[iso])
 
-  const save = ()=>{
+  const save = async ()=>{
     try{
       const n = Number(value) || 0
       if(n <= 0){
@@ -35,7 +36,11 @@ export default function CaloriesBurned(){
         localStorage.setItem(`calorieWise.burned.${iso}`, nextValue)
         draftByDateRef.current.set(iso, nextValue)
       }
-      triggerSync()
+      if(currentUser && isOnline){
+        await saveUserDataToFirestore(currentUser.uid)
+      }else{
+        triggerSync()
+      }
       try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
       navigate(-1)
     }catch(e){ navigate(-1) }
