@@ -952,6 +952,7 @@ export default function TrackCalories(){
 
   const persist = (nextItems, forDate = date)=>{
     try{ 
+      // Ensure we persist under the date the UI is showing at call-time.
       localStorage.setItem(dateKey(forDate), JSON.stringify(nextItems))
       // Trigger cloud sync after saving to localStorage
       triggerSync()
@@ -1015,39 +1016,14 @@ export default function TrackCalories(){
       calories: calories,
       protein: protein,
     }
-    // if the system date advanced since the user opened the page, and the
-    // currently-selected `date` still equals the previous "today" value,
-    // treat the item as intended for the new today date and persist there.
-    const currentToday = todayISO()
-    let effectiveDate = date
-    if(currentToday !== date && date === prevTodayRef.current){
-      effectiveDate = currentToday
-      prevTodayRef.current = currentToday
-      // update UI to show the new date
-      setDate(currentToday)
-    }
+    // Always persist to the currently selected `date`.
+    // Date rollover UI can update what `date` represents, but we should not
+    // remap/migrate items to a different date key during add.
+    const effectiveDate = date
 
-    if(effectiveDate === date){
-      const next = [...items, item]
-      setItems(next)
-      persist(next, effectiveDate)
-    }else{
-      // append item to whatever entries already exist for effectiveDate
-      try{
-        const raw = localStorage.getItem(dateKey(effectiveDate))
-        const parsed = raw ? JSON.parse(raw) : []
-        const merged = Array.isArray(parsed) ? [...parsed, item] : [item]
-        persist(merged, effectiveDate)
-        // if we switched the UI to the new date, update in-memory items immediately
-        if(effectiveDate === currentToday){
-          setItems(merged)
-        }
-      }catch(e){
-        // fallback: just write the single item
-        persist([item], effectiveDate)
-        if(effectiveDate === currentToday){ setItems([item]) }
-      }
-    }
+    const next = [...items, item]
+    setItems(next)
+    persist(next, effectiveDate)
     setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false)
   }
 
