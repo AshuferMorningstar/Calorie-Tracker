@@ -153,6 +153,7 @@ const FOODS = [
   { id: 'hot_sour_soup', name: 'Hot & Sour soup', unit: 'bowl', kcalPerUnit: 60, proteinPerUnit: 2.0, name_hi: 'हॉट एंड सॉर सूप', name_hi_translit: 'hot and sour soup' },
   { id: 'mutton_piece', name: 'Mutton (goat meat) curry - 100g', kcal: 250, protein: 26.0, name_hi: 'मटन', name_hi_translit: 'mutton' },
   { id: 'chicken_piece', name: 'Chicken (cooked) - 100g', kcal: 195, protein: 27.0, name_hi: 'चिकन', name_hi_translit: 'chicken' },
+  { id: 'chicken_raw_curry_cut', name: 'Chicken raw curry cut', kcal: 125, protein: 20 },
   // More momo variants and Nepali / Indian street-foods
   { id: 'kurkure_momo', name: 'Kurkure / Spicy coated momo', unit: 'count', kcalPerUnit: 90, proteinPerUnit: 3.0 },
   // Kurkure snacks - approximate per 100g
