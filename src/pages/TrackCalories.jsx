@@ -1088,6 +1088,25 @@ export default function TrackCalories(){
     setShowClearConfirm(false)
   }
 
+  // Group items with the same name: merge calories and protein into one line
+  const groupedItems = useMemo(() => {
+    const map = new Map()
+    items.forEach(item => {
+      const key = (item.name || '').toLowerCase().trim()
+      if (!key) return
+      if (map.has(key)) {
+        const existing = map.get(key)
+        existing.count += 1
+        existing.calories = (existing.calories || 0) + (Number(item.calories) || 0)
+        existing.protein = (existing.protein || 0) + (Number(item.protein) || 0)
+        existing.amount = (existing.amount || 0) + (Number(item.amount) || 0)
+      } else {
+        map.set(key, { ...item, count: 1 })
+      }
+    })
+    return Array.from(map.values())
+  }, [items])
+
   const totalCalories = useMemo(()=> items.reduce((s,i)=> s + (Number(i.calories)||0), 0), [items])
   const totalProtein = useMemo(()=> Math.round(items.reduce((s,i)=> s + (Number(i.protein)||0), 0) * 10) / 10, [items])
 
@@ -1423,7 +1442,7 @@ export default function TrackCalories(){
                 )
               ) : (
                 <ul style={{listStyle:'none',padding:0,display:'flex',flexDirection:'column',gap:8}}>
-                  {items.map(it=> {
+                  {groupedItems.map(it=> {
                   // compute display protein if missing
                   let displayProtein = null
                   if(it.protein !== null && it.protein !== undefined){ displayProtein = it.protein }
@@ -1446,18 +1465,18 @@ export default function TrackCalories(){
                   }
 
                   return (
-                  <li key={it.id} className="card" style={{position:'relative',padding:6,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'14px minmax(20px,1fr) 64px 100px',alignItems:'center',gap:4,paddingLeft:6}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id) } }}>
+                  <li key={it.id || it.name} className="card" style={{position:'relative',padding:6,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'14px minmax(20px,1fr) 64px 100px',alignItems:'center',gap:4,paddingLeft:6}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id) } }}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
                       {editMode ? (
                         <input type="checkbox" checked={selectedIds.has(it.id)} onClick={(e)=>e.stopPropagation()} onChange={(e)=>{ e.stopPropagation(); toggleSelect(it.id) }} />
                       ) : null}
                     </div>
-                    <div title={it.name} style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}</div>
+                    <div title={it.name} style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}{it.count > 1 ? <span style={{fontSize:11,color:'var(--accent1)',fontWeight:700,marginLeft:4}}>×{it.count}</span> : ''}</div>
                     <div style={{display:'flex',justifyContent:'center',alignItems:'center',fontSize:13,color:'var(--muted)'}}>
-                      {it.amount ? `${it.amount}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
+                      {it.amount ? `${Math.round(it.amount)}${it.kcalPerUnit ? ' pcs' : ' g'}` : ''}
                     </div>
                     <div style={{textAlign:'right',fontSize:13,fontWeight:700}}>
-                      {it.calories ? `${it.calories} kcal` : ''}{displayProtein !== null && displayProtein !== undefined ? ` • ${displayProtein} g` : ''}
+                      {it.calories ? `${Math.round(it.calories)} kcal` : ''}{displayProtein !== null && displayProtein !== undefined ? ` • ${Math.round(displayProtein * 10) / 10} g` : ''}
                     </div>
                   </li>
                 )})}

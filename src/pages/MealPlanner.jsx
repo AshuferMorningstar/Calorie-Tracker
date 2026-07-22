@@ -130,30 +130,31 @@ export default function MealPlanner() {
       const key = `calorieWise.entries.${selectedDate}`
       const recipesToAdd = savedRecipes.filter(r => selectedRecipeIds.has(r.id))
       const quantity = Math.max(1, Math.min(99, saveQuantity || 1))
-      const newItems = []
-      for (let q = 0; q < quantity; q++) {
-        recipesToAdd.forEach(recipe => {
-          newItems.push({
-            id: Date.now() + Math.random() + q,
-            source: 'mealplanner',
-            name: recipe.recipeName || recipe.name,
-            amount: recipe.ingredients ? null : recipe.amount,
-            kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
-            kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
-            proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
-            proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
-            caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
-            calories: recipe.totalCalories || recipe.calories,
-            protein: recipe.totalProtein || recipe.protein,
-            ingredients: recipe.ingredients || null
-          })
-        })
-      }
+      const newItems = recipesToAdd.map(recipe => {
+        const totalCal = (recipe.totalCalories || recipe.calories || 0) * quantity
+        const totalProt = (recipe.totalProtein || recipe.protein || 0) * quantity
+        return {
+          id: Date.now() + Math.random(),
+          source: 'mealplanner',
+          name: recipe.recipeName || recipe.name,
+          amount: recipe.ingredients ? null : recipe.amount,
+          kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
+          kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
+          proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
+          proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
+          caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
+          calories: totalCal,
+          protein: Math.round(totalProt * 10) / 10,
+          ingredients: recipe.ingredients || null,
+          _quantity: quantity
+        }
+      })
       const updated = [...entriesForDate, ...newItems]
       try {
         localStorage.setItem(key, JSON.stringify(updated))
         setEntriesForDate(updated)
         setSelectedRecipeIds(new Set())
+        setSaveQuantity(1)
         triggerSync()
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
       } catch (e) {
