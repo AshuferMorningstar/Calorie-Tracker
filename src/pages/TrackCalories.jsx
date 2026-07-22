@@ -1068,13 +1068,30 @@ export default function TrackCalories(){
     setShowFastConfirm(false)
   }
 
-  const toggleSelect = (id)=>{
-    setSelectedIds(prev=>{
-      const s = new Set(prev)
-      if(s.has(id)) s.delete(id)
-      else s.add(id)
-      return s
-    })
+  const toggleSelect = (id, name)=>{
+    // When grouping is active, toggle by name to select/delete all items with the same name
+    if(name){
+      const nameLower = name.toLowerCase().trim()
+      const idsWithName = items.filter(i => (i.name || '').toLowerCase().trim() === nameLower).map(i => i.id)
+      setSelectedIds(prev=>{
+        const s = new Set(prev)
+        // check if any of these ids are already selected
+        const anySelected = idsWithName.some(id => s.has(id))
+        if(anySelected){
+          idsWithName.forEach(id => s.delete(id))
+        } else {
+          idsWithName.forEach(id => s.add(id))
+        }
+        return s
+      })
+    } else {
+      setSelectedIds(prev=>{
+        const s = new Set(prev)
+        if(s.has(id)) s.delete(id)
+        else s.add(id)
+        return s
+      })
+    }
   }
 
   const deleteSelected = ()=>{
@@ -1481,10 +1498,10 @@ export default function TrackCalories(){
                   }
 
                   return (
-                  <li key={it.id || it.name} className="card" style={{position:'relative',padding:6,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'14px minmax(20px,1fr) 64px 100px',alignItems:'center',gap:4,paddingLeft:6}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id) } }}>
+                  <li key={it.id || it.name} className="card" style={{position:'relative',padding:6,overflow:'visible',width:'100%',boxSizing:'border-box',maxWidth:'100%',flex:'0 0 100%',alignSelf:'stretch',display:'grid',gridTemplateColumns:'14px minmax(20px,1fr) 64px 100px',alignItems:'center',gap:4,paddingLeft:6}} onClick={(e)=>{ if(editMode){ toggleSelect(it.id, it.name) } }}>
                     <div style={{display:'flex',alignItems:'center',justifyContent:'center'}}>
                       {editMode ? (
-                        <input type="checkbox" checked={selectedIds.has(it.id)} onClick={(e)=>e.stopPropagation()} onChange={(e)=>{ e.stopPropagation(); toggleSelect(it.id) }} />
+                        <input type="checkbox" checked={selectedIds.has(it.id)} onClick={(e)=>e.stopPropagation()} onChange={(e)=>{ e.stopPropagation(); toggleSelect(it.id, it.name) }} />
                       ) : null}
                     </div>
                     <div title={it.name} style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontWeight:600}}>{it.name}{it.count > 1 ? <span style={{fontSize:11,color:'var(--accent1)',fontWeight:700,marginLeft:4}}>×{it.count}</span> : ''}</div>
