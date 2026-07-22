@@ -170,11 +170,9 @@ export default function MealPlanner() {
     }
 
     const requestAction = (action) => {
-      if (action === 'save' && selectedRecipeIds.size === 0) return
       if (action === 'delete' && selectedRecipeIds.size === 0) return
       if (action === 'edit' && selectedRecipeIds.size !== 1) return
       setPendingAction(action)
-      if (action === 'save') setSaveQuantity(1)
     }
 
     const cancelPendingAction = () => {
@@ -183,7 +181,6 @@ export default function MealPlanner() {
 
     const confirmPendingAction = () => {
       if (!pendingAction) return
-      if (pendingAction === 'save') handleAddSelectedRecipes()
       if (pendingAction === 'edit') handleEditSelectedRecipe()
       if (pendingAction === 'delete') handleDeleteSelectedRecipes()
       setPendingAction(null)
@@ -191,12 +188,6 @@ export default function MealPlanner() {
 
     const pendingActionText = (() => {
       const count = selectedRecipeIds.size
-      if (pendingAction === 'save') {
-        return {
-          title: `Save ${count} ${count === 1 ? 'recipe' : 'recipes'}?`,
-          note: `This will add to Track Calories for ${selectedDate}.`
-        }
-      }
       if (pendingAction === 'edit') {
         return {
           title: 'Edit selected recipe?',
@@ -289,7 +280,7 @@ export default function MealPlanner() {
             <div>
               <div className="card edge-blue-light" style={{ marginTop: 12, display: 'block', padding: 10 }}>
                 <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--muted)', marginBottom: 8 }}>Action buttons</div>
-                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
                   <button
                     className="card"
                     onClick={() => setSelectedRecipeIds(new Set())}
@@ -307,9 +298,48 @@ export default function MealPlanner() {
                   >
                     Clear
                   </button>
+                  {selectedRecipeIds.size > 0 && (
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <button
+                        onClick={() => setSaveQuantity(q => Math.max(1, (q || 1) - 1))}
+                        style={{
+                          width: 28, height: 28, border: '1px solid var(--card-border)', borderRadius: 6,
+                          background: 'var(--card-bg)', color: 'var(--text)', cursor: 'pointer', fontSize: 16,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1
+                        }}
+                        aria-label="Decrease quantity"
+                      >−</button>
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        value={saveQuantity}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value, 10)
+                          if (!isNaN(v)) setSaveQuantity(Math.max(1, Math.min(99, v)))
+                        }}
+                        style={{
+                          width: 46, height: 28, textAlign: 'center', fontSize: 13, fontWeight: 600,
+                          border: '1px solid var(--card-border)', borderRadius: 6,
+                          background: 'var(--card-bg)', color: 'var(--text)',
+                          MozAppearance: 'textfield', appearance: 'textfield'
+                        }}
+                        aria-label="Save quantity"
+                      />
+                      <button
+                        onClick={() => setSaveQuantity(q => Math.min(99, (q || 1) + 1))}
+                        style={{
+                          width: 28, height: 28, border: '1px solid var(--card-border)', borderRadius: 6,
+                          background: 'var(--card-bg)', color: 'var(--text)', cursor: 'pointer', fontSize: 16,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1
+                        }}
+                        aria-label="Increase quantity"
+                      >+</button>
+                    </div>
+                  )}
                   <button
                     className="card"
-                    onClick={() => requestAction('save')}
+                    onClick={handleAddSelectedRecipes}
                     disabled={selectedRecipeIds.size === 0}
                     style={{
                       flex: '0 0 auto',
@@ -360,7 +390,7 @@ export default function MealPlanner() {
                   </button>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.35, marginTop: 8 }}>
-                  Tap a recipe again to unselect it. Edit works only when exactly one recipe is checked.
+                  {selectedRecipeIds.size > 0 ? `Use the quantity stepper to save multiple copies. ` : ''}Tap a recipe again to unselect it. Edit works only when exactly one recipe is checked.
                 </div>
               </div>
 
