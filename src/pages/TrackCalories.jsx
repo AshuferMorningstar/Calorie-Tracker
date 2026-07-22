@@ -924,6 +924,22 @@ export default function TrackCalories(){
     }catch(e){ setItems([]) }
   },[date])
 
+  // Listen for entriesChanged event to refresh when MealPlanner saves
+  useEffect(()=>{
+    const refresh = ()=> {
+      try{
+        const raw = localStorage.getItem(dateKey(date))
+        if(raw){
+          setItems(JSON.parse(raw))
+        } else {
+          setItems([])
+        }
+      }catch(e){}
+    }
+    try{ window.addEventListener('calorieWise.entriesChanged', refresh) }catch(e){}
+    return ()=>{ try{ window.removeEventListener('calorieWise.entriesChanged', refresh) }catch(e){} }
+  },[date])
+
   // automatically advance `date` when the system day rolls over.
   // Only update if the user is currently viewing the previous "today" value
   // (so we don't override when they explicitly selected another date).
