@@ -508,7 +508,12 @@ export default function AddRecipe() {
     const trimmedIngredient = name.trim()
     if (!trimmedIngredient) return
 
-    const amt = parseFloat(amount)
+    const amt = (() => {
+      const parsed = parseFloat(amount)
+      if (!isNaN(parsed) && parsed > 0) return parsed
+      // Default to placeholder values if amount is empty
+      return unit === 'count' ? 1 : 100
+    })()
     const kcal100 = parseFloat(kcalPer100g)
     const kcalUnit = parseFloat(kcalPerUnit)
     const protein100 = parseFloat(proteinPer100g)
