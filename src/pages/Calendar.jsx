@@ -77,7 +77,7 @@ export default function Calendar(){
     if(view.year !== year || view.month !== month){
       setView({ year, month })
     }
-  }, [selectedDateIso, view.year, view.month])
+  }, [selectedDateIso])
 
   // compute maintenance/diet from stored profile (used to estimate deficit)
   const plan = useMemo(()=>{

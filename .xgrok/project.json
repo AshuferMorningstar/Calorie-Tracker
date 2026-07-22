@@ -1,0 +1,18 @@
+{
+  "version": 1,
+  "setup": "integrated",
+  "languages": [
+    "JavaScript/TypeScript"
+  ],
+  "stacks": [
+    "Node.js",
+    "React/Next"
+  ],
+  "markers": [
+    "package.json"
+  ],
+  "packageName": "calorie-wise",
+  "suggestedRun": "npm run dev",
+  "createdAt": "2026-07-22T20:37:12.230Z",
+  "tool": "xgrok"
+}
