@@ -21,6 +21,7 @@ export default function MealPlanner() {
   const [selectedRecipeIds, setSelectedRecipeIds] = useState(new Set())
   const [recipeSearch, setRecipeSearch] = useState('')
   const [pendingAction, setPendingAction] = useState(null)
+  const [saveQuantity, setSaveQuantity] = useState(1)
   const prevTodayRef = useRef(todayISO())
   const todayValue = todayISO()
 
@@ -128,20 +129,26 @@ export default function MealPlanner() {
       if (selectedRecipeIds.size === 0) return
       const key = `calorieWise.entries.${selectedDate}`
       const recipesToAdd = savedRecipes.filter(r => selectedRecipeIds.has(r.id))
-      const newItems = recipesToAdd.map(recipe => ({
-        id: Date.now() + Math.random(),
-        source: 'mealplanner',
-        name: recipe.recipeName || recipe.name,
-        amount: recipe.ingredients ? null : recipe.amount,
-        kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
-        kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
-        proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
-        proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
-        caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
-        calories: recipe.totalCalories || recipe.calories,
-        protein: recipe.totalProtein || recipe.protein,
-        ingredients: recipe.ingredients || null
-      }))
+      const quantity = Math.max(1, Math.min(99, saveQuantity || 1))
+      const newItems = []
+      for (let q = 0; q < quantity; q++) {
+        recipesToAdd.forEach(recipe => {
+          newItems.push({
+            id: Date.now() + Math.random() + q,
+            source: 'mealplanner',
+            name: recipe.recipeName || recipe.name,
+            amount: recipe.ingredients ? null : recipe.amount,
+            kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
+            kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
+            proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
+            proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
+            caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
+            calories: recipe.totalCalories || recipe.calories,
+            protein: recipe.totalProtein || recipe.protein,
+            ingredients: recipe.ingredients || null
+          })
+        })
+      }
       const updated = [...entriesForDate, ...newItems]
       try {
         localStorage.setItem(key, JSON.stringify(updated))
@@ -167,6 +174,7 @@ export default function MealPlanner() {
       if (action === 'delete' && selectedRecipeIds.size === 0) return
       if (action === 'edit' && selectedRecipeIds.size !== 1) return
       setPendingAction(action)
+      if (action === 'save') setSaveQuantity(1)
     }
 
     const cancelPendingAction = () => {
@@ -452,12 +460,54 @@ export default function MealPlanner() {
           {pendingAction && pendingActionText && (
             <div style={{ position: 'fixed', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 1200 }}>
               <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.32)' }} onClick={cancelPendingAction}></div>
-              <div className="card" style={{ zIndex: 1201, maxWidth: 520, width: '92%', padding: 18, display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-                <div style={{ minWidth: 0, flex: '1 1 auto' }}>
+              <div className="card" style={{ zIndex: 1201, maxWidth: 520, width: '92%', padding: 18, display: 'flex', flexDirection: 'column', gap: 14 }}>
+                <div style={{ minWidth: 0, width: '100%' }}>
                   <div style={{ fontWeight: 700 }}>{pendingActionText.title}</div>
                   <div style={{ fontSize: 13, color: 'var(--muted)' }}>{pendingActionText.note}</div>
                 </div>
-                <div style={{ display: 'flex', gap: 8, flexShrink: 0, flexWrap: 'nowrap' }}>
+                {pendingAction === 'save' && (
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, justifyContent: 'center' }}>
+                    <span style={{ fontSize: 13, color: 'var(--muted)', fontWeight: 500 }}>Quantity:</span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSaveQuantity(q => Math.max(1, (q || 1) - 1)) }}
+                        style={{
+                          width: 32, height: 32, border: '1px solid var(--card-border)', borderRadius: 6,
+                          background: 'var(--card-bg)', color: 'var(--text)', cursor: 'pointer', fontSize: 18,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1
+                        }}
+                        aria-label="Decrease quantity"
+                      >−</button>
+                      <input
+                        type="number"
+                        min="1"
+                        max="99"
+                        value={saveQuantity}
+                        onChange={(e) => {
+                          const v = parseInt(e.target.value, 10)
+                          if (!isNaN(v)) setSaveQuantity(Math.max(1, Math.min(99, v)))
+                        }}
+                        style={{
+                          width: 52, height: 32, textAlign: 'center', fontSize: 14, fontWeight: 600,
+                          border: '1px solid var(--card-border)', borderRadius: 6,
+                          background: 'var(--card-bg)', color: 'var(--text)',
+                          MozAppearance: 'textfield', appearance: 'textfield'
+                        }}
+                        aria-label="Save quantity"
+                      />
+                      <button
+                        onClick={(e) => { e.stopPropagation(); setSaveQuantity(q => Math.min(99, (q || 1) + 1)) }}
+                        style={{
+                          width: 32, height: 32, border: '1px solid var(--card-border)', borderRadius: 6,
+                          background: 'var(--card-bg)', color: 'var(--text)', cursor: 'pointer', fontSize: 18,
+                          display: 'flex', alignItems: 'center', justifyContent: 'center', lineHeight: 1
+                        }}
+                        aria-label="Increase quantity"
+                      >+</button>
+                    </div>
+                  </div>
+                )}
+                <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
                   <button className="card" onClick={cancelPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Cancel</button>
                   <button className="card" onClick={confirmPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Confirm</button>
                 </div>

@@ -518,23 +518,58 @@ export default function AddRecipe() {
     let protein = null
     let caloriesPerGram = null
     let proteinPerGram = null
+    let resolvedUnit = unit
+    let resolvedKcalPer100g = !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null
+    let resolvedKcalPerUnit = unit === 'count' && !isNaN(kcalUnit) && kcalUnit > 0 ? kcalUnit : null
+    let resolvedProteinPer100g = !isNaN(protein100) && protein100 >= 0 ? protein100 : null
+    let resolvedProteinPerUnit = unit === 'count' && !isNaN(protUnit) && protUnit >= 0 ? protUnit : null
 
-    if (unit === 'count') {
-      if (!isNaN(amt) && amt > 0 && !isNaN(kcalUnit) && kcalUnit > 0) {
-        calories = Math.round(amt * kcalUnit)
+    // If any values are missing from the form, try to look them up from the food database
+    const needsLookup = calories === null && (resolvedKcalPer100g === null && resolvedKcalPerUnit === null)
+    if (needsLookup || resolvedKcalPerUnit === null || resolvedProteinPerUnit === null) {
+      const normalized = trimmedIngredient.toLowerCase()
+      const found = ALL_FOODS.find(f => {
+        const englishName = (f.name || f.name_en || '').toLowerCase()
+        const hindiName = (f.name_hi || '').toLowerCase()
+        const translitName = (f.name_hi_translit || '').toLowerCase()
+        return normalized === englishName || normalized === hindiName || normalized === translitName
+      }) || ALL_FOODS.find(f => {
+        const englishName = (f.name || f.name_en || '').toLowerCase()
+        return englishName.startsWith(normalized) || normalized.startsWith(englishName)
+      })
+      if (found) {
+        if (found.unit === 'count' || found.kcalPerUnit) {
+          resolvedUnit = 'count'
+          if (resolvedKcalPerUnit === null) resolvedKcalPerUnit = found.kcalPerUnit || found.kcal || null
+          if (resolvedProteinPerUnit === null) resolvedProteinPerUnit = found.proteinPerUnit || found.protein || null
+          resolvedKcalPer100g = null
+          resolvedProteinPer100g = null
+        } else {
+          resolvedUnit = 'g'
+          if (resolvedKcalPer100g === null) resolvedKcalPer100g = found.kcal || found.kcalPer100g || null
+          if (resolvedProteinPer100g === null) resolvedProteinPer100g = found.protein || found.proteinPer100g || null
+          resolvedKcalPerUnit = null
+          resolvedProteinPerUnit = null
+        }
       }
-      if (!isNaN(amt) && amt > 0 && !isNaN(protUnit) && protUnit >= 0) {
-        protein = Math.round((amt * protUnit) * 10) / 10
+    }
+
+    if (resolvedUnit === 'count') {
+      if (!isNaN(amt) && amt > 0 && resolvedKcalPerUnit !== null && resolvedKcalPerUnit > 0) {
+        calories = Math.round(amt * resolvedKcalPerUnit)
+      }
+      if (!isNaN(amt) && amt > 0 && resolvedProteinPerUnit !== null && resolvedProteinPerUnit >= 0) {
+        protein = Math.round((amt * resolvedProteinPerUnit) * 10) / 10
       }
     } else {
-      if (!isNaN(kcal100) && kcal100 > 0) {
-        caloriesPerGram = Number((kcal100 / 100).toFixed(2))
+      if (resolvedKcalPer100g !== null && resolvedKcalPer100g > 0) {
+        caloriesPerGram = Number((resolvedKcalPer100g / 100).toFixed(2))
       }
       if (!isNaN(amt) && amt > 0 && caloriesPerGram !== null) {
         calories = Math.round(amt * caloriesPerGram)
       }
-      if (!isNaN(protein100) && protein100 >= 0) {
-        proteinPerGram = Number((protein100 / 100).toFixed(3))
+      if (resolvedProteinPer100g !== null && resolvedProteinPer100g >= 0) {
+        proteinPerGram = Number((resolvedProteinPer100g / 100).toFixed(3))
       }
       if (!isNaN(amt) && amt > 0 && proteinPerGram !== null) {
         protein = Math.round((amt * proteinPerGram) * 10) / 10
@@ -545,11 +580,11 @@ export default function AddRecipe() {
       id: Date.now(),
       name: trimmedIngredient,
       amount: !isNaN(amt) && amt > 0 ? amt : null,
-      unit: unit,
-      kcalPer100g: unit === 'g' && !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null,
-      kcalPerUnit: unit === 'count' && !isNaN(kcalUnit) && kcalUnit > 0 ? kcalUnit : null,
-      proteinPer100g: unit === 'g' && !isNaN(protein100) && protein100 >= 0 ? protein100 : null,
-      proteinPerUnit: unit === 'count' && !isNaN(protUnit) && protUnit >= 0 ? protUnit : null,
+      unit: resolvedUnit,
+      kcalPer100g: resolvedUnit === 'g' && resolvedKcalPer100g !== null ? resolvedKcalPer100g : null,
+      kcalPerUnit: resolvedUnit === 'count' && resolvedKcalPerUnit !== null ? resolvedKcalPerUnit : null,
+      proteinPer100g: resolvedUnit === 'g' && resolvedProteinPer100g !== null ? resolvedProteinPer100g : null,
+      proteinPerUnit: resolvedUnit === 'count' && resolvedProteinPerUnit !== null ? resolvedProteinPerUnit : null,
       caloriesPerGram: caloriesPerGram,
       calories: calories,
       protein: protein,
