@@ -359,7 +359,7 @@ export default function MealPlanner() {
                       opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
                     }}
                   >
-                    Save
+                    Add
                   </button>
                   <button
                     className="card"
