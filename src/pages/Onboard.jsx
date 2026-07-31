@@ -13,7 +13,7 @@ export default function Onboard(){
     <div className="goal-modal" role="main">
       <div className="goal-box" aria-label="Onboarding - select goal">
         <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise logo" style={{width:88,height:88,display:'block',margin:'0 auto 12px'}}/>
-        <h2 style={{margin:'0 0 6px'}}>Welcome to Calorie Wise</h2>
+        <h1 style={{margin:'0 0 6px',fontSize:20,fontWeight:700}}>Welcome to Calorie Wise</h1>
         <p className="muted">Select a goal to personalize your experience.</p>
         <div className="goal-actions" style={{marginTop:16}}>
           <button className="card" onClick={()=>choose('loss')}>Weight loss</button>

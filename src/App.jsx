@@ -618,7 +618,7 @@ export default function App(){
       <div className="dashboard-header profile-top" style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
           <img src="/assets/caloriewiselogo.svg" alt="Calorie Wise logo" className="top-logo" />
-          <h2>Calorie Wise</h2>
+          <h1 style={{margin:0,fontSize:'inherit',fontWeight:'inherit',lineHeight:'inherit'}}>Calorie Wise</h1>
         </div>
         <div style={{display:'flex',gap:8,alignItems:'center'}}>
           <button
@@ -715,7 +715,7 @@ export default function App(){
                 </div>
               </div>
             </div>
-            <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise" width={108} height={108} decoding="async" fetchpriority="high" loading="eager" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
+            <img src="/assets/Picsart_26-01-22_22-42-53-930.png" alt="Calorie Wise app icon - calorie tracker and meal planner" width={108} height={108} decoding="async" fetchpriority="high" loading="eager" style={{position:'absolute',right:12,top:'50%',transform:'translateY(-50%)',width:108,height:108,objectFit:'contain',borderRadius:8}} />
           </div>
 
           <div style={{display:'flex',gap:8,alignItems:'stretch'}}>
