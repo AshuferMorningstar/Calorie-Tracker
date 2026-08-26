@@ -159,7 +159,6 @@ export default function MealPlanner() {
       try {
         localStorage.setItem(key, JSON.stringify(updated))
         setEntriesForDate(updated)
-        setSelectedRecipeIds(new Set())
         setSaveQuantity(1)
         triggerSync()
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
@@ -397,7 +396,7 @@ export default function MealPlanner() {
                   </button>
                 </div>
                 <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.35, marginTop: 8 }}>
-                  {selectedRecipeIds.size > 0 ? `Use the quantity stepper to save multiple copies. ` : ''}Tap a recipe again to unselect it. Edit works only when exactly one recipe is checked.
+                  {selectedRecipeIds.size > 0 ? `Use the quantity stepper to save multiple copies. ` : ''}Selected recipes stay checked so you can add them again. Tap a recipe to unselect it. Edit works only when exactly one recipe is checked.
                 </div>
               </div>
 
