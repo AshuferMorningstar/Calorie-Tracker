@@ -17,7 +17,6 @@ Calorie Wise is a calorie tracking and meal logging app built for fast daily use
 - Vite for development and production builds.
 - React Router for page navigation.
 - Firebase Auth and Firestore for sign-in and cloud sync.
-- Dexie for local data handling where needed.
 - Plain CSS for styling and page layout.
 
 ## Project structure

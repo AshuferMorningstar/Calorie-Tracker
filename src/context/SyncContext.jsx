@@ -63,6 +63,7 @@ export const SyncProvider = ({ children }) => {
 
       const now = Date.now()
       if (now - lastSyncRunRef.current < 15000) {
+        syncTimerRef.current = setTimeout(() => triggerSync(), 15000 - (now - lastSyncRunRef.current))
         return
       }
 

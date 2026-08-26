@@ -761,6 +761,13 @@ function isSnackLikeFood(food){
 
 const dateKey = (d)=> `calorieWise.entries.${d}`
 
+const createEntryId = ()=> {
+  try{
+    if(window.crypto?.randomUUID) return window.crypto.randomUUID()
+  }catch(e){}
+  return `${Date.now()}_${Math.random().toString(36).slice(2)}`
+}
+
 const todayISO = ()=>{
   const d = new Date()
   const y = d.getFullYear()
@@ -978,6 +985,16 @@ export default function TrackCalories(){
     }catch(e){}
   }
 
+  const getLatestItems = (forDate = date)=>{
+    try{
+      const raw = localStorage.getItem(dateKey(forDate))
+      const parsed = raw ? JSON.parse(raw) : []
+      return Array.isArray(parsed) ? parsed : []
+    }catch(e){
+      return items
+    }
+  }
+
   const addItem = (e)=>{
     e.preventDefault()
     const trimmed = (name || '').trim()
@@ -1022,7 +1039,7 @@ export default function TrackCalories(){
     }
 
     const item = {
-      id: Date.now(),
+      id: createEntryId(),
       name: trimmed,
       amount: effectiveAmount,
       kcalPer100g: !isNaN(kcal100) && kcal100 > 0 ? kcal100 : null,
@@ -1038,14 +1055,15 @@ export default function TrackCalories(){
     // remap/migrate items to a different date key during add.
     const effectiveDate = date
 
-    const next = [...items, item]
+    const currentItems = getLatestItems(effectiveDate)
+    const next = [...currentItems, item]
     setItems(next)
     persist(next, effectiveDate)
     setName(''); setAmount(''); setKcalPer100g(''); setProteinPer100g(''); setKcalPerUnit(''); setProteinPerUnit(''); setUnit('g'); setManualKcalNeeded(false)
   }
 
   const removeItem = (id)=>{
-    const next = items.filter(i=>i.id !== id)
+    const next = getLatestItems().filter(i=>i.id !== id)
     setItems(next)
     persist(next)
   }
@@ -1096,7 +1114,7 @@ export default function TrackCalories(){
 
   const deleteSelected = ()=>{
     if(!selectedIds || selectedIds.size === 0) return
-    const next = items.filter(i=> !selectedIds.has(i.id))
+    const next = getLatestItems().filter(i=> !selectedIds.has(i.id))
     setItems(next)
     persist(next)
     setSelectedIds(new Set())
@@ -1110,8 +1128,9 @@ export default function TrackCalories(){
   }
 
   const confirmClearAll = ()=>{
-    setItems([])
-    persist([])
+    const emptyItems = []
+    setItems(emptyItems)
+    persist(emptyItems)
     setSelectedIds(new Set())
     setEditMode(false)
     setShowClearConfirm(false)
