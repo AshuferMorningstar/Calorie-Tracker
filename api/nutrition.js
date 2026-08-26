@@ -65,6 +65,7 @@ export default async function handler(req, res) {
         const providerError = await response.json()
         providerMessage = providerError.error?.message || ''
       } catch (error) {}
+      if (/credit balance is too low|insufficient credit|purchase credits/i.test(providerMessage)) continue
       console.error('Claude rejected nutrition request:', response.status, providerMessage)
       return sendError(res, 502, providerMessage
         ? `Nutrition provider rejected the request: ${providerMessage}`
