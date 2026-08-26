@@ -5,9 +5,9 @@ const claudeModel = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001'
 const getApiKeys = () => [
   process.env.CLAUDE_API_KEY,
   process.env.CLAUDE_API_KEY_FALLBACK,
-  process.env.CLAUDE_API_KEY_FALLBACK_2,
-  process.env.CLAUDE_API_KEY_FALLBACK_3,
-  process.env.CLAUDE_API_KEY_FALLBACK_4
+  process.env.CLAUDE_API_KEY_FALLBACK_2 || process.env.CLAUSE_API_KEY_FALLBACK_2,
+  process.env.CLAUDE_API_KEY_FALLBACK_3 || process.env.CLAUSE_API_KEY_FALLBACK_3,
+  process.env.CLAUDE_API_KEY_FALLBACK_4 || process.env.CLAUSE_API_KEY_FALLBACK_4
 ].filter(Boolean)
 
 const sendError = (res, status, message) => res.status(status).json({ error: message })
