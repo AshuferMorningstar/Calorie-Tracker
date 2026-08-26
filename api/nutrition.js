@@ -1,5 +1,6 @@
 const allowedUnits = new Set(['g', 'count'])
 const retryableStatuses = new Set([401, 429, 500, 502, 503, 529])
+const claudeModel = process.env.CLAUDE_MODEL || 'claude-3-5-haiku-20241022'
 
 const getApiKeys = () => [
   process.env.CLAUDE_API_KEY,
@@ -43,7 +44,7 @@ export default async function handler(req, res) {
           'anthropic-version': '2023-06-01'
         },
         body: JSON.stringify({
-          model: process.env.CLAUDE_MODEL || 'claude-3-5-haiku-latest',
+          model: claudeModel,
           max_tokens: 180,
           temperature: 0,
           system: 'You provide cautious nutrition estimates. Respond with JSON only, no markdown or explanation.',
@@ -59,7 +60,13 @@ export default async function handler(req, res) {
     lastStatus = response.status
     if (!response.ok) {
       if (retryableStatuses.has(response.status)) continue
-      return sendError(res, 502, 'Nutrition lookup rejected the request.')
+      let providerMessage = ''
+      try {
+        const providerError = await response.json()
+        providerMessage = providerError.error?.message || ''
+      } catch (error) {}
+      console.error('Claude rejected nutrition request:', response.status, providerMessage)
+      return sendError(res, 502, `Nutrition provider rejected the request (${response.status}). Check the API key and Claude model configuration.`)
     }
 
     const result = await response.json()
