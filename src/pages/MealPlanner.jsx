@@ -22,8 +22,24 @@ export default function MealPlanner() {
   const [recipeSearch, setRecipeSearch] = useState('')
   const [pendingAction, setPendingAction] = useState(null)
   const [saveQuantity, setSaveQuantity] = useState(1)
+  const [notification, setNotification] = useState(null)
+  const [isAdding, setIsAdding] = useState(false)
   const prevTodayRef = useRef(todayISO())
   const todayValue = todayISO()
+  const notificationTimerRef = useRef(null)
+  const isAddingRef = useRef(false)
+
+  useEffect(() => {
+    return () => {
+      if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current)
+    }
+  }, [])
+
+  const showNotification = (message, type = 'success') => {
+    setNotification({ message, type })
+    if (notificationTimerRef.current) clearTimeout(notificationTimerRef.current)
+    notificationTimerRef.current = setTimeout(() => setNotification(null), 3000)
+  }
 
   const filteredRecipes = savedRecipes.filter((recipe) => {
     const query = recipeSearch.trim().toLowerCase()
@@ -126,44 +142,61 @@ export default function MealPlanner() {
     }
   
     const handleAddSelectedRecipes = () => {
-      if (selectedRecipeIds.size === 0) return
-      const key = `calorieWise.entries.${selectedDate}`
-      const recipesToAdd = savedRecipes.filter(r => selectedRecipeIds.has(r.id))
-      const quantity = Math.max(1, Math.min(99, saveQuantity || 1))
-      const newItems = []
-      for (let q = 0; q < quantity; q++) {
-        recipesToAdd.forEach(recipe => {
-          newItems.push({
-            id: Date.now() + Math.random() + q,
-            source: 'mealplanner',
-            name: recipe.recipeName || recipe.name,
-            amount: recipe.ingredients ? null : recipe.amount,
-            kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
-            kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
-            proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
-            proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
-            caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
-            calories: recipe.totalCalories || recipe.calories || 0,
-            protein: recipe.totalProtein || recipe.protein || 0,
-            ingredients: recipe.ingredients || null
+      if (selectedRecipeIds.size === 0 || isAddingRef.current) return
+      isAddingRef.current = true
+      setIsAdding(true)
+      try {
+        const key = `calorieWise.entries.${selectedDate}`
+        const latestRecipesRaw = localStorage.getItem('calorieWise.recipes')
+        const latestRecipes = latestRecipesRaw ? JSON.parse(latestRecipesRaw) : savedRecipes
+        const recipes = Array.isArray(latestRecipes) ? latestRecipes : []
+        const recipesToAdd = recipes.filter(r => selectedRecipeIds.has(r.id))
+        if (recipesToAdd.length === 0) {
+          showNotification('Select a saved recipe before adding.', 'error')
+          return
+        }
+
+        const quantity = Math.max(1, Math.min(99, saveQuantity || 1))
+        const newItems = []
+        for (let q = 0; q < quantity; q++) {
+          recipesToAdd.forEach(recipe => {
+            newItems.push({
+              id: `${Date.now()}_${Math.random().toString(36).slice(2)}_${q}`,
+              source: 'mealplanner',
+              name: recipe.recipeName || recipe.name,
+              amount: recipe.ingredients ? null : recipe.amount,
+              kcalPer100g: recipe.ingredients ? null : recipe.kcalPer100g,
+              kcalPerUnit: recipe.ingredients ? null : recipe.kcalPerUnit,
+              proteinPer100g: recipe.ingredients ? null : recipe.proteinPer100g,
+              proteinPerUnit: recipe.ingredients ? null : recipe.proteinPerUnit,
+              caloriesPerGram: recipe.ingredients ? null : recipe.caloriesPerGram,
+              calories: recipe.totalCalories || recipe.calories || 0,
+              protein: recipe.totalProtein || recipe.protein || 0,
+              ingredients: recipe.ingredients || null
+            })
           })
-        })
-      }
-      // Always read the latest from localStorage to be safe
-      let existing = []
-      try {
+        }
+
         const raw = localStorage.getItem(key)
-        if (raw) existing = JSON.parse(raw)
-      } catch (e) {}
-      const updated = [...existing, ...newItems]
-      try {
+        const parsed = raw ? JSON.parse(raw) : []
+        const existing = Array.isArray(parsed) ? parsed : []
+        const updated = [...existing, ...newItems]
         localStorage.setItem(key, JSON.stringify(updated))
+        const saved = JSON.parse(localStorage.getItem(key) || '[]')
+        if (!Array.isArray(saved) || saved.length !== updated.length) {
+          throw new Error('Entry write could not be verified')
+        }
         setEntriesForDate(updated)
         setSaveQuantity(1)
         triggerSync()
         window.dispatchEvent(new Event('calorieWise.entriesChanged'))
+        showNotification(`${newItems.length} recipe ${newItems.length === 1 ? 'entry' : 'entries'} added.`)
       } catch (e) {
         console.error('Failed to add recipes to date:', e)
+        showNotification('Recipe was not added. Please try again.', 'error')
+      } finally {
+        isAddingRef.current = false
+        setIsAdding(false)
       }
     }
 
@@ -274,6 +307,9 @@ export default function MealPlanner() {
               gap: 8,
               fontSize: 16,
               fontWeight: 500,
+              background: 'rgba(59, 130, 246, 0.15)',
+              color: '#2563eb',
+              border: '1px solid rgba(59, 130, 246, 0.3)',
               cursor: savedRecipes.length >= MAX_RECIPES ? 'not-allowed' : 'pointer',
               opacity: savedRecipes.length >= MAX_RECIPES ? 0.5 : 1
             }}
@@ -298,6 +334,9 @@ export default function MealPlanner() {
                       gap: 6,
                       fontSize: 12,
                       fontWeight: 600,
+                      background: 'rgba(108, 117, 125, 0.1)',
+                      color: '#6c757d',
+                      border: '1px solid rgba(108, 117, 125, 0.2)',
                       cursor: selectedRecipeIds.size === 0 ? 'not-allowed' : 'pointer',
                       opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
                     }}
@@ -346,7 +385,7 @@ export default function MealPlanner() {
                   <button
                     className="card"
                     onClick={handleAddSelectedRecipes}
-                    disabled={selectedRecipeIds.size === 0}
+                    disabled={selectedRecipeIds.size === 0 || isAdding}
                     style={{
                       flex: '0 0 auto',
                       padding: '7px 10px',
@@ -354,11 +393,14 @@ export default function MealPlanner() {
                       gap: 6,
                       fontSize: 12,
                       fontWeight: 600,
-                      cursor: selectedRecipeIds.size === 0 ? 'not-allowed' : 'pointer',
-                      opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
+                      background: 'rgba(34, 197, 94, 0.15)',
+                      color: '#15803d',
+                      border: '1px solid rgba(34, 197, 94, 0.35)',
+                      cursor: selectedRecipeIds.size === 0 || isAdding ? 'not-allowed' : 'pointer',
+                      opacity: selectedRecipeIds.size === 0 || isAdding ? 0.6 : 1
                     }}
                   >
-                    Add
+                    {isAdding ? 'Adding...' : 'Add'}
                   </button>
                   <button
                     className="card"
@@ -371,6 +413,9 @@ export default function MealPlanner() {
                       gap: 6,
                       fontSize: 12,
                       fontWeight: 600,
+                      background: 'rgba(59, 130, 246, 0.15)',
+                      color: '#2563eb',
+                      border: '1px solid rgba(59, 130, 246, 0.3)',
                       cursor: selectedRecipeIds.size !== 1 ? 'not-allowed' : 'pointer',
                       opacity: selectedRecipeIds.size !== 1 ? 0.6 : 1
                     }}
@@ -388,6 +433,9 @@ export default function MealPlanner() {
                       gap: 6,
                       fontSize: 12,
                       fontWeight: 600,
+                      background: 'rgba(239, 68, 68, 0.12)',
+                      color: '#b91c1c',
+                      border: '1px solid rgba(239, 68, 68, 0.3)',
                       cursor: selectedRecipeIds.size === 0 ? 'not-allowed' : 'pointer',
                       opacity: selectedRecipeIds.size === 0 ? 0.6 : 1
                     }}
@@ -398,6 +446,15 @@ export default function MealPlanner() {
                 <div style={{ fontSize: 11, color: 'var(--muted)', lineHeight: 1.35, marginTop: 8 }}>
                   {selectedRecipeIds.size > 0 ? `Use the quantity stepper to save multiple copies. ` : ''}Selected recipes stay checked so you can add them again. Tap a recipe to unselect it. Edit works only when exactly one recipe is checked.
                 </div>
+                {notification && (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    style={{ marginTop: 10, padding: '9px 12px', borderRadius: 8, background: notification.type === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(34, 197, 94, 0.12)', color: notification.type === 'error' ? '#b91c1c' : '#15803d', fontSize: 13, fontWeight: 600 }}
+                  >
+                    {notification.message}
+                  </div>
+                )}
               </div>
 
               <div className="card edge-blue-light" style={{ marginTop: 12, display: 'block', padding: 12 }}>
@@ -544,8 +601,8 @@ export default function MealPlanner() {
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: 8, justifyContent: 'flex-end' }}>
-                  <button className="card" onClick={cancelPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Cancel</button>
-                  <button className="card" onClick={confirmPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap' }}>Confirm</button>
+                  <button className="card" onClick={cancelPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap', background: 'rgba(108, 117, 125, 0.1)', color: '#6c757d', border: '1px solid rgba(108, 117, 125, 0.2)' }}>Cancel</button>
+                  <button className="card" onClick={confirmPendingAction} style={{ padding: '8px 12px', fontWeight: 600, whiteSpace: 'nowrap', background: pendingAction === 'delete' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(59, 130, 246, 0.15)', color: pendingAction === 'delete' ? '#b91c1c' : '#2563eb', border: pendingAction === 'delete' ? '1px solid rgba(239, 68, 68, 0.3)' : '1px solid rgba(59, 130, 246, 0.3)' }}>Confirm</button>
                 </div>
               </div>
             </div>
