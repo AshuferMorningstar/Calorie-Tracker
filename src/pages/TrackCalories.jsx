@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react'
 import { createPortal } from 'react-dom'
 import { useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
+import { lookupNutrition } from '../services/nutrition'
 import vegetables from '../data/vegetables_india.json'
 import fruits from '../data/fruits.json'
 import foodsIndia from '../data/foods_india.json'
@@ -891,6 +892,8 @@ export default function TrackCalories(){
   const [showClearConfirm, setShowClearConfirm] = useState(false)
   const [showFastConfirm, setShowFastConfirm] = useState(false)
   const [isFasting, setIsFasting] = useState(false)
+  const [isNutritionLoading, setIsNutritionLoading] = useState(false)
+  const [nutritionMessage, setNutritionMessage] = useState(null)
 
   useEffect(()=>{
     // load items for selected date
@@ -992,6 +995,29 @@ export default function TrackCalories(){
       return Array.isArray(parsed) ? parsed : []
     }catch(e){
       return items
+    }
+  }
+
+  const findNutritionWithAI = async ()=>{
+    if(!isCustomFood || isNutritionLoading) return
+    setIsNutritionLoading(true)
+    setNutritionMessage(null)
+    try{
+      const result = await lookupNutrition((name || '').trim(), unit)
+      if(unit === 'count'){
+        setKcalPerUnit(String(result.calories))
+        setProteinPerUnit(String(result.protein))
+      }else{
+        setKcalPer100g(String(result.calories))
+        setProteinPer100g(String(result.protein))
+      }
+      setManualKcalNeeded(false)
+      setNutritionMessage({ type: 'success', text: 'Nutrition estimate added. Check it before logging.' })
+    }catch(error){
+      console.error('Nutrition lookup failed:', error)
+      setNutritionMessage({ type: 'error', text: error?.message || 'Could not find nutrition. Please enter it manually.' })
+    }finally{
+      setIsNutritionLoading(false)
     }
   }
 
@@ -1434,7 +1460,20 @@ export default function TrackCalories(){
                   >
                     Count
                   </button>
+                  <button
+                    type="button"
+                    onClick={findNutritionWithAI}
+                    disabled={isNutritionLoading || !name.trim()}
+                    style={{ background: 'rgba(14, 165, 233, 0.14)', color: '#0369a1', border: '1px solid rgba(14, 165, 233, 0.35)', borderRadius: 6, padding: '7px 10px', fontWeight: 600, cursor: isNutritionLoading || !name.trim() ? 'not-allowed' : 'pointer', opacity: isNutritionLoading || !name.trim() ? 0.6 : 1 }}
+                  >
+                    {isNutritionLoading ? 'Finding...' : 'Find nutrition'}
+                  </button>
                 </div>
+                {nutritionMessage && (
+                  <div role="status" aria-live="polite" style={{ fontSize: 12, marginTop: 8, color: nutritionMessage.type === 'error' ? '#b91c1c' : '#15803d' }}>
+                    {nutritionMessage.text}
+                  </div>
+                )}
               </div>
             )}
 
