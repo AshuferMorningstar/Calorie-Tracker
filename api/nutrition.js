@@ -1,6 +1,6 @@
 const allowedUnits = new Set(['g', 'count'])
 const retryableStatuses = new Set([401, 429, 500, 502, 503, 529])
-const claudeModel = process.env.CLAUDE_MODEL || 'claude-3-5-haiku-20241022'
+const claudeModel = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001'
 
 const getApiKeys = () => [
   process.env.CLAUDE_API_KEY,
@@ -66,7 +66,9 @@ export default async function handler(req, res) {
         providerMessage = providerError.error?.message || ''
       } catch (error) {}
       console.error('Claude rejected nutrition request:', response.status, providerMessage)
-      return sendError(res, 502, `Nutrition provider rejected the request (${response.status}). Check the API key and Claude model configuration.`)
+      return sendError(res, 502, providerMessage
+        ? `Nutrition provider rejected the request: ${providerMessage}`
+        : `Nutrition provider rejected the request (${response.status}). Check the API key and Claude model configuration.`)
     }
 
     const result = await response.json()
