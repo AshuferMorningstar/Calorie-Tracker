@@ -17,7 +17,22 @@ export default function CaloriesBurned(){
   const initialDate = location.state?.date || today
   const [iso, setIso] = useState(initialDate)
   const [value, setValue] = useState('')
+  const [notification, setNotification] = useState(null)
+  const [isSaving, setIsSaving] = useState(false)
   const draftByDateRef = useRef(new Map())
+  const notificationTimerRef = useRef(null)
+
+  useEffect(()=>{
+    return ()=>{
+      if(notificationTimerRef.current) clearTimeout(notificationTimerRef.current)
+    }
+  },[])
+
+  const showNotification = (message, type = 'success')=>{
+    setNotification({ message, type })
+    if(notificationTimerRef.current) clearTimeout(notificationTimerRef.current)
+    notificationTimerRef.current = setTimeout(() => setNotification(null), 3000)
+  }
 
   useEffect(()=>{
     try{
@@ -34,6 +49,8 @@ export default function CaloriesBurned(){
   },[iso])
 
   const save = async ()=>{
+    if(isSaving) return
+    setIsSaving(true)
     try{
       const n = Number(value) || 0
       if(n <= 0){
@@ -50,8 +67,12 @@ export default function CaloriesBurned(){
         triggerSync()
       }
       try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
-      navigate(-1)
-    }catch(e){ navigate(-1) }
+      showNotification(`Calories burned saved for ${iso}.`)
+    }catch(e){
+      showNotification('Could not save calories burned. Please try again.', 'error')
+    }finally{
+      setIsSaving(false)
+    }
   }
 
   const remove = ()=>{
@@ -59,6 +80,7 @@ export default function CaloriesBurned(){
     try{ draftByDateRef.current.set(iso, '') }catch(e){}
     try{ window.dispatchEvent(new Event('calorieWise.burnedChanged')) }catch(e){}
     setValue('')
+    showNotification(`Calories burned removed for ${iso}.`)
   }
 
   const handleBack = ()=>{
@@ -95,9 +117,33 @@ export default function CaloriesBurned(){
             </div>
 
             <div style={{display:'flex',gap:8,marginTop:8}}>
-              <button className="card" type="submit">Save</button>
-              <button className="card" type="button" onClick={remove}>Remove</button>
+              <button
+                className="card"
+                type="submit"
+                disabled={isSaving}
+                style={{background:'rgba(34, 197, 94, 0.15)',color:'#15803d',border:'1px solid rgba(34, 197, 94, 0.35)',padding:'8px 14px',fontWeight:700,cursor:isSaving ? 'wait' : 'pointer',opacity:isSaving ? 0.7 : 1}}
+              >
+                {isSaving ? 'Saving...' : 'Save'}
+              </button>
+              <button
+                className="card"
+                type="button"
+                onClick={remove}
+                disabled={isSaving}
+                style={{background:'rgba(239, 68, 68, 0.12)',color:'#b91c1c',border:'1px solid rgba(239, 68, 68, 0.3)',padding:'8px 14px',fontWeight:700,cursor:isSaving ? 'not-allowed' : 'pointer',opacity:isSaving ? 0.6 : 1}}
+              >
+                Remove
+              </button>
             </div>
+            {notification && (
+              <div
+                role="status"
+                aria-live="polite"
+                style={{marginTop:12,padding:'9px 12px',borderRadius:8,background:notification.type === 'error' ? 'rgba(239, 68, 68, 0.12)' : 'rgba(34, 197, 94, 0.12)',color:notification.type === 'error' ? '#b91c1c' : '#15803d',fontSize:13,fontWeight:600}}
+              >
+                {notification.message}
+              </div>
+            )}
           </form>
         </div>
       </div>
