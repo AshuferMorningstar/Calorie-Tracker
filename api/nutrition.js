@@ -1,5 +1,5 @@
 const allowedUnits = new Set(['g', 'count'])
-const retryableStatuses = new Set([401, 429, 500, 502, 503, 529])
+const retryableStatuses = new Set([401, 402, 429, 500, 502, 503, 529])
 const claudeModel = process.env.CLAUDE_MODEL || 'claude-haiku-4-5-20251001'
 
 const getApiKeys = () => [
