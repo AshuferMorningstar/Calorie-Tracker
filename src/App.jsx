@@ -742,7 +742,7 @@ export default function App(){
                 </>
               )}
             </div>
-            <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/burned')}>
+            <button className="card" style={{width:120,display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center',gap:6}} title="Calories burned" onClick={()=>navigate('/burned', { state: { date: dashboardDate } })}>
               <div style={{fontSize:20}}>🏃</div>
               <div style={{fontSize:12,color:'var(--muted)'}}>Calories burned</div>
             </button>

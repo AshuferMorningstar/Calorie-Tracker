@@ -1,13 +1,21 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
 import { saveUserDataToFirestore } from '../services/firestore'
 
 export default function CaloriesBurned(){
   const navigate = useNavigate()
+  const location = useLocation()
   const { triggerSync, currentUser, isOnline } = useSyncContext()
-  const today = new Date().toISOString().slice(0,10)
-  const [iso, setIso] = useState(today)
+  const localISODate = (date = new Date())=>{
+    const year = date.getFullYear()
+    const month = String(date.getMonth() + 1).padStart(2, '0')
+    const day = String(date.getDate()).padStart(2, '0')
+    return `${year}-${month}-${day}`
+  }
+  const today = localISODate()
+  const initialDate = location.state?.date || today
+  const [iso, setIso] = useState(initialDate)
   const [value, setValue] = useState('')
   const draftByDateRef = useRef(new Map())
 
