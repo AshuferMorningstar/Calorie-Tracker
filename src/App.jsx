@@ -1,12 +1,12 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { onAuthChange, signInWithGoogle, signOut, getGoogleRedirectResult } from './services/auth'
+import { signInWithGoogle, signOut, getGoogleRedirectResult } from './services/auth'
 import { useSyncContext } from './context/SyncContext'
-import { loadUserDataFromFirestore, saveUserDataToFirestore, syncDataBeforeLogout } from './services/firestore'
+import { syncDataBeforeLogout } from './services/firestore'
 
 export default function App(){
   const navigate = useNavigate()
-  const { triggerSync, lastSyncAt } = useSyncContext()
+  const { currentUser, isOnline, syncStatus, triggerSync, lastSyncAt } = useSyncContext()
 
   const localISODate = (date = new Date()) => {
     const year = date.getFullYear()
@@ -24,10 +24,6 @@ export default function App(){
   const [darkMode, setDarkMode] = useState(() => {
     try{ return localStorage.getItem('calorieWise.theme') === 'dark' }catch(e){return false}
   })
-  const [currentUser, setCurrentUser] = useState(null)
-  const [authLoading, setAuthLoading] = useState(true)
-  const [isOnline, setIsOnline] = useState(() => navigator.onLine)
-  const [syncStatus, setSyncStatus] = useState('synced')
   const [editNameOpen, setEditNameOpen] = useState(false)
   const [displayName, setDisplayName] = useState(() => {
     try{ return localStorage.getItem('calorieWise.displayName') || '' }catch(e){ return '' }
@@ -72,64 +68,6 @@ export default function App(){
       localStorage.setItem('calorieWise.theme', darkMode ? 'dark' : 'light')
     }catch(e){}
   },[darkMode])
-
-  // Listen for online/offline status
-  useEffect(()=>{
-    const handleOnline = () => {
-      setIsOnline(true)
-      setSyncStatus('syncing')
-      if(currentUser){
-        syncLocalDataToFirestore(currentUser.uid)
-      }
-    }
-    const handleOffline = () => {
-      setIsOnline(false)
-      setSyncStatus('offline')
-    }
-    window.addEventListener('online', handleOnline)
-    window.addEventListener('offline', handleOffline)
-    return () => {
-      window.removeEventListener('online', handleOnline)
-      window.removeEventListener('offline', handleOffline)
-    }
-  },[currentUser])
-
-  const syncLocalDataToFirestore = async (userId) => {
-    if(!isOnline) return
-    try{
-      setSyncStatus('syncing')
-      await saveUserDataToFirestore(userId)
-      setSyncStatus('synced')
-    }catch(e){
-      console.warn('[App] Sync failed:', e.message)
-      setSyncStatus('offline')
-    }
-  }
-
-  // Listen for auth state changes and load user data from Firestore when signed in
-  useEffect(()=>{
-    const unsubscribe = onAuthChange(async (user) => {
-      setCurrentUser(user)
-      setAuthLoading(false)
-      if(user){
-        try{
-          console.log('[App] User signed in:', user.email)
-          // Load user data from Firestore and restore to localStorage
-          await loadUserDataFromFirestore(user.uid)
-          setSyncStatus('synced')
-        }catch(e){
-          console.warn('[App] Failed to load cloud data:', e.message)
-          if(isOnline){
-            setSyncStatus('offline')
-          }
-        }
-      }else{
-        console.log('[App] User signed out')
-        setSyncStatus('synced')
-      }
-    })
-    return () => unsubscribe()
-  },[])
 
   // Ensure redirect-based Google sign-in completes in PWA/mobile.
   useEffect(()=>{
@@ -209,8 +147,6 @@ export default function App(){
     try{
       const user = await signInWithGoogle()
       console.log('[App] User signed in:', user.email)
-      // Save current data to Firestore
-      await saveUserDataToFirestore(user.uid)
       closeMenu()
     }catch(e){
       console.error('[App] Sign-in failed:', e.message)
@@ -228,7 +164,6 @@ export default function App(){
         sessionStorage.removeItem('calorieWise.splashThisSession')
         sessionStorage.removeItem('calorieWise.pendingGoogleRedirect')
       }catch(e){}
-      setSyncStatus('synced')
       closeMenu()
       navigate('/onboard-auth') // Redirect to login page
     }catch(e){
@@ -586,7 +521,7 @@ export default function App(){
         achievedCalories = 0
       }
 
-      const achievedRounded = Math.max(0, Math.round(achievedCalories))
+      const achievedRounded = Math.round(achievedCalories)
       setDietProgress({
         isDeficitGoal,
         totalRequiredCalories,

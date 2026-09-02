@@ -65,6 +65,9 @@ export const loadUserDataFromFirestore = async (userId) => {
           localStorage.setItem(key, sanitizedData[key])
         }
       })
+      try {
+        window.dispatchEvent(new Event('calorieWise.entriesChanged'))
+      } catch (e) {}
       console.log('[Firestore] User data loaded successfully')
       return true
     } else {

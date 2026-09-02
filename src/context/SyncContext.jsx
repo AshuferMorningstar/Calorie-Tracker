@@ -102,7 +102,10 @@ export const SyncProvider = ({ children }) => {
       if (user) {
         try {
           console.log('[Sync] User signed in, loading data...')
-          await loadUserDataFromFirestore(user.uid)
+          const hasCloudData = await loadUserDataFromFirestore(user.uid)
+          if (!hasCloudData && isOnline) {
+            await saveUserDataToFirestore(user.uid)
+          }
           setSyncStatus('synced')
           try{
             const nowIso = new Date().toISOString()
