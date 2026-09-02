@@ -1,11 +1,11 @@
 const { onCall, HttpsError } = require('firebase-functions/v2/https')
 const { defineSecret } = require('firebase-functions/params')
 
-const claudeApiKey = defineSecret('CLAUDE_API_KEY')
+const openRouterApiKey = defineSecret('OPENROUTER_API_KEY')
 const allowedUnits = new Set(['g', 'count'])
 
 exports.lookupNutrition = onCall(
-  { secrets: [claudeApiKey], timeoutSeconds: 30, region: 'us-central1' },
+  { secrets: [openRouterApiKey], timeoutSeconds: 30, region: 'us-central1' },
   async (request) => {
     if (!request.auth) {
       throw new HttpsError('unauthenticated', 'You must be signed in to use nutrition lookup.')
@@ -25,19 +25,23 @@ exports.lookupNutrition = onCall(
       ? 'Return nutrition per 100 grams.'
       : 'Return nutrition per one count or piece.'
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
         'content-type': 'application/json',
-        'x-api-key': claudeApiKey.value(),
-        'anthropic-version': '2023-06-01'
+        authorization: `Bearer ${openRouterApiKey.value()}`,
+        'X-Title': 'Calorie Wise'
       },
       body: JSON.stringify({
-        model: process.env.CLAUDE_MODEL || 'claude-3-5-haiku-latest',
+        model: process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3.5-lightning:free',
         max_tokens: 180,
         temperature: 0,
-        system: 'You provide cautious nutrition estimates. Respond with JSON only, no markdown or explanation.',
+        reasoning: { enabled: true },
+        response_format: { type: 'json_object' },
         messages: [{
+          role: 'system',
+          content: 'You provide cautious nutrition estimates. Respond with JSON only, no markdown or explanation.'
+        }, {
           role: 'user',
           content: `Estimate calories and protein for this food: "${foodName}". ${unitInstruction} Use a typical edible serving and return numbers only in this exact shape: {"calories": number, "protein": number}. Calories must be kcal and protein must be grams. Use non-negative numbers.`
         }]
@@ -45,15 +49,15 @@ exports.lookupNutrition = onCall(
     })
 
     if (!response.ok) {
-      console.error('Claude nutrition request failed:', response.status)
+      console.error('OpenRouter nutrition request failed:', response.status)
       throw new HttpsError('unavailable', 'Nutrition lookup is temporarily unavailable.')
     }
 
     const result = await response.json()
-    const text = result.content?.find((block) => block.type === 'text')?.text || ''
+    const text = result.choices?.[0]?.message?.content || ''
     let nutrition
     try {
-      nutrition = JSON.parse(text.trim())
+      nutrition = JSON.parse(text.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, ''))
     } catch (error) {
       throw new HttpsError('internal', 'Nutrition lookup returned an invalid result.')
     }

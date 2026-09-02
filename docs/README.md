@@ -47,6 +47,7 @@ These scripts are the only ones defined in `package.json`, so the workflow is in
 
 - The app uses React 18 with Vite, so the codebase follows a modern component-based structure with fast refresh in development.
 - Firebase handles authentication and cloud sync, while local storage keeps the app usable offline or when sync is delayed.
+- The nutrition estimate endpoint uses OpenRouter with `nvidia/nemotron-3.5-lightning:free` and reasoning enabled. Configure `OPENROUTER_API_KEY` on the server; `OPENROUTER_MODEL` can override the default.
 - The food tracker uses built-in datasets for common foods, fruits, vegetables, and Indian meals so users can log quickly without manual nutrition entry.
 - The app uses both a vector logo for in-app UI and a PNG logo for icons and manifest files.
 - A production build should be regenerated after asset changes so `dist/` stays current.
