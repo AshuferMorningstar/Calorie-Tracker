@@ -39,7 +39,7 @@ export default async function handler(req, res) {
   const unitInstruction = unit === 'g'
     ? 'Return nutrition per 100 grams.'
     : 'Return nutrition per one count or piece.'
-  const prompt = `Search the web for reliable nutrition information for this food: "${foodName}". ${unitInstruction} Prefer Indian food labels, restaurant nutrition pages, or reputable nutrition sources when available. Convert the result to the requested unit. Return only one JSON object in this exact shape: {"calories": number, "protein": number}. Calories must be kcal and protein must be grams. Use non-negative numbers.`
+  const prompt = `Find nutrition for "${foodName}" online. ${unitInstruction} Prefer Indian labels or reliable sources. Return only {"calories": number, "protein": number}; kcal and grams, non-negative.`
   let response
   try {
     response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
@@ -52,17 +52,17 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: openRouterModel,
-        max_tokens: 180,
+        max_tokens: 80,
         temperature: 0,
         plugins: [{
           id: 'web',
           engine: 'exa',
           mode: 'instant',
-          max_results: 3,
-          search_prompt: 'Find reliable nutrition data, especially Indian food labels, restaurant menus, and reputable nutrition sources.'
+          max_results: 1,
+          search_prompt: 'Find one reliable nutrition source, prioritizing Indian food labels.'
         }],
         messages: [
-          { role: 'system', content: 'You provide cautious nutrition estimates. After reasoning, your final answer must be only one JSON object with numeric calories and protein fields. Do not include Markdown or any other text.' },
+          { role: 'system', content: 'Return only one JSON object with numeric calories and protein fields. No Markdown or explanation.' },
           { role: 'user', content: prompt }
         ]
       })
