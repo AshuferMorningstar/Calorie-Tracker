@@ -54,7 +54,6 @@ exports.lookupNutrition = onCall(
         model: process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3.5-lightning:free',
         max_tokens: 180,
         temperature: 0,
-        reasoning: { enabled: true },
         messages: [{
           role: 'system',
           content: 'You provide cautious nutrition estimates. After reasoning, your final answer must be only one JSON object with numeric calories and protein fields. Do not include Markdown or any other text.'
