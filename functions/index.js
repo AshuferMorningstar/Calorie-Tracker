@@ -55,10 +55,9 @@ exports.lookupNutrition = onCall(
         max_tokens: 180,
         temperature: 0,
         reasoning: { enabled: true },
-        response_format: { type: 'json_object' },
         messages: [{
           role: 'system',
-          content: 'You provide cautious nutrition estimates. Respond with JSON only, no markdown or explanation.'
+          content: 'You provide cautious nutrition estimates. After reasoning, your final answer must be only one JSON object with numeric calories and protein fields. Do not include Markdown or any other text.'
         }, {
           role: 'user',
           content: `Estimate calories and protein for this food: "${foodName}". ${unitInstruction} Use a typical edible serving and return numbers only in this exact shape: {"calories": number, "protein": number}. Calories must be kcal and protein must be grams. Use non-negative numbers.`
