@@ -3,6 +3,24 @@ const openRouterModel = process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3.5-lig
 
 const sendError = (res, status, message) => res.status(status).json({ error: message })
 
+const parseNutritionResponse = (content) => {
+  const text = Array.isArray(content)
+    ? content.map((part) => typeof part === 'string' ? part : part?.text || '').join(' ')
+    : typeof content === 'string' ? content : ''
+  const cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+  const candidates = [cleaned]
+  const start = cleaned.indexOf('{')
+  const end = cleaned.lastIndexOf('}')
+  if (start >= 0 && end > start) candidates.push(cleaned.slice(start, end + 1))
+
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(candidate.replace(/^```json\s*/i, '').replace(/\s*```$/, ''))
+    } catch (error) {}
+  }
+  return null
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST')
@@ -62,11 +80,8 @@ export default async function handler(req, res) {
   }
 
   const result = await response.json()
-  const text = result.choices?.[0]?.message?.content || ''
-  let nutrition
-  try {
-    nutrition = JSON.parse(text.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, ''))
-  } catch (error) {
+  const nutrition = parseNutritionResponse(result.choices?.[0]?.message?.content)
+  if (!nutrition) {
     return sendError(res, 502, 'Nutrition lookup returned an invalid result.')
   }
 

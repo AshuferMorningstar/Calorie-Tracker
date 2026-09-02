@@ -4,6 +4,24 @@ const { defineSecret } = require('firebase-functions/params')
 const openRouterApiKey = defineSecret('OPENROUTER_API_KEY')
 const allowedUnits = new Set(['g', 'count'])
 
+const parseNutritionResponse = (content) => {
+  const text = Array.isArray(content)
+    ? content.map((part) => typeof part === 'string' ? part : part?.text || '').join(' ')
+    : typeof content === 'string' ? content : ''
+  const cleaned = text.replace(/<think>[\s\S]*?<\/think>/gi, '').trim()
+  const candidates = [cleaned]
+  const start = cleaned.indexOf('{')
+  const end = cleaned.lastIndexOf('}')
+  if (start >= 0 && end > start) candidates.push(cleaned.slice(start, end + 1))
+
+  for (const candidate of candidates) {
+    try {
+      return JSON.parse(candidate.replace(/^```json\s*/i, '').replace(/\s*```$/, ''))
+    } catch (error) {}
+  }
+  return null
+}
+
 exports.lookupNutrition = onCall(
   { secrets: [openRouterApiKey], timeoutSeconds: 30, region: 'us-central1' },
   async (request) => {
@@ -54,11 +72,8 @@ exports.lookupNutrition = onCall(
     }
 
     const result = await response.json()
-    const text = result.choices?.[0]?.message?.content || ''
-    let nutrition
-    try {
-      nutrition = JSON.parse(text.trim().replace(/^```json\s*/i, '').replace(/\s*```$/, ''))
-    } catch (error) {
+    const nutrition = parseNutritionResponse(result.choices?.[0]?.message?.content)
+    if (!nutrition) {
       throw new HttpsError('internal', 'Nutrition lookup returned an invalid result.')
     }
 
