@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
 
 const todayISO = () => {
@@ -12,6 +12,7 @@ const todayISO = () => {
 
 export default function Tasks() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { triggerSync } = useSyncContext()
 
   const [taskInput, setTaskInput] = useState('')
@@ -107,13 +108,7 @@ export default function Tasks() {
   }, [])
 
   const handleBack = () => {
-    try {
-      if (window.history && window.history.length > 1) {
-        navigate(-1)
-        return
-      }
-    } catch (e) {}
-    navigate('/', { state: { fromSplash: true } })
+    navigate(location.state?.from || '/', { state: { openMenu: true } })
   }
 
   const addTask = () => {

@@ -193,6 +193,13 @@ export default function App(){
   const toggleMenu = ()=> menuOpen ? closeMenu() : openMenu()
   const location = useLocation()
 
+  useEffect(() => {
+    if (location.state?.openMenu) {
+      setMenuOpen(true)
+      navigate(location.pathname, { replace: true, state: null })
+    }
+  }, [location, navigate])
+
   const data = useMemo(()=>{
     try{
       const currentKg = Number(localStorage.getItem('calorieWise.currentWeightKg') || '') || null
@@ -837,10 +844,10 @@ export default function App(){
           </div>
 
           <nav style={{display:'flex',flexDirection:'column',gap:8,marginTop:8}} aria-label="Main menu">
-            <button className="card" onClick={()=>{ navigate('/profile'); closeMenu() }}>Profile</button>
-            <button className="card" onClick={()=>{ navigate('/meal-planner'); closeMenu() }}>Meal Planner</button>
-            <button className="card" onClick={()=>{ navigate('/tasks'); closeMenu() }}>Activity Planner</button>
-            <button className="card" onClick={()=>{ navigate('/workout-manager'); closeMenu() }}>Workout Manager</button>
+            <button className="card" onClick={()=>{ navigate('/profile', { state: { from: location.pathname } }); closeMenu() }}>Profile</button>
+            <button className="card" onClick={()=>{ navigate('/meal-planner', { state: { from: location.pathname } }); closeMenu() }}>Meal Planner</button>
+            <button className="card" onClick={()=>{ navigate('/tasks', { state: { from: location.pathname } }); closeMenu() }}>Activity Planner</button>
+            <button className="card" onClick={()=>{ navigate('/workout-manager', { state: { from: location.pathname } }); closeMenu() }}>Workout Manager</button>
             {currentUser ? (
               <button className="card" onClick={handleSignOut}>Sign out</button>
             ) : (

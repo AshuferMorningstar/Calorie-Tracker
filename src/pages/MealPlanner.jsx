@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
 
 const MAX_RECIPES = 30
 
 export default function MealPlanner() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { triggerSync } = useSyncContext()
   const todayISO = () => {
     const d = new Date()
@@ -242,15 +243,7 @@ export default function MealPlanner() {
       return null
     })()
   
-    const handleBack = () => {
-      try {
-        if (window.history && window.history.length > 1) {
-          navigate(-1)
-          return
-        }
-      } catch (e) {}
-      navigate('/', { state: { fromSplash: true } })
-    }
+    const handleBack = () => navigate(location.state?.from || '/', { state: { openMenu: true } })
   
     return (
       <div style={{ padding: 16, maxWidth: 900, margin: '0 auto' }}>

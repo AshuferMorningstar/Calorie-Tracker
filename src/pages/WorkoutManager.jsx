@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset } from '../services/workouts'
 
 const workoutDays = Array.from({ length: 7 }, (_, index) => `Day ${index + 1}`)
@@ -17,6 +17,11 @@ const isDayComplete = (day) => {
 
 export default function WorkoutManager() {
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const handleBack = () => {
+    navigate(location.state?.from || '/', { state: { openMenu: true } })
+  }
   const [completedDays, setCompletedDays] = useState(() => (
     (() => {
       resetWorkoutCompletionForNewWeek()
@@ -43,7 +48,7 @@ export default function WorkoutManager() {
       <header style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
         <button
           className="icon-btn"
-          onClick={() => navigate(-1)}
+          onClick={handleBack}
           aria-label="Back"
           style={{ fontSize: 20, lineHeight: 1 }}
         >

@@ -1,9 +1,10 @@
 import React, { useMemo } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
 
 export default function Profile() {
   const navigate = useNavigate()
+  const location = useLocation()
   const { currentUser } = useSyncContext()
   const data = useMemo(() => {
     try {
@@ -51,7 +52,7 @@ export default function Profile() {
     <main style={{padding:'12px 16px 24px',width:'100%',maxWidth:900,margin:'0 auto',overflowX:'hidden'}}>
       <div className="profile-top" style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'6px 0'}}>
         <div style={{display:'flex',alignItems:'center',gap:12}}>
-          <button className="icon-btn" onClick={()=>{ try{ if(window.history && window.history.length > 1){ navigate(-1); return } }catch(e){} navigate('/', { state: { fromSplash: true } }) }} style={{fontSize:20,lineHeight:1}}>←</button>
+          <button className="icon-btn" onClick={()=>navigate(location.state?.from || '/', { state: { openMenu: true } })} style={{fontSize:20,lineHeight:1}}>←</button>
           <h2 style={{margin:0}}>Your profile</h2>
         </div>
       </div>
