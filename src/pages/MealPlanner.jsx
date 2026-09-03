@@ -247,9 +247,12 @@ export default function MealPlanner() {
   
     return (
       <div style={{ padding: 16, maxWidth: 900, margin: '0 auto' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 12 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
           <button className="icon-btn" onClick={handleBack} style={{ fontSize: 20, lineHeight: 1 }}>←</button>
           <h2 style={{ margin: 0 }}>Meal Planner</h2>
+          </div>
+          <button className="icon-btn" onClick={() => navigate('/')} aria-label="Home" title="Home" style={{ fontSize: 18, lineHeight: 1 }}>⌂</button>
         </div>
   
         <div style={{ paddingBottom: 80 }}>

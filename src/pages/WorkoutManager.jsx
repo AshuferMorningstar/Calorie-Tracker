@@ -45,7 +45,8 @@ export default function WorkoutManager() {
 
   return (
     <main style={{ padding: 16, maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
-      <header style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 20 }}>
+      <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
           className="icon-btn"
           onClick={handleBack}
@@ -55,6 +56,8 @@ export default function WorkoutManager() {
           ←
         </button>
         <h1 style={{ margin: 0, fontSize: 22 }}>Workout Manager</h1>
+        </div>
+        <button className="icon-btn" onClick={() => navigate('/')} aria-label="Home" title="Home" style={{ fontSize: 18, lineHeight: 1 }}>⌂</button>
       </header>
 
       <section style={{ display: 'grid', gap: 10, marginBottom: 18 }} aria-label="Workout days">

@@ -55,6 +55,7 @@ export default function Profile() {
           <button className="icon-btn" onClick={()=>navigate(location.state?.from || '/', { state: { openMenu: true } })} style={{fontSize:20,lineHeight:1}}>←</button>
           <h2 style={{margin:0}}>Your profile</h2>
         </div>
+        <button className="icon-btn" onClick={()=>navigate('/')} aria-label="Home" title="Home" style={{fontSize:18,lineHeight:1}}>⌂</button>
       </div>
       <div style={{color:'var(--muted)',marginTop:12}}>Review and edit your personal info and plan.</div>
 
