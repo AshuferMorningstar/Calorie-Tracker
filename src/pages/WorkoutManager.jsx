@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset } from '../services/workouts'
 
 const workoutDays = Array.from({ length: 7 }, (_, index) => `Day ${index + 1}`)
 const storageKey = (day) => `calorieWise.workouts.${day.toLowerCase().replace(' ', '-')}`
@@ -17,7 +18,10 @@ const isDayComplete = (day) => {
 export default function WorkoutManager() {
   const navigate = useNavigate()
   const [completedDays, setCompletedDays] = useState(() => (
-    Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)]))
+    (() => {
+      resetWorkoutCompletionForNewWeek()
+      return Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)]))
+    })()
   ))
 
   useEffect(() => {
@@ -29,6 +33,10 @@ export default function WorkoutManager() {
       window.removeEventListener('storage', refresh)
     }
   }, [])
+
+  useEffect(() => scheduleWorkoutWeekReset(() => {
+    setCompletedDays(Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)])))
+  }), [])
 
   return (
     <main style={{ padding: 16, maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>

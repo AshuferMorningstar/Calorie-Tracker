@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
+import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset } from '../services/workouts'
 
 const storageKey = (day) => `calorieWise.workouts.${day}`
 const titleStorageKey = (day) => `calorieWise.workoutTitle.${day}`
@@ -41,6 +42,7 @@ export default function WorkoutDay() {
   const [titleDraft, setTitleDraft] = useState('')
 
   useEffect(() => {
+    resetWorkoutCompletionForNewWeek()
     setWorkouts(readWorkouts(day))
     clearForm()
     try {
@@ -52,6 +54,8 @@ export default function WorkoutDay() {
       setTitleDraft('Your workouts')
     }
   }, [day])
+
+  useEffect(() => scheduleWorkoutWeekReset(() => setWorkouts(readWorkouts(day))), [day])
 
   const saveWorkouts = (nextWorkouts) => {
     setWorkouts(nextWorkouts)
