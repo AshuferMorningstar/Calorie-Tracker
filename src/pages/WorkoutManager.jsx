@@ -1,9 +1,34 @@
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 const workoutDays = Array.from({ length: 7 }, (_, index) => `Day ${index + 1}`)
+const storageKey = (day) => `calorieWise.workouts.${day.toLowerCase().replace(' ', '-')}`
+
+const isDayComplete = (day) => {
+  try {
+    const stored = localStorage.getItem(storageKey(day))
+    const workouts = stored ? JSON.parse(stored) : []
+    return Array.isArray(workouts) && workouts.length > 0 && workouts.every((workout) => workout.completed)
+  } catch (error) {
+    return false
+  }
+}
 
 export default function WorkoutManager() {
   const navigate = useNavigate()
+  const [completedDays, setCompletedDays] = useState(() => (
+    Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)]))
+  ))
+
+  useEffect(() => {
+    const refresh = () => setCompletedDays(Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)])))
+    window.addEventListener('calorieWise.workoutsChanged', refresh)
+    window.addEventListener('storage', refresh)
+    return () => {
+      window.removeEventListener('calorieWise.workoutsChanged', refresh)
+      window.removeEventListener('storage', refresh)
+    }
+  }, [])
 
   return (
     <main style={{ padding: 16, maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
@@ -29,11 +54,36 @@ export default function WorkoutManager() {
             style={{
               width: '100%',
               textAlign: 'left',
+              display: 'flex',
+              flexDirection: 'row',
+              flexWrap: 'nowrap',
+              justifyContent: 'space-between',
               border: '1px solid var(--card-border)',
               background: 'var(--card-bg)'
             }}
           >
-            {day}
+            <span style={{ flex: '1 1 auto', minWidth: 0 }}>{day}</span>
+            <span
+              aria-label={completedDays[day] ? `${day} completed` : `${day} incomplete`}
+              title={completedDays[day] ? 'All workouts completed' : 'Complete all workouts to check this day'}
+              style={{
+                width: 22,
+                height: 22,
+                flex: '0 0 22px',
+                borderRadius: '50%',
+                display: 'inline-flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                border: completedDays[day] ? '2px solid var(--accent1)' : '2px solid var(--muted)',
+                background: completedDays[day] ? 'var(--accent1)' : 'transparent',
+                color: '#fff',
+                fontSize: 14,
+                fontWeight: 700,
+                lineHeight: 1
+              }}
+            >
+              {completedDays[day] ? '✓' : ''}
+            </span>
           </button>
         ))}
       </section>

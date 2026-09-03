@@ -57,6 +57,7 @@ export default function WorkoutDay() {
     setWorkouts(nextWorkouts)
     try {
       localStorage.setItem(storageKey(day), JSON.stringify(nextWorkouts))
+      window.dispatchEvent(new Event('calorieWise.workoutsChanged'))
       triggerSync()
     } catch (error) {}
   }
