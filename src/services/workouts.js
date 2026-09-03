@@ -7,14 +7,22 @@ export const workoutDayNumberForDate = (date = new Date()) => {
 
 export const workoutDayKeyForDate = (date = new Date()) => `day-${workoutDayNumberForDate(date)}`
 
-export const syncTodayWorkoutAttendance = () => {
+export const workoutDateForCurrentWeek = (dayKey, date = new Date()) => {
+  const dayNumber = Number(String(dayKey).replace('day-', ''))
+  if (!Number.isInteger(dayNumber) || dayNumber < 1 || dayNumber > 7) return null
+  const monday = new Date(date)
+  monday.setHours(0, 0, 0, 0)
+  const daysSinceMonday = (monday.getDay() + 6) % 7
+  monday.setDate(monday.getDate() - daysSinceMonday + dayNumber - 1)
+  return `${monday.getFullYear()}-${String(monday.getMonth() + 1).padStart(2, '0')}-${String(monday.getDate()).padStart(2, '0')}`
+}
+
+export const syncWorkoutAttendance = (dayKey, workouts) => {
   try {
-    const stored = localStorage.getItem(`calorieWise.workouts.${workoutDayKeyForDate()}`)
-    const workouts = stored ? JSON.parse(stored) : []
     if (!Array.isArray(workouts) || workouts.length === 0 || !workouts.every((workout) => workout.completed)) return false
 
-    const date = new Date()
-    const iso = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+    const iso = workoutDateForCurrentWeek(dayKey)
+    if (!iso) return false
     const key = `calorieWise.attendance.${iso}`
     if (localStorage.getItem(key) === '1') return false
     localStorage.setItem(key, '1')
