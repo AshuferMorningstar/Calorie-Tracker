@@ -306,17 +306,25 @@ export default function App(){
   }, [dashboardDate])
 
   useEffect(()=>{
-    const onChanged = ()=> setStorageTick(x=>x+1)
+    const onChanged = ()=> {
+      setStorageTick(x=>x+1)
+      try{
+        const today = localISODate()
+        setWorkoutToday(localStorage.getItem(`calorieWise.attendance.${today}`) === '1')
+      }catch(e){}
+    }
     try{
       window.addEventListener('calorieWise.burnedChanged', onChanged)
       window.addEventListener('calorieWise.attendanceChanged', onChanged)
       window.addEventListener('calorieWise.entriesChanged', onChanged)
+      window.addEventListener('calorieWise.workoutsChanged', onChanged)
     }catch(e){}
     return ()=>{
       try{
         window.removeEventListener('calorieWise.burnedChanged', onChanged)
         window.removeEventListener('calorieWise.attendanceChanged', onChanged)
         window.removeEventListener('calorieWise.entriesChanged', onChanged)
+        window.removeEventListener('calorieWise.workoutsChanged', onChanged)
       }catch(e){}
     }
   },[])

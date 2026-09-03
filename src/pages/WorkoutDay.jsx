@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useSyncContext } from '../context/SyncContext'
-import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset } from '../services/workouts'
+import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset, syncTodayWorkoutAttendance, workoutDayKeyForDate } from '../services/workouts'
 
 const storageKey = (day) => `calorieWise.workouts.${day}`
 const titleStorageKey = (day) => `calorieWise.workoutTitle.${day}`
@@ -44,6 +44,7 @@ export default function WorkoutDay() {
   useEffect(() => {
     resetWorkoutCompletionForNewWeek()
     setWorkouts(readWorkouts(day))
+    if (syncTodayWorkoutAttendance()) window.dispatchEvent(new Event('calorieWise.attendanceChanged'))
     clearForm()
     try {
       const storedTitle = localStorage.getItem(titleStorageKey(day)) || 'Your workouts'
@@ -62,6 +63,9 @@ export default function WorkoutDay() {
     try {
       localStorage.setItem(storageKey(day), JSON.stringify(nextWorkouts))
       window.dispatchEvent(new Event('calorieWise.workoutsChanged'))
+      if (day === workoutDayKeyForDate() && nextWorkouts.length > 0 && nextWorkouts.every((workout) => workout.completed) && syncTodayWorkoutAttendance()) {
+        window.dispatchEvent(new Event('calorieWise.attendanceChanged'))
+      }
       triggerSync()
     } catch (error) {}
   }

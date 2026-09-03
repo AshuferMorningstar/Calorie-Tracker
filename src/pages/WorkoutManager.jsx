@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
-import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset } from '../services/workouts'
+import { resetWorkoutCompletionForNewWeek, scheduleWorkoutWeekReset, syncTodayWorkoutAttendance } from '../services/workouts'
 
 const workoutDays = Array.from({ length: 7 }, (_, index) => `Day ${index + 1}`)
 const storageKey = (day) => `calorieWise.workouts.${day.toLowerCase().replace(' ', '-')}`
@@ -25,12 +25,16 @@ export default function WorkoutManager() {
   const [completedDays, setCompletedDays] = useState(() => (
     (() => {
       resetWorkoutCompletionForNewWeek()
+      syncTodayWorkoutAttendance()
       return Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)]))
     })()
   ))
 
   useEffect(() => {
-    const refresh = () => setCompletedDays(Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)])))
+    const refresh = () => {
+      if (syncTodayWorkoutAttendance()) window.dispatchEvent(new Event('calorieWise.attendanceChanged'))
+      setCompletedDays(Object.fromEntries(workoutDays.map((day) => [day, isDayComplete(day)])))
+    }
     window.addEventListener('calorieWise.workoutsChanged', refresh)
     window.addEventListener('storage', refresh)
     return () => {
