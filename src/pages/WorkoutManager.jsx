@@ -50,10 +50,11 @@ export default function WorkoutManager() {
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
         <button
+          type="button"
           className="icon-btn"
           onClick={handleBack}
           aria-label="Back"
-          style={{ fontSize: 20, lineHeight: 1 }}
+          style={{ fontSize: 24, fontWeight: 800, lineHeight: 1, position: 'relative', zIndex: 2, flexShrink: 0 }}
         >
           ←
         </button>

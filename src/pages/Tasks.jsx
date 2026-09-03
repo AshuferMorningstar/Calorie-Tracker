@@ -159,7 +159,7 @@ export default function Tasks() {
     <div style={{ padding: 16, maxWidth: 760, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 12 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button className="icon-btn back-btn" onClick={handleBack} aria-label="Back">←</button>
+        <button type="button" className="icon-btn back-btn" onClick={handleBack} aria-label="Back" style={{ fontSize: 24, fontWeight: 800, lineHeight: 1, position: 'relative', zIndex: 2, flexShrink: 0 }}>←</button>
         <h2 style={{ margin: 0 }}>Activity Planner</h2>
         </div>
         <button className="icon-btn" onClick={() => navigate('/')} aria-label="Home" title="Home" style={{ fontSize: 18, lineHeight: 1 }}>⌂</button>

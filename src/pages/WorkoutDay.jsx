@@ -142,7 +142,7 @@ export default function WorkoutDay() {
     <main style={{ padding: 16, maxWidth: 720, margin: '0 auto', width: '100%', boxSizing: 'border-box' }}>
       <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, marginBottom: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-        <button className="icon-btn" onClick={() => navigate('/workout-manager')} aria-label="Back" style={{ fontSize: 20, lineHeight: 1 }}>←</button>
+        <button type="button" className="icon-btn back-btn" onClick={() => navigate('/workout-manager')} aria-label="Back" style={{ fontSize: 24, fontWeight: 800, lineHeight: 1, position: 'relative', zIndex: 2, flexShrink: 0 }}>←</button>
         <h1 style={{ margin: 0, fontSize: 22 }}>{dayLabel}</h1>
         </div>
         <button className="icon-btn" onClick={() => navigate('/')} aria-label="Home" title="Home" style={{ fontSize: 18, lineHeight: 1 }}>⌂</button>
