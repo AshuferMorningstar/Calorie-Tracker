@@ -14,6 +14,8 @@ import Calendar from './pages/Calendar'
 import MealPlanner from './pages/MealPlanner'
 import AddRecipe from './pages/AddRecipe'
 import Tasks from './pages/Tasks'
+import WorkoutManager from './pages/WorkoutManager'
+import WorkoutDay from './pages/WorkoutDay'
 import ConditionalHome from './ConditionalHome'
 import { SyncProvider } from './context/SyncContext'
 import '../styles.css'
@@ -66,6 +68,8 @@ root.render(
         <Route path="/meal-planner" element={<MealPlanner/>} />
         <Route path="/add-recipe" element={<AddRecipe/>} />
         <Route path="/tasks" element={<Tasks/>} />
+        <Route path="/workout-manager" element={<WorkoutManager/>} />
+        <Route path="/workout-manager/:day" element={<WorkoutDay/>} />
         <Route path="*" element={<App />} />
       </Routes>
     </BrowserRouter>
